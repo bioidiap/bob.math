@@ -6,236 +6,795 @@
  * @brief Binds the Linear System solver based on LAPACK to python.
  *
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "histogram.h"
+#include <xbob.blitz/cppapi.h>
 #include "bob/math/linsolve.h"
 
-#include "bob/python/ndarray.h"
-
-using namespace boost::python;
-
-static const char* LINSOLVE_DOC = "Solve the linear system a*x=b and return the result as a blitz array. The solver is from the LAPACK library (use of dgesv).";
-static const char* LINSOLVE_SYMPOS_DOC = "Solve the linear system a*x=b, where a is symmetric definite positive, and return the result as a blitz array. The solver is from the LAPACK library (use of dposv).";
-static const char* LINSOLVE_CG_SYMPOS_DOC = "Solve the linear system a*x=b via conjugate gradients, where a is symmetric definite positive, and return the result as a blitz array.";
-
-static void script_linsolve(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_x = x.type();
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_x.dtype == bob::core::array::t_float64 && info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_x.nd == info_b.nd)
-    {
-      if(info_x.nd == 1)
-      {
-        blitz::Array<double,1> x_ = x.bz<double,1>();
-        bob::math::linsolve(A.bz<double,2>(), x_, 
-          b.bz<double,1>());
-      }
-      else if(info_x.nd == 2)
-      {
-        blitz::Array<double,2> x_ = x.bz<double,2>();
-        bob::math::linsolve(A.bz<double,2>(), x_, 
-          b.bz<double,2>());
-      }
-      else
-        PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-    }
-    else
-      PYTHON_ERROR(TypeError, "x and b should have the same number of dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static void script_linsolve_(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_x = x.type();
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_x.dtype == bob::core::array::t_float64 && info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_x.nd == info_b.nd)
-    {
-      if(info_x.nd == 1)
-      {
-        blitz::Array<double,1> x_ = x.bz<double,1>();
-        bob::math::linsolve_(A.bz<double,2>(), x_, 
-          b.bz<double,1>());
-      }
-      else if(info_x.nd == 2)
-      {
-        blitz::Array<double,2> x_ = x.bz<double,2>();
-        bob::math::linsolve_(A.bz<double,2>(), x_, 
-          b.bz<double,2>());
-      }
-      else
-        PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-    }
-    else
-      PYTHON_ERROR(TypeError, "x and b should have the same number of dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static object py_script_linsolve(bob::python::const_ndarray A, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_b.nd == 1)
-    {
-      bob::python::ndarray x(info_b.dtype, info_b.shape[0]);
-      blitz::Array<double,1> x_ = x.bz<double,1>();
-      bob::math::linsolve_(A.bz<double,2>(), x_, 
-        b.bz<double,1>());
-      return x.self();
-    }
-    else if(info_b.nd == 2)
-    {
-      bob::python::ndarray x(info_b.dtype, info_b.shape[0], info_b.shape[1]);
-      blitz::Array<double,2> x_ = x.bz<double,2>();
-      bob::math::linsolve_(A.bz<double,2>(), x_, 
-        b.bz<double,2>());
-      return x.self();
-    }
-    else
-      PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static void script_linsolveSympos(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_x = x.type();
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_x.dtype == bob::core::array::t_float64 && info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_x.nd == info_b.nd)
-    {
-      if(info_x.nd == 1)
-      {
-        blitz::Array<double,1> x_ = x.bz<double,1>();
-        bob::math::linsolveSympos(A.bz<double,2>(), x_, 
-          b.bz<double,1>());
-      }
-      else if(info_x.nd == 2)
-      {
-        blitz::Array<double,2> x_ = x.bz<double,2>();
-        bob::math::linsolveSympos(A.bz<double,2>(), x_, 
-          b.bz<double,2>());
-      }
-      else
-        PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-    }
-    else
-      PYTHON_ERROR(TypeError, "x and b should have the same number of dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static void script_linsolveSympos_(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_x = x.type();
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_x.dtype == bob::core::array::t_float64 && info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_x.nd == info_b.nd)
-    {
-      if(info_x.nd == 1)
-      {
-        blitz::Array<double,1> x_ = x.bz<double,1>();
-        bob::math::linsolveSympos_(A.bz<double,2>(), x_, 
-          b.bz<double,1>());
-      }
-      else if(info_x.nd == 2)
-      {
-        blitz::Array<double,2> x_ = x.bz<double,2>();
-        bob::math::linsolveSympos_(A.bz<double,2>(), x_, 
-          b.bz<double,2>());
-      }
-      else
-        PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-    }
-    else
-      PYTHON_ERROR(TypeError, "x and b should have the same number of dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static object py_script_linsolveSympos(bob::python::const_ndarray A, bob::python::const_ndarray b) {
-  const bob::core::array::typeinfo& info_b = b.type();
-  if(info_b.dtype == bob::core::array::t_float64)
-  {
-    if(info_b.nd == 1)
-    {
-      bob::python::ndarray x(info_b.dtype, info_b.shape[0]);
-      blitz::Array<double,1> x_ = x.bz<double,1>();
-      bob::math::linsolveSympos_(A.bz<double,2>(), x_, 
-        b.bz<double,1>());
-      return x.self();
-    }
-    else if(info_b.nd == 2)
-    {
-      bob::python::ndarray x(info_b.dtype, info_b.shape[0], info_b.shape[1]);
-      blitz::Array<double,2> x_ = x.bz<double,2>();
-      bob::math::linsolveSympos_(A.bz<double,2>(), x_, 
-        b.bz<double,2>());
-      return x.self();
-    }
-    else
-      PYTHON_ERROR(TypeError, "Linear solver does not support more than 2 dimensions");
-  }
-  else
-    PYTHON_ERROR(TypeError, "Linear solver does only support float64 type");
-}
-
-static void script_linsolveCGSympos(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b,
-    const double acc, const int max_iter) {
-  blitz::Array<double,1> x_ = x.bz<double,1>();
-  bob::math::linsolveCGSympos(A.bz<double,2>(), x_, 
-      b.bz<double,1>(), acc, max_iter);
-}
-
-static void script_linsolveCGSympos_(bob::python::const_ndarray A, bob::python::ndarray x, bob::python::const_ndarray b,
-    const double acc, const int max_iter) {
-  blitz::Array<double,1> x_ = x.bz<double,1>();
-  bob::math::linsolveCGSympos_(A.bz<double,2>(), x_, 
-      b.bz<double,1>(), acc, max_iter);
-}
-
-static object py_script_linsolveCGSympos(bob::python::const_ndarray A, bob::python::const_ndarray b,
-    const double acc, const int max_iter) {
-  const bob::core::array::typeinfo& info = b.type();
-  bob::python::ndarray res(info.dtype, info.shape[0]);
-  blitz::Array<double,1> res_ = res.bz<double,1>();
-  bob::math::linsolveCGSympos(A.bz<double,2>(), res_, 
-      b.bz<double,1>(), acc, max_iter);
-  return res.self();
-}
-
-void bind_math_linsolve()
-{
-  // Linear system solver -- internal allocation of result
-  def("linsolve", &py_script_linsolve, (arg("a"), arg("b")), LINSOLVE_DOC);
-  def("linsolve_sympos", &py_script_linsolveSympos, (arg("a"), arg("b")), LINSOLVE_SYMPOS_DOC);
-  def("linsolve_cg_sympos", &py_script_linsolveCGSympos, (arg("a"), arg("b"), arg("acc"), arg("max_iter")), LINSOLVE_CG_SYMPOS_DOC);
+static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
   
-  def("linsolve", &script_linsolve, (arg("a"),arg("output"),arg("b")), LINSOLVE_DOC);
-  def("linsolve_", &script_linsolve_, (arg("a"),arg("output"),arg("b")), LINSOLVE_DOC);
-  def("linsolve_sympos", &script_linsolveSympos, (arg("a"),arg("output"),arg("b")), LINSOLVE_SYMPOS_DOC);
-  def("linsolve_sympos_", &script_linsolveSympos_, (arg("a"),arg("output"),arg("b")), LINSOLVE_SYMPOS_DOC);
-  def("linsolve_cg_sympos", &script_linsolveCGSympos, (arg("a"), arg("output"), arg("b"), arg("acc"), arg("max_iter")), LINSOLVE_CG_SYMPOS_DOC);
-  def("linsolve_cg_sympos_", &script_linsolveCGSympos_, (arg("a"), arg("output"), arg("b"), arg("acc"), arg("max_iter")), LINSOLVE_CG_SYMPOS_DOC);
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (b->ndim != x->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolve(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      case 2:
+        bob::math::linsolve(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
 }
 
+static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, b->ndim, b->shape);
+        if (!retval) return 0;
+        bob::math::linsolve(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        break;
+
+      case 2:
+        retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, b->ndim, b->shape);
+        if (!retval) return 0;
+        bob::math::linsolve(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>((PyBlitzArrayObject*)retval),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+
+    }
+
+  }
+  catch (std::exception& e) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, "linsolve failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+/**
+ * Note: Dispatcher function.
+ */
+PyObject* py_linsolve(PyObject*, PyObject* args, PyObject* kwargs) {
+  
+  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
+
+  PyObject* retval = 0;
+
+  switch (nargs) {
+
+    case 3:
+      retval = py_linsolve_1(0, args, kwargs);
+      break;
+
+    case 2:
+      retval = py_linsolve_2(0, args, kwargs);
+      break;
+
+    default:
+
+      PyErr_Format(PyExc_RuntimeError, "number of arguments mismatch - linsolve requires 2 or 3 arguments, but you provided %" PY_FORMAT_SIZE_T "d (see help)", nargs);
+
+  }
+
+  return retval;
+
+}
+
+PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != x->ndim || A->ndim != b->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolve_(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      case 2:
+        bob::math::linsolve_(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_ failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (b->ndim != x->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolveSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      case 2:
+        bob::math::linsolveSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, b->ndim, b->shape);
+        if (!retval) return 0;
+        bob::math::linsolveSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        break;
+
+      case 2:
+        retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, b->ndim, b->shape);
+        if (!retval) return 0;
+        bob::math::linsolveSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>((PyBlitzArrayObject*)retval),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+
+    }
+
+  }
+  catch (std::exception& e) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+/**
+ * Note: Dispatcher function.
+ */
+PyObject* py_linsolve_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
+  
+  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
+
+  PyObject* retval = 0;
+
+  switch (nargs) {
+
+    case 3:
+      retval = py_linsolve_sympos_1(0, args, kwargs);
+      break;
+
+    case 2:
+      retval = py_linsolve_sympos_2(0, args, kwargs);
+      break;
+
+    default:
+
+      PyErr_Format(PyExc_RuntimeError, "number of arguments mismatch - linsolve_sympos requires 2 or 3 arguments, but you provided %" PY_FORMAT_SIZE_T "d (see help)", nargs);
+
+  }
+
+  return retval;
+
+}
+
+PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != x->ndim || A->ndim != b->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolveSympos_(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      case 2:
+        bob::math::linsolveSympos_(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,2>(b)
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos_ failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { 
+    "A", "x", "b", "acc", "max_iter", 
+    0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+  double acc = 0.;
+  int max_iter = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b,
+        &acc, &max_iter
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (b->ndim != x->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolveCGSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b),
+            acc, max_iter
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver with conjugate gradients can only work with 1D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "A", "b", "acc", "max_iter", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* b = 0;
+  double acc = 0.;
+  int max_iter = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&di", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_Converter, &b,
+        &acc, &max_iter
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
+    Py_DECREF(A);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, b->ndim, b->shape);
+        if (!retval) return 0;
+        bob::math::linsolveCGSympos(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b),
+            acc, max_iter
+            );
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+
+    }
+
+  }
+  catch (std::exception& e) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(b);
+  return retval;
+
+}
+
+/**
+ * Note: Dispatcher function.
+ */
+PyObject* py_linsolve_cg_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
+  
+  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
+
+  PyObject* retval = 0;
+
+  switch (nargs) {
+
+    case 5:
+      retval = py_linsolve_cg_sympos_1(0, args, kwargs);
+      break;
+
+    case 4:
+      retval = py_linsolve_cg_sympos_2(0, args, kwargs);
+      break;
+
+    default:
+
+      PyErr_Format(PyExc_RuntimeError, "number of arguments mismatch - linsolve_cg_sympos requires 4 or 5 arguments, but you provided %" PY_FORMAT_SIZE_T "d (see help)", nargs);
+
+  }
+
+  return retval;
+
+}
+
+PyObject* py_linsolve_cg_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
+  
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { 
+    "A", "x", "b", "acc", "max_iter", 
+    0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* b = 0;
+  double acc = 0.;
+  int max_iter = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist, 
+        &PyBlitzArray_Converter, &A, 
+        &PyBlitzArray_OutputConverter, &x,
+        &PyBlitzArray_Converter, &b,
+        acc, max_iter
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 ||
+      x->type_num != NPY_FLOAT64 ||
+      b->type_num != NPY_FLOAT64) {
+    PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  if (A->ndim != x->ndim || A->ndim != b->ndim) {
+    PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
+    Py_DECREF(A);
+    Py_DECREF(x);
+    Py_DECREF(b);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+
+    switch(b->ndim) {
+      case 1:
+        bob::math::linsolveCGSympos_(
+            *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(b),
+            acc, max_iter
+            );
+        retval = Py_None;
+        Py_INCREF(retval);
+        break;
+
+      default:
+        PyErr_Format(PyExc_TypeError, "linear solver with conjugate gradients can only work with 1D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos_ failed: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(x);
+  Py_DECREF(b);
+  return retval;
+
+}

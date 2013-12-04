@@ -43,6 +43,7 @@ setup(
       Extension("xbob.math._library",
         [
           "xbob/math/histogram.cpp",
+          "xbob/math/linsolve.cpp",
           "xbob/math/main.cpp",
           ],
         packages = packages,

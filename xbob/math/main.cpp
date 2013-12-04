@@ -14,6 +14,7 @@
 #include <xbob.blitz/capi.h>
 
 #include "histogram.h"
+#include "linsolve.h"
 
 PyDoc_STRVAR(s_histogram_intersection_str, "histogram_intersection");
 PyDoc_STRVAR(s_histogram_intersection_doc,
@@ -61,6 +62,112 @@ histograms represented by index and values.\n\
 "
 );
 
+PyDoc_STRVAR(s_linsolve_str, "linsolve");
+PyDoc_STRVAR(s_linsolve_doc,
+"linsolve(A, b) -> array\n\
+linsolve(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method uses LAPACK's ``dgesv`` generic solver.\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
+PyDoc_STRVAR(s_linsolve_nocheck_str, "linsolve_");
+PyDoc_STRVAR(s_linsolve_nocheck_doc,
+"linsolve_(A, b) -> array\n\
+linsolve_(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method uses LAPACK's ``dgesv`` generic solver.\n\
+\n\
+THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
+FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
+your input matrices are well-behaved (contiguous, c-style, memory aligned).\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
+PyDoc_STRVAR(s_linsolve_sympos_str, "linsolve_sympos");
+PyDoc_STRVAR(s_linsolve_sympos_doc,
+"linsolve_sympos(A, b) -> array\n\
+linsolve_sympos(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
+positive definite matrix.\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
+PyDoc_STRVAR(s_linsolve_sympos_nocheck_str, "linsolve_sympos_");
+PyDoc_STRVAR(s_linsolve_sympos_nocheck_doc,
+"linsolve_sympos_(A, b) -> array\n\
+linsolve_sympos_(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
+positive definite matrix.\n\
+\n\
+THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
+FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
+your input matrices are well-behaved (contiguous, c-style, memory aligned).\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
+PyDoc_STRVAR(s_linsolve_cg_sympos_str, "linsolve_cg_sympos");
+PyDoc_STRVAR(s_linsolve_cg_sympos_doc,
+"linsolve_cg_sympos(A, b) -> array\n\
+linsolve_cg_sympos(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method solves the linear system via conjugate gradients and assumes\n\
+``A`` is a symmetric positive definite matrix.\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
+PyDoc_STRVAR(s_linsolve_cg_sympos_nocheck_str, "linsolve_cg_sympos_");
+PyDoc_STRVAR(s_linsolve_cg_sympos_nocheck_doc,
+"linsolve_cg_sympos_(A, b) -> array\n\
+linsolve_cg_sympos_(A, x, b) -> None\n\
+\n\
+Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+This method solves the linear system via conjugate gradients and assumes\n\
+``A`` is a symmetric positive definite matrix.\n\
+\n\
+THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
+FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
+your input matrices are well-behaved (contiguous, c-style, memory aligned).\n\
+\n\
+You can use this method in two different formats. The first interface\n\
+accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
+accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
+solution.\n\
+"
+);
+
 static PyMethodDef module_methods[] = {
     {
       s_histogram_intersection_str,
@@ -79,6 +186,42 @@ static PyMethodDef module_methods[] = {
       (PyCFunction)py_kullback_leibler,
       METH_VARARGS|METH_KEYWORDS,
       s_kullback_leibler_doc
+    },
+    {
+      s_linsolve_str,
+      (PyCFunction)py_linsolve,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_doc
+    },
+    {
+      s_linsolve_nocheck_str,
+      (PyCFunction)py_linsolve_nocheck,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_nocheck_doc
+    },
+    {
+      s_linsolve_sympos_str,
+      (PyCFunction)py_linsolve_sympos,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_sympos_doc
+    },
+    {
+      s_linsolve_sympos_nocheck_str,
+      (PyCFunction)py_linsolve_sympos_nocheck,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_sympos_nocheck_doc
+    },
+    {
+      s_linsolve_cg_sympos_str,
+      (PyCFunction)py_linsolve_cg_sympos,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_cg_sympos_doc
+    },
+    {
+      s_linsolve_cg_sympos_nocheck_str,
+      (PyCFunction)py_linsolve_cg_sympos_nocheck,
+      METH_VARARGS|METH_KEYWORDS,
+      s_linsolve_cg_sympos_nocheck_doc
     },
     {0}  /* Sentinel */
 };
