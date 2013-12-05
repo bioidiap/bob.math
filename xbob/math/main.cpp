@@ -16,6 +16,7 @@
 #include "histogram.h"
 #include "linsolve.h"
 #include "pavx.h"
+#include "norminv.h"
 
 PyDoc_STRVAR(s_histogram_intersection_str, "histogram_intersection");
 PyDoc_STRVAR(s_histogram_intersection_doc,
@@ -239,6 +240,29 @@ The width and height arrays are returned. The width array is a 64-bit\n\
 of the returned tuple) is a 64-bit **float** 1D array of the same size.\n\
 ");
 
+PyDoc_STRVAR(s_norminv_str, "norminv");
+PyDoc_STRVAR(s_norminv_doc,
+"norminv(p, mu, sigma) -> scalar\n\
+\n\
+Computes the inverse normal cumulative distribution for a probability\n\
+``p``, given a distribution with mean ``mu`` and standard deviation\n\
+``sigma``. The value ``p`` must lie in the range [0,1].\n\
+\n\
+Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
+");
+
+PyDoc_STRVAR(s_normsinv_str, "normsinv");
+PyDoc_STRVAR(s_normsinv_doc,
+"normsinv(p) -> scalar\n\
+\n\
+Computes the inverse normal cumulative distribution for a probability\n\
+``p``, given a distribution with mean 0.0 and standard deviation 1.0.\n\
+It is equivalent as calling :py:func:`norminv(p, 0, 1)`. The value\n\
+``p`` must lie in the range [0,1].\n\
+\n\
+Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
+");
+
 static PyMethodDef module_methods[] = {
     {
       s_histogram_intersection_str,
@@ -317,6 +341,18 @@ static PyMethodDef module_methods[] = {
       (PyCFunction)py_pavx_width_height,
       METH_VARARGS|METH_KEYWORDS,
       s_pavx_width_height_doc
+    },
+    {
+      s_norminv_str,
+      (PyCFunction)py_norminv,
+      METH_VARARGS|METH_KEYWORDS,
+      s_norminv_doc
+    },
+    {
+      s_normsinv_str,
+      (PyCFunction)py_normsinv,
+      METH_VARARGS|METH_KEYWORDS,
+      s_normsinv_doc
     },
     {0}  /* Sentinel */
 };

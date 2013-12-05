@@ -45,6 +45,7 @@ setup(
           "xbob/math/histogram.cpp",
           "xbob/math/linsolve.cpp",
           "xbob/math/pavx.cpp",
+          "xbob/math/norminv.cpp",
           "xbob/math/main.cpp",
           ],
         packages = packages,
