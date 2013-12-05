@@ -38,45 +38,46 @@ def py_scatters(data):
 
   return (Sw, Sb, mu)
 
-def setup_func():
+def test_scatter():
 
-  self.data = list(bob.db.iris.data().values())
-  self.data_c0 = numpy.vstack(bob.db.iris.data()['setosa'])
-
-@nose.tools.with_setup(setup_func)
-def test_scatter(self):
+  data = numpy.random.rand(50,4)
 
   # This test demonstrates how to use the scatter matrix function of bob.
-  S, M = scatter(self.data_c0.T)
-  S /= (self.data_c0.shape[1]-1)
+  S, M = scatter(data.T)
+  S /= (data.shape[1]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(self.data_c0))
-  M_ = means(self.data_c0.T)
+  K = numpy.array(numpy.cov(data))
+  M_ = means(data.T)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
 
-@nose.tools.with_setup(setup_func)
-def test_scatters(self):
+def test_scatters():
+
+  data = [
+      numpy.random.rand(50,4),
+      numpy.random.rand(50,4),
+      numpy.random.rand(50,4),
+      ]
 
   # Compares bob's implementation against pythonic one
   # 1. python
-  Sw_, Sb_, m_ = py_scatters(self.data)
+  Sw_, Sb_, m_ = py_scatters(data)
 
   # 2.a. bob
-  Sw, Sb, m = scatters(self.data)
+  Sw, Sb, m = scatters(data)
   # 3.a. comparison
   assert numpy.allclose(Sw, Sw_)
   assert numpy.allclose(Sb, Sb_)
   assert numpy.allclose(m, m_)
 
-  N = self.data[0].shape[1]
+  N = data[0].shape[1]
   # 2.b. bob
   Sw = numpy.ndarray((N,N), numpy.float64)
   Sb = numpy.ndarray((N,N), numpy.float64)
   m = numpy.ndarray((N,), numpy.float64)
-  scatters(self.data, Sw, Sb, m)
+  scatters(data, Sw, Sb, m)
   # 3.b comparison
   assert numpy.allclose(Sw, Sw_)
   assert numpy.allclose(Sb, Sb_)
@@ -85,7 +86,7 @@ def test_scatters(self):
   # 2.c. bob
   Sw = numpy.ndarray((N,N), numpy.float64)
   Sb = numpy.ndarray((N,N), numpy.float64)
-  scatters(self.data, Sw, Sb)
+  scatters(data, Sw, Sb)
   # 3.c comparison
   assert numpy.allclose(Sw, Sw_)
   assert numpy.allclose(Sb, Sb_)

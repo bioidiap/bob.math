@@ -17,6 +17,7 @@
 #include "linsolve.h"
 #include "pavx.h"
 #include "norminv.h"
+#include "scatter.h"
 
 PyDoc_STRVAR(s_histogram_intersection_str, "histogram_intersection");
 PyDoc_STRVAR(s_histogram_intersection_doc,
@@ -263,6 +264,129 @@ It is equivalent as calling :py:func:`norminv(p, 0, 1)`. The value\n\
 Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
 ");
 
+PyDoc_STRVAR(s_scatter_str, "scatter");
+PyDoc_STRVAR(s_scatter_doc,
+"scatter(a) -> (array, array)\n\
+scatter(a, s) -> array\n\
+scatter(a, s, m) -> None\n\
+\n\
+Computes the scatter matrix of a 2D array *considering data is organized\n\
+row-wise* (each sample is a row, each feature is a column). The\n\
+resulting array ``s`` is squared with extents equal to the\n\
+number of columns in ``a``. The resulting array ``m`` is a 1D array\n\
+with the row means of ``a``. This method supports only 32 or 64-bit\n\
+float arrays as input.\n\
+\n\
+This function supports many calling modes, but you should provide, at\n\
+least, the input data matrix ``a``. All non-provided arguments will be\n\
+allocated internally and returned.\n\
+");
+
+PyDoc_STRVAR(s_scatter_nocheck_str, "scatter_");
+PyDoc_STRVAR(s_scatter_nocheck_doc,
+"scatter_(a, s, m) -> None\n\
+\n\
+Computes the scatter matrix of a 2D array *considering data is organized\n\
+row-wise* (each sample is a row, each feature is a column). The\n\
+resulting array ``s`` is squared with extents equal to the\n\
+number of columns in ``a``. The resulting array ``m`` is a 1D array\n\
+with the row means of ``a``. This method supports only 32 or 64-bit\n\
+float arrays as input.\n\
+\n\
+.. warning::\n\
+\n\
+   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
+   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
+   your input matrices sizes match.\n\
+");
+
+PyDoc_STRVAR(s_scatters_str, "scatters");
+PyDoc_STRVAR(s_scatters_doc,
+"scatters(data) -> (array, array, array)\n\
+scatters(data, sw, sb) -> array\n\
+scatters(data, sw, sb, m) -> None\n\
+\n\
+Computes the within-class (``sw``) and between-class (``sb``) scatter\n\
+matrices of a set of 2D arrays considering data is organized row-wise\n\
+(each sample is a row, each feature is a column).\n\
+\n\
+This function supports many calling modes, but you should provide, at\n\
+least, the input data matrices ``data``, which should be sequence of\n\
+2D 32-bit or 64-bit float values in which every row of each matrix\n\
+represents one observation for a given class. **Every matrix in\n\
+``data`` should have exactly the same number of columns.**\n\
+\n\
+The returned values ``sw`` and ``sb`` are square matrices with the\n\
+same number of rows and columns as the number of columns in ``data``.\n\
+The returned value ``m`` (last call variant) is a 1D array with the\n\
+same length as number of columns in each ``data`` matrix and represents\n\
+the ensemble mean with no prior (i.e., biased towards classes with more\n\
+samples.\n\
+\n\
+Strategy implemented:\n\
+\n\
+1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the\n\
+   total class counts (:math:`N`).\n\
+2. Evaluate ``sw`` and ``sb`` using normal loops.\n\
+\n\
+Note that ``sw`` and ``sb``, in this implementation, will be normalized\n\
+by N-1 (number of samples) and K (number of classes). This procedure\n\
+makes the eigen values scaled by (N-1)/K, effectively increasing their\n\
+values. The main motivation for this normalization are numerical\n\
+precision concerns with the increasing number of samples causing a\n\
+rather large Sw matrix. A normalization strategy mitigates this\n\
+problem. The eigen vectors will see no effect on this normalization as\n\
+they are normalized in the euclidean sense (:math:`||a|| = 1`) so that\n\
+does not change those.\n\
+");
+
+PyDoc_STRVAR(s_scatters_nocheck_str, "scatters_");
+PyDoc_STRVAR(s_scatters_nocheck_doc,
+"scatters_(data, sw, sb) -> None\n\
+scatters_(data, sw, sb, m) -> None\n\
+\n\
+Computes the within-class (``sw``) and between-class (``sb``) scatter\n\
+matrices of a set of 2D arrays considering data is organized row-wise\n\
+(each sample is a row, each feature is a column).\n\
+\n\
+.. warning::\n\
+\n\
+   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
+   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
+   your input matrices sizes match.\n\
+\n\
+This function supports many calling modes, but you should provide, at\n\
+least, the input data matrices ``data``, which should be sequence of\n\
+2D 32-bit or 64-bit float values in which every row of each matrix\n\
+represents one observation for a given class. **Every matrix in\n\
+``data`` should have exactly the same number of columns.**\n\
+\n\
+The returned values ``sw`` and ``sb`` are square matrices with the\n\
+same number of rows and columns as the number of columns in ``data``.\n\
+The returned value ``m`` (last call variant) is a 1D array with the\n\
+same length as number of columns in each ``data`` matrix and represents\n\
+the ensemble mean with no prior (i.e., biased towards classes with more\n\
+samples. **In this variant, you should pre-allocate all output matrices\n\
+so that scatters (and the overall mean) are stored on your provided\n\
+arrays**.\n\
+\n\
+Strategy implemented:\n\
+\n\
+1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the\n\
+   total class counts (:math:`N`).\n\
+2. Evaluate ``sw`` and ``sb`` using normal loops.\n\
+\n\
+Note that ``sw`` and ``sb``, in this implementation, will be normalized\n\
+by N-1 (number of samples) and K (number of classes). This procedure\n\
+makes the eigen values scaled by (N-1)/K, effectively increasing their\n\
+values. The main motivation for this normalization are numerical\n\
+precision concerns with the increasing number of samples causing a\n\
+rather large Sw matrix. A normalization strategy mitigates this\n\
+problem. The eigen vectors will see no effect on this normalization as\n\
+they are normalized in the euclidean sense (:math:`||a|| = 1`) so that\n\
+does not change those.\n\
+");
+
 static PyMethodDef module_methods[] = {
     {
       s_histogram_intersection_str,
@@ -353,6 +477,30 @@ static PyMethodDef module_methods[] = {
       (PyCFunction)py_normsinv,
       METH_VARARGS|METH_KEYWORDS,
       s_normsinv_doc
+    },
+    {
+      s_scatter_str,
+      (PyCFunction)py_scatter,
+      METH_VARARGS|METH_KEYWORDS,
+      s_scatter_doc
+    },
+    {
+      s_scatter_nocheck_str,
+      (PyCFunction)py_scatter_nocheck,
+      METH_VARARGS|METH_KEYWORDS,
+      s_scatter_nocheck_doc
+    },
+    {
+      s_scatters_str,
+      (PyCFunction)py_scatters,
+      METH_VARARGS|METH_KEYWORDS,
+      s_scatters_doc
+    },
+    {
+      s_scatters_nocheck_str,
+      (PyCFunction)py_scatters_nocheck,
+      METH_VARARGS|METH_KEYWORDS,
+      s_scatters_nocheck_doc
     },
     {0}  /* Sentinel */
 };
