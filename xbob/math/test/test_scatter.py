@@ -44,6 +44,8 @@ def test_scatter():
 
   # This test demonstrates how to use the scatter matrix function of bob.
   S, M = scatter(data.T)
+  S = S.as_ndarray()
+  M = M.as_ndarray()
   S /= (data.shape[1]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing

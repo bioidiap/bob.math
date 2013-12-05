@@ -22,7 +22,7 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* m = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&O&",
-        kwlist, 
+        kwlist,
         &PyBlitzArray_Converter, &a,
         &PyBlitzArray_OutputConverter, &s,
         &PyBlitzArray_OutputConverter, &m
@@ -99,23 +99,12 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
 
   int returns = 2 - (user_s + user_m);
 
-  if (!returns) {
-    Py_DECREF(s);
-    Py_DECREF(m);
-    Py_RETURN_NONE;
-  }
-
-  // if you get here, it means the user is interested on stuff to be returned
   PyObject* retval = PyTuple_New(returns);
-  if (!retval) {
-    Py_DECREF(s);
-    Py_DECREF(m);
-  }
 
   // fill from the back
-  if (!user_m) PyTuple_SET_ITEM(--retval, returns, (PyObject*)m);
+  if (!user_m) PyTuple_SET_ITEM(retval, --returns, (PyObject*)m);
   else Py_DECREF(m);
-  if (!user_s) PyTuple_SET_ITEM(--retval, returns, (PyObject*)s);
+  if (!user_s) PyTuple_SET_ITEM(retval, --returns, (PyObject*)s);
   else Py_DECREF(s);
 
   return retval;
@@ -341,7 +330,7 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
       case NPY_FLOAT32:
         {
           std::vector<blitz::Array<float,2>> cxxdata;
-          for (Py_ssize_t i=1; i<PyTuple_GET_SIZE(data); ++i) {
+          for (Py_ssize_t i=0; i<PyTuple_GET_SIZE(data); ++i) {
             cxxdata.push_back(*PyBlitzArrayCxx_AsBlitz<float,2>
                 ((PyBlitzArrayObject*)PyTuple_GET_ITEM(data,i)));
             bob::math::scatters(cxxdata,
@@ -356,7 +345,7 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
       case NPY_FLOAT64:
         {
           std::vector<blitz::Array<double,2>> cxxdata;
-          for (Py_ssize_t i=1; i<PyTuple_GET_SIZE(data); ++i) {
+          for (Py_ssize_t i=0; i<PyTuple_GET_SIZE(data); ++i) {
             cxxdata.push_back(*PyBlitzArrayCxx_AsBlitz<double,2>
                 ((PyBlitzArrayObject*)PyTuple_GET_ITEM(data,i)));
             bob::math::scatters(cxxdata,
@@ -389,27 +378,14 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
 
   int returns = 3 - (user_sw + user_sb + user_m);
 
-  if (!returns) {
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
-    Py_RETURN_NONE;
-  }
-
-  // if you get here, it means the user is interested on stuff to be returned
   PyObject* retval = PyTuple_New(returns);
-  if (!retval) {
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
-  }
 
   // fill from the back
-  if (!user_m) PyTuple_SET_ITEM(--retval, returns, (PyObject*)m);
+  if (!user_m) PyTuple_SET_ITEM(retval, --returns, (PyObject*)m);
   else Py_DECREF(m);
-  if (!user_sb) PyTuple_SET_ITEM(--retval, returns, (PyObject*)sb);
+  if (!user_sb) PyTuple_SET_ITEM(retval, --returns, (PyObject*)sb);
   else Py_DECREF(sb);
-  if (!user_sw) PyTuple_SET_ITEM(--retval, returns, (PyObject*)sw);
+  if (!user_sw) PyTuple_SET_ITEM(retval, --returns, (PyObject*)sw);
   else Py_DECREF(sw);
 
   return retval;

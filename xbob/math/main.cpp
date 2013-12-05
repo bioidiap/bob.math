@@ -266,9 +266,7 @@ Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
 
 PyDoc_STRVAR(s_scatter_str, "scatter");
 PyDoc_STRVAR(s_scatter_doc,
-"scatter(a) -> (array, array)\n\
-scatter(a, s) -> array\n\
-scatter(a, s, m) -> None\n\
+"scatter(a, [s, [m]]) -> tuple\n\
 \n\
 Computes the scatter matrix of a 2D array *considering data is organized\n\
 row-wise* (each sample is a row, each feature is a column). The\n\
@@ -302,9 +300,7 @@ float arrays as input.\n\
 
 PyDoc_STRVAR(s_scatters_str, "scatters");
 PyDoc_STRVAR(s_scatters_doc,
-"scatters(data) -> (array, array, array)\n\
-scatters(data, sw, sb) -> array\n\
-scatters(data, sw, sb, m) -> None\n\
+"scatters(data, [sw, [sb, [m]]]) -> tuple\n\
 \n\
 Computes the within-class (``sw``) and between-class (``sb``) scatter\n\
 matrices of a set of 2D arrays considering data is organized row-wise\n\
