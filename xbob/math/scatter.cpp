@@ -441,7 +441,7 @@ PyObject* py_scatters_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
       case NPY_FLOAT32:
         {
           std::vector<blitz::Array<float,2>> cxxdata;
-          for (Py_ssize_t i=1; i<PyTuple_GET_SIZE(data); ++i) {
+          for (Py_ssize_t i=0; i<PyTuple_GET_SIZE(data); ++i) {
             cxxdata.push_back(*PyBlitzArrayCxx_AsBlitz<float,2>
                 ((PyBlitzArrayObject*)PyTuple_GET_ITEM(data,i)));
             bob::math::scatters_(cxxdata,
@@ -456,7 +456,7 @@ PyObject* py_scatters_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
       case NPY_FLOAT64:
         {
           std::vector<blitz::Array<double,2>> cxxdata;
-          for (Py_ssize_t i=1; i<PyTuple_GET_SIZE(data); ++i) {
+          for (Py_ssize_t i=0; i<PyTuple_GET_SIZE(data); ++i) {
             cxxdata.push_back(*PyBlitzArrayCxx_AsBlitz<double,2>
                 ((PyBlitzArrayObject*)PyTuple_GET_ITEM(data,i)));
             bob::math::scatters_(cxxdata,
