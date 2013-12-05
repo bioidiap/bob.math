@@ -2,7 +2,7 @@
  * @author Andre Anjos <andre.anjos@idiap.ch>
  * @date Wed  4 Dec 15:26:54 2013 
  *
- * @brief 
+ * @brief Declaration of components relevant for main.cpp
  */
 
 #include <Python.h>

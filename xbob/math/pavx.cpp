@@ -4,86 +4,232 @@
  * @author Laurent El Shafey <Laurent.El-Shafey@idiap.ch>
  *
  * @brief Binds the Pool-Adjacent-Violators Algorithm
- *
- * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "pavx.h"
+#include <xbob.blitz/cppapi.h>
 #include "bob/math/pavx.h"
-
-#include "bob/python/ndarray.h"
 #include "bob/core/cast.h"
 
-using namespace boost::python;
+PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
 
-static const char* C_PAVX_DOC = "Applies the Pool-Adjacent-Violators Algorithm. The input and output arrays should have the same size. This is a simplified C++ port of the isotonic regression code made available at http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html.";
-static const char* C_PAVX__DOC = "Applies the Pool-Adjacent-Violators Algorithm. The input and output arrays should have the same size. Arguments are not checked! This is a simplified C++ port of the isotonic regression code made available at http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html.";
-static const char* P_PAVX_DOC = "Applies the Pool-Adjacent-Violators Algorithm. The output array is allocated and returned. This is a simplified C++ port of the isotonic regression code made available at http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html.";
-static const char* P_PAVXWIDTH_DOC = "Applies the Pool-Adjacent-Violators Algorithm. The input and output arrays should have the same size. The width array is returned. This is a simplified C++ port of the isotonic regression code made available at http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html.";
-static const char* P_PAVXWIDTHHEIGHT_DOC = "Applies the Pool-Adjacent-Violators Algorithm. The input and output arrays should have the same size. The width and height arrays are returned. This is a simplified C++ port of the isotonic regression code made available at http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html.";
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "input", "output", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
 
-static void c_pavx_(bob::python::const_ndarray y, bob::python::ndarray ghat) 
-{
-  blitz::Array<double,1> ghat_ = ghat.bz<double,1>();
-  bob::math::pavx_(y.bz<double,1>(), ghat_);
+  PyBlitzArrayObject* input = 0;
+  PyBlitzArrayObject* output = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&",
+        kwlist, 
+        &PyBlitzArray_Converter, &input, 
+        &PyBlitzArray_OutputConverter, &output
+        )) return 0;
+
+  // can only handle 1D arrays
+  if (input->ndim != 1 || (output && output->ndim != 1)) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays should be one-dimensional");
+    Py_DECREF(input);
+    Py_XDECREF(output);
+    return 0;
+  }
+
+  // can only handle float arrays
+  if (input->type_num != NPY_FLOAT64 || (output && output->type_num != NPY_FLOAT64)) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays data types should be float (i.e. `numpy.float64' equivalents)");
+    Py_DECREF(input);
+    Py_XDECREF(output);
+    return 0;
+  }
+
+  // if output was not provided by user
+  bool returns_output = false;
+  if (!output) {
+    output = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(NPY_FLOAT64, input->ndim, input->shape);
+    if (!output) {
+      Py_DECREF(input);
+      return 0;
+    }
+    returns_output = true;
+  }
+
+  try {
+    bob::math::pavx(*PyBlitzArrayCxx_AsBlitz<double,1>(input),
+        *PyBlitzArrayCxx_AsBlitz<double,1>(output));
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "pavx failed: unknown exception caught");
+  }
+
+  Py_DECREF(input);
+  if (returns_output) return (PyObject*)output;
+  Py_DECREF(output);
+  Py_RETURN_NONE;
+
 }
 
-static void c_pavx(bob::python::const_ndarray y, bob::python::ndarray ghat) 
-{
-  blitz::Array<double,1> ghat_ = ghat.bz<double,1>();
-  bob::math::pavx(y.bz<double,1>(), ghat_);
+PyObject* py_pavx_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "input", "output", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* input = 0;
+  PyBlitzArrayObject* output = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
+        kwlist, 
+        &PyBlitzArray_Converter, &input, 
+        &PyBlitzArray_OutputConverter, &output
+        )) return 0;
+
+  // can only handle 1D arrays
+  if (input->ndim != 1 || output->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays should be one-dimensional");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  // can only handle float arrays
+  if (input->type_num != NPY_FLOAT64 || output->type_num != NPY_FLOAT64) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays data types should be float (i.e. `numpy.float64' equivalents)");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  try {
+    bob::math::pavx_(*PyBlitzArrayCxx_AsBlitz<double,1>(input),
+        *PyBlitzArrayCxx_AsBlitz<double,1>(output));
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "pavx failed: unknown exception caught");
+  }
+
+  Py_DECREF(input);
+  Py_DECREF(output);
+  Py_RETURN_NONE;
 }
 
-static object p_pavx(bob::python::const_ndarray y) 
-{
-  const bob::core::array::typeinfo& info = y.type();
-  blitz::Array<double,1> y_ = y.bz<double,1>();
-  bob::python::ndarray ghat(bob::core::array::t_float64, info.shape[0]);
-  blitz::Array<double,1> ghat_ = ghat.bz<double,1>();
-  bob::math::pavx(y.bz<double,1>(), ghat_);
-  return ghat.self();
+PyObject* py_pavx_width (PyObject*, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "input", "output", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* input = 0;
+  PyBlitzArrayObject* output = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
+        kwlist,
+        &PyBlitzArray_Converter, &input,
+        &PyBlitzArray_OutputConverter, &output
+        )) return 0;
+
+  // can only handle 1D arrays
+  if (input->ndim != 1 || output->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays should be one-dimensional");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  // can only handle float arrays
+  if (input->type_num != NPY_FLOAT64 || output->type_num != NPY_FLOAT64) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays data types should be float (i.e. `numpy.float64' equivalents)");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  PyObject* retval = 0;
+
+  try {
+    blitz::Array<size_t,1> width =
+      bob::math::pavxWidth(*PyBlitzArrayCxx_AsBlitz<double,1>(input),
+          *PyBlitzArrayCxx_AsBlitz<double,1>(output));
+    blitz::Array<uint64_t,1> uwidth = bob::core::array::cast<uint64_t>(width);
+    retval = PyBlitzArrayCxx_NewFromArray(uwidth);
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "pavx failed: unknown exception caught");
+  }
+
+  Py_DECREF(input);
+  Py_DECREF(output);
+  return retval;
 }
 
-static object p_pavxWidth(bob::python::const_ndarray y, bob::python::ndarray ghat) 
-{
-  blitz::Array<double,1> ghat_ = ghat.bz<double,1>();
-  blitz::Array<size_t,1> w_ = bob::math::pavxWidth(y.bz<double,1>(), ghat_);
-  bob::python::ndarray width(bob::core::array::t_uint64, w_.extent(0));
-  blitz::Array<uint64_t,1> width_ = width.bz<uint64_t,1>();
-  width_ = bob::core::array::cast<uint64_t>(w_); 
-  return width.self();
-}
+PyObject* py_pavx_width_height (PyObject*, PyObject* args, PyObject* kwds) {
 
-static object p_pavxWidthHeight(bob::python::const_ndarray y, bob::python::ndarray ghat) 
-{
-  blitz::Array<double,1> ghat_ = ghat.bz<double,1>();
-  std::pair<blitz::Array<size_t,1>,blitz::Array<double,1> > pair = bob::math::pavxWidthHeight(y.bz<double,1>(), ghat_);
-  bob::python::ndarray width(bob::core::array::t_uint64, pair.first.extent(0));
-  blitz::Array<uint64_t,1> width_ = width.bz<uint64_t,1>();
-  width_ = bob::core::array::cast<uint64_t>(pair.first);
-  bob::python::ndarray height(bob::core::array::t_float64, pair.second.extent(0));
-  blitz::Array<double,1> height_ = height.bz<double,1>();
-  height_ = pair.second;
-  return make_tuple(width, height);
-}
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = { "input", "output", 0 /* Sentinel */ };
+  static char** kwlist = const_cast<char**>(const_kwlist);
 
-void bind_math_pavx()
-{
-  def("pavx_", &c_pavx, (arg("input"), arg("output")), C_PAVX__DOC);
-  def("pavx", &c_pavx_, (arg("input"), arg("output")), C_PAVX_DOC);
-  def("pavx", &p_pavx, (arg("input")), P_PAVX_DOC);
-  def("pavxWidth", &p_pavxWidth, (arg("input"), arg("output")), P_PAVXWIDTH_DOC);
-  def("pavxWidthHeight", &p_pavxWidthHeight, (arg("input"), arg("output")), P_PAVXWIDTHHEIGHT_DOC);
-}
+  PyBlitzArrayObject* input = 0;
+  PyBlitzArrayObject* output = 0;
 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
+        kwlist, 
+        &PyBlitzArray_Converter, &input, 
+        &PyBlitzArray_OutputConverter, &output
+        )) return 0;
+
+  // can only handle 1D arrays
+  if (input->ndim != 1 || output->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays should be one-dimensional");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  // can only handle float arrays
+  if (input->type_num != NPY_FLOAT64 || output->type_num != NPY_FLOAT64) {
+    PyErr_SetString(PyExc_TypeError, "input and output arrays data types should be float (i.e. `numpy.float64' equivalents)");
+    Py_DECREF(input);
+    Py_DECREF(output);
+    return 0;
+  }
+
+  PyObject* width = 0;
+  PyObject* height = 0;
+
+  try {
+    std::pair<blitz::Array<size_t,1>,blitz::Array<double,1>> width_height =
+      bob::math::pavxWidthHeight(*PyBlitzArrayCxx_AsBlitz<double,1>(input),
+          *PyBlitzArrayCxx_AsBlitz<double,1>(output));
+    blitz::Array<uint64_t,1> uwidth = bob::core::array::cast<uint64_t>(width_height.first);
+    width = PyBlitzArrayCxx_NewFromArray(uwidth);
+    if (width) {
+      height = PyBlitzArrayCxx_NewFromArray(width_height.second);
+      if (!height) Py_CLEAR(width);
+    }
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "pavx failed: unknown exception caught");
+  }
+
+  Py_DECREF(input);
+  Py_DECREF(output);
+
+  if (!height) return 0;
+
+  // creates the return pair and returns
+  PyObject* retval = PyTuple_New(2);
+  PyTuple_SET_ITEM(retval, 0, width);
+  PyTuple_SET_ITEM(retval, 1, height);
+  return retval;
+}

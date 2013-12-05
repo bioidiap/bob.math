@@ -12,17 +12,16 @@ import os, sys
 from xbob.math import pavx, pavx_, pavxWidth, pavxWidthHeight
 import numpy
 
-def pavx_internal_test(y, ghat_ref, w_ref, h_ref):
+def pavx_check(y, ghat_ref, w_ref, h_ref):
   """Make a full test for a given sample"""
 
-  ghat = numpy.ndarray(dtype=numpy.float64, shape=y.shape)
-  pavx(y, ghat)
+  ghat = pavx(y)
   assert numpy.all(numpy.abs(ghat - ghat_ref) < 1e-4)
   pavx_(y, ghat)
   assert numpy.all(numpy.abs(ghat - ghat_ref) < 1e-4)
   w=pavxWidth(y, ghat)
-  assert numpy.all(numpy.abs(ghat - ghat_ref) < 1e-4)
   assert numpy.all(numpy.abs(w - w_ref) < 1e-4)
+  assert numpy.all(numpy.abs(ghat - ghat_ref) < 1e-4)
   ret=pavxWidthHeight(y, ghat)
   assert numpy.all(numpy.abs(ghat - ghat_ref) < 1e-4)
   assert numpy.all(numpy.abs(ret[0] - w_ref) < 1e-4)
@@ -45,7 +44,7 @@ def test_pavx_sample1():
     118.1671, 138.3151, 141.9755, 145.7352, 157.9881,
     168.6932, 175.2756])
 
-  pavx_internal_test(y, ghat_ref, w_ref, h_ref)
+  pavx_check(y, ghat_ref, w_ref, h_ref)
 
 def test_pavx_sample2():
 
@@ -63,4 +62,4 @@ def test_pavx_sample2():
     98.5769, 102.3841, 132.1742, 140.2783, 150.7383,
     154.7762,  180.8819])
 
-  pavx_internal_test(y, ghat_ref, w_ref, h_ref)
+  pavx_check(y, ghat_ref, w_ref, h_ref)

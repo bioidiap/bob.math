@@ -43,31 +43,41 @@ static PyObject* py_histogram_intersection_1
 
   PyObject* retval = 0;
 
-  switch(h1->type_num) {
+  try {
 
-    case NPY_UINT8:
-      retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<uint8_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(h2)));
-      break;
+    switch(h1->type_num) {
 
-    case NPY_UINT16:
-      retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<uint16_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(h2)));
-      break;
+      case NPY_UINT8:
+        retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<uint8_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(h2)));
+        break;
 
-    case NPY_INT32:
-      retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<int32_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<int32_t,1>(h2)));
-      break;
+      case NPY_UINT16:
+        retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<uint16_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(h2)));
+        break;
 
-    case NPY_INT64:
-      retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<int64_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<int64_t,1>(h2)));
-      break;
+      case NPY_INT32:
+        retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<int32_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<int32_t,1>(h2)));
+        break;
 
-    case NPY_FLOAT64:
-      retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<double,1>(h1), *PyBlitzArrayCxx_AsBlitz<double,1>(h2)));
-      break;
+      case NPY_INT64:
+        retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<int64_t,1>(h1), *PyBlitzArrayCxx_AsBlitz<int64_t,1>(h2)));
+        break;
 
-    default:
-      PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(h1->type_num));
+      case NPY_FLOAT64:
+        retval = PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(*PyBlitzArrayCxx_AsBlitz<double,1>(h1), *PyBlitzArrayCxx_AsBlitz<double,1>(h2)));
+        break;
 
+      default:
+        PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(h1->type_num));
+
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "histogram intersection failed: unknown exception caught");
   }
 
   Py_DECREF(h1);
@@ -178,36 +188,46 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
 
   PyObject* retval = 0;
 
-  switch(index1->type_num) {
+  try {
 
-    case NPY_UINT8:
-      retval = py_histogram_intersection_2_inner<uint8_t>(index1, value1,
-          index2, value2);
-      break;
+    switch(index1->type_num) {
 
-    case NPY_UINT16:
-      retval = py_histogram_intersection_2_inner<uint16_t>(index1, value1,
-          index2, value2);
-      break;
+      case NPY_UINT8:
+        retval = py_histogram_intersection_2_inner<uint8_t>(index1, value1,
+            index2, value2);
+        break;
 
-    case NPY_INT32:
-      retval = py_histogram_intersection_2_inner<int32_t>(index1, value1,
-          index2, value2);
-      break;
+      case NPY_UINT16:
+        retval = py_histogram_intersection_2_inner<uint16_t>(index1, value1,
+            index2, value2);
+        break;
 
-    case NPY_INT64:
-      retval = py_histogram_intersection_2_inner<int64_t>(index1, value1,
-          index2, value2);
-      break;
+      case NPY_INT32:
+        retval = py_histogram_intersection_2_inner<int32_t>(index1, value1,
+            index2, value2);
+        break;
 
-    case NPY_FLOAT64:
-      retval = py_histogram_intersection_2_inner<double>(index1, value1,
-          index2, value2);
-      break;
+      case NPY_INT64:
+        retval = py_histogram_intersection_2_inner<int64_t>(index1, value1,
+            index2, value2);
+        break;
 
-    default:
-      PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for index type '%s'", PyBlitzArray_TypenumAsString(index1->type_num));
+      case NPY_FLOAT64:
+        retval = py_histogram_intersection_2_inner<double>(index1, value1,
+            index2, value2);
+        break;
 
+      default:
+        PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for index type '%s'", PyBlitzArray_TypenumAsString(index1->type_num));
+
+    }
+
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "histogram intersection failed: unknown exception caught");
   }
 
   Py_DECREF(index1);
