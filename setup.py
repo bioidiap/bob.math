@@ -47,6 +47,7 @@ setup(
           "xbob/math/pavx.cpp",
           "xbob/math/norminv.cpp",
           "xbob/math/scatter.cpp",
+          "xbob/math/lp_interior_point.cpp",
           "xbob/math/main.cpp",
           ],
         packages = packages,

@@ -5,9 +5,6 @@
  * @brief Bindings to bob::math
  */
 
-#define XBOB_MATH_MODULE
-#include <xbob.math/api.h>
-
 #ifdef NO_IMPORT_ARRAY
 #undef NO_IMPORT_ARRAY
 #endif
@@ -18,6 +15,7 @@
 #include "pavx.h"
 #include "norminv.h"
 #include "scatter.h"
+#include "lp_interior_point.h"
 
 PyDoc_STRVAR(s_histogram_intersection_str, "histogram_intersection");
 PyDoc_STRVAR(s_histogram_intersection_doc,
@@ -503,40 +501,20 @@ static PyMethodDef module_methods[] = {
 
 PyDoc_STRVAR(module_docstr, "bob::math classes and methods");
 
-int PyXbobMath_APIVersion = XBOB_MATH_API_VERSION;
-
 PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
+
+  PyBobMathLpInteriorPoint_Type.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return;
 
   PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME,
       module_methods, module_docstr);
 
   /* register some constants */
-  PyModule_AddIntConstant(m, "__api_version__", XBOB_MATH_API_VERSION);
   PyModule_AddStringConstant(m, "__version__", XBOB_EXT_MODULE_VERSION);
 
-  /* exhaustive list of C APIs */
-  static void* PyXbobMath_API[PyXbobMath_API_pointers];
-
-  /**************
-   * Versioning *
-   **************/
-
-  PyXbobMath_API[PyXbobMath_APIVersion_NUM] = (void *)&PyXbobMath_APIVersion;
-
-#if PY_VERSION_HEX >= 0x02070000
-
-  /* defines the PyCapsule */
-
-  PyObject* c_api_object = PyCapsule_New((void *)PyXbobMath_API,
-      XBOB_EXT_MODULE_PREFIX "." XBOB_EXT_MODULE_NAME "._C_API", 0);
-
-#else
-
-  PyObject* c_api_object = PyCObject_FromVoidPtr((void *)PyXbobMath_API, 0);
-
-#endif
-
-  if (c_api_object) PyModule_AddObject(m, "_C_API", c_api_object);
+  /* register the types to python */
+  Py_INCREF(&PyBobMathLpInteriorPoint_Type);
+  PyModule_AddObject(m, "LPInteriorPoint", (PyObject *)&PyBobMathLpInteriorPoint_Type);
 
   /* imports the NumPy C-API */
   import_array();
