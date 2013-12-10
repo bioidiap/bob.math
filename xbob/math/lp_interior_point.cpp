@@ -991,7 +991,6 @@ static int PyBobMathLpInteriorPointShortstep_init1(PyBobMathLpInteriorPointShort
 
   if (!PyBobMathLpInteriorPointShortstep_Check(solver)) {
     PyErr_Format(PyExc_TypeError, "copy-constructor for %s requires an object of the same type, not %s", s_lpinteriorpointshortstep_str, solver->ob_type->tp_name);
-    Py_DECREF(solver);
     return -1;
   }
 
@@ -1007,7 +1006,6 @@ static int PyBobMathLpInteriorPointShortstep_init1(PyBobMathLpInteriorPointShort
     PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointshortstep_str);
   }
   
-  Py_DECREF(solver);
   self->parent.base = self->base;
 
   if (PyErr_Occurred()) return -1;
@@ -1192,6 +1190,607 @@ PyTypeObject PyBobMathLpInteriorPointShortstep_Type = {
     0,                                                          /* tp_new */
 };
 
+/*************************************************************
+ * Implementation of LPInteriorPointPredictorCorrector class *
+ *************************************************************/
+
+PyDoc_STRVAR(s_lpinteriorpointpredictorcorrector_str, XBOB_EXT_MODULE_PREFIX ".LPInteriorPointPredictorCorrector");
+
+PyDoc_STRVAR(s_lpinteriorpointpredictorcorrector_doc,
+"LPInteriorPointPredictorCorrector(M, N, theta_pred, theta_corr, epsilon) -> new LPInteriorPointPredictorCorrector\n\
+LPInteriorPointPredictorCorrector(solver) -> new LPInteriorPointPredictorCorrector\n\
+\n\
+A Linear Program solver based on a predictor-corrector interior point\n\
+method.\n\
+\n\
+See :py:class:`LPInteriorPoint` for more details on the base class.\n\
+\n\
+Objects of this class can be initialized in two different ways: a\n\
+detailed constructor with the parameters described below or a copy\n\
+constructor, that deep-copies the input object and creates a new\n\
+object (**not** a new reference to the same object).\n\
+\n\
+Constructor parameters:\n\
+\n\
+M\n\
+  (int) first dimension of the A matrix\n\
+\n\
+N\n\
+  (int) second dimension of the A matrix\n\
+\n\
+theta_pred\n\
+  (float) the value theta_pred used to define a V2 neighborhood\n\
+\n\
+theta_corr\n\
+  (float) the value theta_corr used to define a V2 neighborhood\n\
+\n\
+epsilon\n\
+  (float) The precision to determine whether an equality constraint\n\
+  is fulfilled or not.\n\
+\n\
+");
+
+/* Type definition for PyBobMathLpInteriorPointObject */
+typedef struct {
+  PyBobMathLpInteriorPointObject parent;
+
+  /* Type-specific fields go here. */
+  bob::math::LPInteriorPointPredictorCorrector* base;
+
+} PyBobMathLpInteriorPointPredictorCorrectorObject;
+
+static int PyBobMathLpInteriorPointPredictorCorrector_Check(PyObject* o) {
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobMathLpInteriorPointPredictorCorrector_Type));
+}
+
+static int PyBobMathLpInteriorPointPredictorCorrector_init1(PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"solver", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyObject* solver = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &solver)) return -1;
+
+  if (!PyBobMathLpInteriorPointPredictorCorrector_Check(solver)) {
+    PyErr_Format(PyExc_TypeError, "copy-constructor for %s requires an object of the same type, not %s", s_lpinteriorpointpredictorcorrector_str, solver->ob_type->tp_name);
+    return -1;
+  }
+
+  PyBobMathLpInteriorPointPredictorCorrectorObject* other = reinterpret_cast<PyBobMathLpInteriorPointPredictorCorrectorObject*>(solver);
+
+  try {
+    self->base = new bob::math::LPInteriorPointPredictorCorrector(*other->base);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
+  }
+  
+  self->parent.base = self->base;
+
+  if (PyErr_Occurred()) return -1;
+
+  return 0;
+
+}
+
+static int PyBobMathLpInteriorPointPredictorCorrector_init5(PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"M", "N", "theta_pred", "theta_corr", "epsilon", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  Py_ssize_t M = 0;
+  Py_ssize_t N = 0;
+  double theta_pred = 0.;
+  double theta_corr = 0.;
+  double epsilon = 0.;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist, 
+        &M, &N, &theta_pred, &theta_corr, &epsilon)) return -1;
+
+  try {
+    self->base = new bob::math::LPInteriorPointPredictorCorrector(M, N, theta_pred, theta_corr, epsilon);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot construct object of type %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
+    return -1;
+  }
+  
+  self->parent.base = self->base;
+
+  return 0;
+
+}
+
+static int PyBobMathLpInteriorPointPredictorCorrector_init(PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* args, PyObject* kwds) {
+
+  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwds?PyDict_Size(kwds):0;
+
+  switch (nargs) {
+
+    case 1:
+      return PyBobMathLpInteriorPointPredictorCorrector_init1(self, args, kwds);
+      break;
+
+    case 5:
+      return PyBobMathLpInteriorPointPredictorCorrector_init5(self, args, kwds);
+      break;
+
+    default:
+
+      PyErr_Format(PyExc_RuntimeError, "number of arguments mismatch - %s requires 1 or 5 arguments, but you provided %" PY_FORMAT_SIZE_T "d (see help)", s_lpinteriorpointpredictorcorrector_str, nargs);
+
+  }
+
+  return -1;
+
+}
+
+static void PyBobMathLpInteriorPointPredictorCorrector_delete (PyBobMathLpInteriorPointPredictorCorrectorObject* self) {
+  
+  delete self->base;
+  self->parent.base = 0;
+  self->base = 0;
+  self->parent.ob_type->tp_free((PyObject*)self);
+
+}
+
+PyDoc_STRVAR(s_theta_pred_str, "theta_pred");
+PyDoc_STRVAR(s_theta_pred_doc,
+"The value theta_pred used to define a V2 neighborhood"
+);
+
+static PyObject* PyBobMathLpInteriorPointPredictorCorrector_getThetaPred (PyBobMathLpInteriorPointPredictorCorrectorObject* self, void* /*closure*/) {
+  return Py_BuildValue("d", self->base->getThetaPred());
+}
+
+static int PyBobMathLpInteriorPointPredictorCorrector_setThetaPred (PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setThetaPred(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `theta_pred' of %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
+    return -1;
+  }
+
+  return 0;
+
+}
+
+PyDoc_STRVAR(s_theta_corr_str, "theta_corr");
+PyDoc_STRVAR(s_theta_corr_doc,
+"The value theta_corr used to define a V2 neighborhood"
+);
+
+static PyObject* PyBobMathLpInteriorPointPredictorCorrector_getThetaCorr (PyBobMathLpInteriorPointPredictorCorrectorObject* self, void* /*closure*/) {
+  return Py_BuildValue("d", self->base->getThetaCorr());
+}
+
+static int PyBobMathLpInteriorPointPredictorCorrector_setThetaCorr (PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setThetaCorr(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `theta_corr' of %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
+    return -1;
+  }
+
+  return 0;
+
+}
+
+static PyGetSetDef PyBobMathLpInteriorPointPredictorCorrector_getseters[] = {
+    {
+      s_theta_pred_str, 
+      (getter)PyBobMathLpInteriorPointPredictorCorrector_getThetaPred,
+      (setter)PyBobMathLpInteriorPointPredictorCorrector_setThetaPred,
+      s_theta_pred_doc,
+      0
+    },
+    {
+      s_theta_corr_str, 
+      (getter)PyBobMathLpInteriorPointPredictorCorrector_getThetaCorr,
+      (setter)PyBobMathLpInteriorPointPredictorCorrector_setThetaCorr,
+      s_theta_corr_doc,
+      0
+    },
+    {0}  /* Sentinel */
+};
+
+static PyObject* PyBobMathLpInteriorPointPredictorCorrector_RichCompare
+(PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* other, int op) {
+
+  if (!PyBobMathLpInteriorPointPredictorCorrector_Check(other)) {
+    PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'",
+        s_lpinteriorpointpredictorcorrector_str, other->ob_type->tp_name);
+    return 0;
+  }
+  
+  PyBobMathLpInteriorPointPredictorCorrectorObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointPredictorCorrectorObject*>(other);
+
+  switch (op) {
+    case Py_EQ:
+      if (*(self->base) == *(other_->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    case Py_NE:
+      if (*(self->base) != *(other_->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
+  }
+
+}
+
+PyTypeObject PyBobMathLpInteriorPointPredictorCorrector_Type = {
+    PyObject_HEAD_INIT(0)
+    0,                                                          /*ob_size*/
+    s_lpinteriorpointpredictorcorrector_str,                    /*tp_name*/
+    sizeof(PyBobMathLpInteriorPointPredictorCorrectorObject),   /*tp_basicsize*/
+    0,                                                          /*tp_itemsize*/
+    (destructor)PyBobMathLpInteriorPointPredictorCorrector_delete, /*tp_dealloc*/
+    0,                                                          /*tp_print*/
+    0,                                                          /*tp_getattr*/
+    0,                                                          /*tp_setattr*/
+    0,                                                          /*tp_compare*/
+    0,                                                          /*tp_repr*/
+    0,                                                          /*tp_as_number*/
+    0,                                                          /*tp_as_sequence*/
+    0,                                                          /*tp_as_mapping*/
+    0,                                                          /*tp_hash */
+    0,                                                          /*tp_call*/
+    0,                                                          /*tp_str*/
+    0,                                                          /*tp_getattro*/
+    0,                                                          /*tp_setattro*/
+    0,                                                          /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,                   /*tp_flags*/
+    s_lpinteriorpointpredictorcorrector_doc,                    /* tp_doc */
+    0,		                                                      /* tp_traverse */
+    0,		                                                      /* tp_clear */
+    (richcmpfunc)PyBobMathLpInteriorPointPredictorCorrector_RichCompare, /* tp_richcompare */
+    0,		                                                      /* tp_weaklistoffset */
+    0,		                                                      /* tp_iter */
+    0,		                                                      /* tp_iternext */
+    0,                                                          /* tp_methods */
+    0,                                                          /* tp_members */
+    PyBobMathLpInteriorPointPredictorCorrector_getseters,       /* tp_getset */
+    0,                                                          /* tp_base */
+    0,                                                          /* tp_dict */
+    0,                                                          /* tp_descr_get */
+    0,                                                          /* tp_descr_set */
+    0,                                                          /* tp_dictoffset */
+    (initproc)PyBobMathLpInteriorPointPredictorCorrector_init,  /* tp_init */
+    0,                                                          /* tp_alloc */
+    0,                                                          /* tp_new */
+};
+
+/****************************************************
+ * Implementation of LPInteriorPointLongstep class *
+ ****************************************************/
+
+PyDoc_STRVAR(s_lpinteriorpointlongstep_str, XBOB_EXT_MODULE_PREFIX ".LPInteriorPointLongstep");
+
+PyDoc_STRVAR(s_lpinteriorpointlongstep_doc,
+"LPInteriorPointLongstep(M, N, gamma, sigma, epsilon) -> new LPInteriorPointLongstep\n\
+LPInteriorPointLongstep(solver) -> new LPInteriorPointLongstep\n\
+\n\
+A Linear Program solver based on a long step interior point method.\n\
+\n\
+See :py:class:`LPInteriorPoint` for more details on the base class.\n\
+\n\
+Objects of this class can be initialized in two different ways: a\n\
+detailed constructor with the parameters described below or a copy\n\
+constructor, that deep-copies the input object and creates a new\n\
+object (**not** a new reference to the same object).\n\
+\n\
+Constructor parameters:\n\
+\n\
+M\n\
+  (int) first dimension of the A matrix\n\
+\n\
+N\n\
+  (int) second dimension of the A matrix\n\
+\n\
+gamma\n\
+  (float) The value gamma used to define a V-inf neighborhood\n\
+\n\
+sigma\n\
+  (float) The value sigma used to define a V-inf neighborhood\n\
+\n\
+epsilon\n\
+  (float) The precision to determine whether an equality constraint\n\
+  is fulfilled or not.\n\
+\n\
+");
+
+typedef struct {
+  PyBobMathLpInteriorPointObject parent;
+
+  /* Type-specific fields go here. */
+  bob::math::LPInteriorPointLongstep* base;
+
+} PyBobMathLpInteriorPointLongstepObject;
+
+static int PyBobMathLpInteriorPointLongstep_Check(PyObject* o) {
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobMathLpInteriorPointLongstep_Type));
+}
+
+static int PyBobMathLpInteriorPointLongstep_init1(PyBobMathLpInteriorPointLongstepObject* self, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"solver", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyObject* solver = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &solver)) return -1;
+
+  if (!PyBobMathLpInteriorPointLongstep_Check(solver)) {
+    PyErr_Format(PyExc_TypeError, "copy-constructor for %s requires an object of the same type, not %s", s_lpinteriorpointlongstep_str, solver->ob_type->tp_name);
+    return -1;
+  }
+
+  PyBobMathLpInteriorPointLongstepObject* other = reinterpret_cast<PyBobMathLpInteriorPointLongstepObject*>(solver);
+
+  try {
+    self->base = new bob::math::LPInteriorPointLongstep(*other->base);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointlongstep_str);
+  }
+  
+  self->parent.base = self->base;
+
+  if (PyErr_Occurred()) return -1;
+
+  return 0;
+
+}
+
+static int PyBobMathLpInteriorPointLongstep_init5(PyBobMathLpInteriorPointLongstepObject* self, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"M", "N", "gamma", "sigma", "epsilon", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  Py_ssize_t M = 0;
+  Py_ssize_t N = 0;
+  double gamma = 0.;
+  double sigma = 0.;
+  double epsilon = 0.;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist, 
+        &M, &N, &gamma, &sigma, &epsilon)) return -1;
+
+  try {
+    self->base = new bob::math::LPInteriorPointLongstep(M, N, gamma, sigma, epsilon);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot construct object of type %s: unknown exception caught", s_lpinteriorpointlongstep_str);
+    return -1;
+  } 
+  self->parent.base = self->base;
+
+  return 0;
+
+}
+
+static int PyBobMathLpInteriorPointLongstep_init(PyBobMathLpInteriorPointLongstepObject* self, PyObject* args, PyObject* kwds) {
+
+  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwds?PyDict_Size(kwds):0;
+
+  switch (nargs) {
+
+    case 1:
+      return PyBobMathLpInteriorPointLongstep_init1(self, args, kwds);
+      break;
+
+    case 5:
+      return PyBobMathLpInteriorPointLongstep_init5(self, args, kwds);
+      break;
+
+    default:
+
+      PyErr_Format(PyExc_RuntimeError, "number of arguments mismatch - %s requires 1 or 5 arguments, but you provided %" PY_FORMAT_SIZE_T "d (see help)", s_lpinteriorpointlongstep_str, nargs);
+
+  }
+
+  return -1;
+
+}
+
+static void PyBobMathLpInteriorPointLongstep_delete (PyBobMathLpInteriorPointLongstepObject* self) {
+  
+  delete self->base;
+  self->parent.base = 0;
+  self->base = 0;
+  self->parent.ob_type->tp_free((PyObject*)self);
+
+}
+
+PyDoc_STRVAR(s_gamma_str, "gamma");
+PyDoc_STRVAR(s_gamma_doc,
+"The value gamma used to define a V-Inf neighborhood"
+);
+
+static PyObject* PyBobMathLpInteriorPointLongstep_getGamma (PyBobMathLpInteriorPointLongstepObject* self, void* /*closure*/) {
+  return Py_BuildValue("d", self->base->getGamma());
+}
+
+static int PyBobMathLpInteriorPointLongstep_setGamma (PyBobMathLpInteriorPointLongstepObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setGamma(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `gamma' of %s: unknown exception caught", s_lpinteriorpointlongstep_str);
+    return -1;
+  }
+
+  return 0;
+
+}
+
+PyDoc_STRVAR(s_sigma_str, "sigma");
+PyDoc_STRVAR(s_sigma_doc,
+"The value sigma used to define a V-Inf neighborhood"
+);
+
+static PyObject* PyBobMathLpInteriorPointLongstep_getSigma (PyBobMathLpInteriorPointLongstepObject* self, void* /*closure*/) {
+  return Py_BuildValue("d", self->base->getSigma());
+}
+
+static int PyBobMathLpInteriorPointLongstep_setSigma (PyBobMathLpInteriorPointLongstepObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setSigma(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `sigma' of %s: unknown exception caught", s_lpinteriorpointlongstep_str);
+    return -1;
+  }
+
+  return 0;
+
+}
+
+static PyGetSetDef PyBobMathLpInteriorPointLongstep_getseters[] = {
+    {
+      s_gamma_str, 
+      (getter)PyBobMathLpInteriorPointLongstep_getGamma,
+      (setter)PyBobMathLpInteriorPointLongstep_setGamma,
+      s_gamma_doc,
+      0
+    },
+    {
+      s_sigma_str, 
+      (getter)PyBobMathLpInteriorPointLongstep_getSigma,
+      (setter)PyBobMathLpInteriorPointLongstep_setSigma,
+      s_sigma_doc,
+      0
+    },
+    {0}  /* Sentinel */
+};
+
+static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
+(PyBobMathLpInteriorPointLongstepObject* self, PyObject* other, int op) {
+
+  if (!PyBobMathLpInteriorPointLongstep_Check(other)) {
+    PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'",
+        s_lpinteriorpointlongstep_str, other->ob_type->tp_name);
+    return 0;
+  }
+  
+  PyBobMathLpInteriorPointLongstepObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointLongstepObject*>(other);
+
+  switch (op) {
+    case Py_EQ:
+      if (*(self->base) == *(other_->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    case Py_NE:
+      if (*(self->base) != *(other_->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
+  }
+
+}
+
+PyTypeObject PyBobMathLpInteriorPointLongstep_Type = {
+    PyObject_HEAD_INIT(0)
+    0,                                                          /*ob_size*/
+    s_lpinteriorpointlongstep_str,                             /*tp_name*/
+    sizeof(PyBobMathLpInteriorPointLongstepObject),            /*tp_basicsize*/
+    0,                                                          /*tp_itemsize*/
+    (destructor)PyBobMathLpInteriorPointLongstep_delete,       /*tp_dealloc*/
+    0,                                                          /*tp_print*/
+    0,                                                          /*tp_getattr*/
+    0,                                                          /*tp_setattr*/
+    0,                                                          /*tp_compare*/
+    0,                                                          /*tp_repr*/
+    0,                                                          /*tp_as_number*/
+    0,                                                          /*tp_as_sequence*/
+    0,                                                          /*tp_as_mapping*/
+    0,                                                          /*tp_hash */
+    0,                                                          /*tp_call*/
+    0,                                                          /*tp_str*/
+    0,                                                          /*tp_getattro*/
+    0,                                                          /*tp_setattro*/
+    0,                                                          /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,                   /*tp_flags*/
+    s_lpinteriorpointlongstep_doc,                             /* tp_doc */
+    0,		                                                      /* tp_traverse */
+    0,		                                                      /* tp_clear */
+    (richcmpfunc)PyBobMathLpInteriorPointLongstep_RichCompare, /* tp_richcompare */
+    0,		                                                      /* tp_weaklistoffset */
+    0,		                                                      /* tp_iter */
+    0,		                                                      /* tp_iternext */
+    0,                                                          /* tp_methods */
+    0,                                                          /* tp_members */
+    PyBobMathLpInteriorPointLongstep_getseters,                /* tp_getset */
+    0,                                                          /* tp_base */
+    0,                                                          /* tp_dict */
+    0,                                                          /* tp_descr_get */
+    0,                                                          /* tp_descr_set */
+    0,                                                          /* tp_dictoffset */
+    (initproc)PyBobMathLpInteriorPointLongstep_init,           /* tp_init */
+    0,                                                          /* tp_alloc */
+    0,                                                          /* tp_new */
+};
+
 /**
 static bool is_in_vinf(bob::math::LPInteriorPointLongstep& op,
   bob::python::const_ndarray x, bob::python::const_ndarray mu,
@@ -1203,28 +1802,6 @@ static bool is_in_vinf(bob::math::LPInteriorPointLongstep& op,
 
 void bind_math_lp_interiorpoint()
 {
-  class_<bob::math::LPInteriorPointShortstep, boost::shared_ptr<bob::math::LPInteriorPointShortstep>, bases<bob::math::LPInteriorPoint> >("LPInteriorPointShortstep", "A Linear Program solver based on a short step interior point method", init<const size_t, const size_t, const double, const double>((arg("self"), arg("M"), arg("N"), arg("theta"), arg("epsilon")), "Constructs a new LPInteriorPointShortstep solver"))
-    .def(init<const bob::math::LPInteriorPointShortstep&>((arg("self"), arg("solver")), "Copy constructs a solver"))
-    .def(self == self)
-    .def(self != self)
-    .add_property("theta", &bob::math::LPInteriorPointShortstep::getTheta, &bob::math::LPInteriorPointShortstep::setTheta, "The value theta used to define a V2 neighborhood")
-  ;
-
-  class_<bob::math::LPInteriorPointPredictorCorrector, boost::shared_ptr<bob::math::LPInteriorPointPredictorCorrector>, bases<bob::math::LPInteriorPoint> >("LPInteriorPointPredictorCorrector", "A Linear Program solver based on a predictor-corrector interior point method", init<const size_t, const size_t, const double, const double, const double>((arg("self"), arg("M"), arg("N"), arg("theta_pred"), arg("theta_corr"), arg("epsilon")), "Constructs a new LPInteriorPointPredictorCorrector solver"))
-    .def(init<const bob::math::LPInteriorPointPredictorCorrector&>((arg("self"), arg("solver")), "Copy constructs a solver"))
-    .def(self == self)
-    .def(self != self)
-    .add_property("theta_pred", &bob::math::LPInteriorPointPredictorCorrector::getThetaPred, &bob::math::LPInteriorPointPredictorCorrector::setThetaPred, "The value theta_pred used to define a V2 neighborhood")
-    .add_property("theta_corr", &bob::math::LPInteriorPointPredictorCorrector::getThetaCorr, &bob::math::LPInteriorPointPredictorCorrector::setThetaCorr, "The value theta_corr used to define a V2 neighborhood")
-  ;
-
-  class_<bob::math::LPInteriorPointLongstep, boost::shared_ptr<bob::math::LPInteriorPointLongstep>, bases<bob::math::LPInteriorPoint> >("LPInteriorPointLongstep", "A Linear Program solver based on a ong step interior point method", init<const size_t, const size_t, const double, const double, const double>((arg("self"), arg("M"), arg("N"), arg("gamma"), arg("sigma"), arg("epsilon")), "Constructs a new LPInteriorPointLongstep solver"))
-    .def(init<const bob::math::LPInteriorPointLongstep&>((arg("self"), arg("solver")), "Copy constructs a solver"))
-    .def(self == self)
-    .def(self != self)
     .def("is_in_v", &is_in_vinf, (arg("self"), arg("x"), arg("mu"), arg("gamma")), "Check if a primal-dual point (x,lambda,mu) belongs to the V-inf neighborhood of the central path")
-    .add_property("gamma", &bob::math::LPInteriorPointLongstep::getGamma, &bob::math::LPInteriorPointLongstep::setGamma, "The value gamma used to define a V-inf neighborhood")
-    .add_property("sigma", &bob::math::LPInteriorPointLongstep::getSigma, &bob::math::LPInteriorPointLongstep::setSigma, "The value sigma used to define a V-inf neighborhood")
-  ;
 }
 **/

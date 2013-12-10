@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import LPInteriorPointShortstep #, LPInteriorPointPredictorCorrector, LPInteriorPointLongstep
+from xbob.math import LPInteriorPointShortstep, LPInteriorPointPredictorCorrector, LPInteriorPointLongstep
 import numpy
 import nose.tools
 
@@ -74,8 +74,6 @@ def test_parameters():
   nose.tools.eq_(op1.theta, 0.4)
   nose.tools.eq_(op1.epsilon, 1e-6)
   op1b = LPInteriorPointShortstep(op1)
-  print '***************************************'
-  print op1b.m
   nose.tools.eq_(op1, op1b)
   assert not (op1 != op1b)
   op1b.theta = 0.5

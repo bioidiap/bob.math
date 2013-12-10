@@ -9,3 +9,5 @@
 
 extern PyTypeObject PyBobMathLpInteriorPoint_Type;
 extern PyTypeObject PyBobMathLpInteriorPointShortstep_Type;
+extern PyTypeObject PyBobMathLpInteriorPointPredictorCorrector_Type;
+extern PyTypeObject PyBobMathLpInteriorPointLongstep_Type;
