@@ -78,8 +78,31 @@ PyDoc_STRVAR(s_M_doc,
 "The first dimension of the problem/A matrix"
 );
 
-static PyObject* PyBobMathLpInteriorPoint_M (PyBobMathLpInteriorPointObject* self) {
+static PyObject* PyBobMathLpInteriorPoint_getM (PyBobMathLpInteriorPointObject* self,
+    void* /*closure*/) {
   return Py_BuildValue("n", self->base->getDimM());
+}
+
+static int PyBobMathLpInteriorPoint_setM (PyBobMathLpInteriorPointObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  Py_ssize_t M = PyNumber_AsSsize_t(o, PyExc_OverflowError);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setDimM(M);
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset size M of LPInteriorPoint: unknown exception caught");
+    return -1;
+  }
+
+  return 0;
+
 }
 
 PyDoc_STRVAR(s_N_str, "N");
@@ -87,8 +110,31 @@ PyDoc_STRVAR(s_N_doc,
 "The second dimension of the problem/A matrix"
 );
 
-static PyObject* PyBobMathLpInteriorPoint_N (PyBobMathLpInteriorPointObject* self) {
+static PyObject* PyBobMathLpInteriorPoint_getN (PyBobMathLpInteriorPointObject* self,
+    void* /*closure*/) {
   return Py_BuildValue("n", self->base->getDimN());
+}
+
+static int PyBobMathLpInteriorPoint_setN (PyBobMathLpInteriorPointObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  Py_ssize_t N = PyNumber_AsSsize_t(o, PyExc_OverflowError);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setDimN(N);
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset size N of LPInteriorPoint: unknown exception caught");
+    return -1;
+  }
+
+  return 0;
+
 }
 
 PyDoc_STRVAR(s_epsilon_str, "epsilon");
@@ -96,8 +142,30 @@ PyDoc_STRVAR(s_epsilon_doc,
 "The precision to determine whether an equality constraint is fulfilled or not"
 );
 
-static PyObject* PyBobMathLpInteriorPoint_epsilon (PyBobMathLpInteriorPointObject* self) {
+static PyObject* PyBobMathLpInteriorPoint_getEpsilon (PyBobMathLpInteriorPointObject* self, void* /*closure*/) {
   return Py_BuildValue("d", self->base->getEpsilon());
+}
+
+static int PyBobMathLpInteriorPoint_setEpsilon (PyBobMathLpInteriorPointObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setEpsilon(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `epsilon' of LPInteriorPoint: unknown exception caught");
+    return -1;
+  }
+
+  return 0;
+
 }
 
 PyDoc_STRVAR(s_lambda_str, "lambda");
@@ -137,22 +205,22 @@ static PyObject* PyBobMathLpInteriorPoint_mu (PyBobMathLpInteriorPointObject* se
 static PyGetSetDef PyBobMathLpInteriorPoint_getseters[] = {
     {
       s_M_str, 
-      (getter)PyBobMathLpInteriorPoint_M,
-      0,
+      (getter)PyBobMathLpInteriorPoint_getM,
+      (setter)PyBobMathLpInteriorPoint_setM,
       s_M_doc,
       0
     },
     {
       s_N_str, 
-      (getter)PyBobMathLpInteriorPoint_N,
-      0,
+      (getter)PyBobMathLpInteriorPoint_getN,
+      (setter)PyBobMathLpInteriorPoint_setN,
       s_N_doc,
       0
     },
     {
       s_epsilon_str, 
-      (getter)PyBobMathLpInteriorPoint_epsilon,
-      0,
+      (getter)PyBobMathLpInteriorPoint_getEpsilon,
+      (setter)PyBobMathLpInteriorPoint_setEpsilon,
       s_epsilon_doc,
       0
     },
@@ -352,11 +420,9 @@ static PyObject* PyBobMathLpInteriorPoint_solve
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot solve LPInteriorPoint: unknown exception caught");
-    return 0;
   }
 
   Py_DECREF(A);
@@ -488,11 +554,9 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check feasibility of LPInteriorPoint: unknown exception caught");
-    return 0;
   }
 
   Py_DECREF(A);
@@ -501,6 +565,8 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
   Py_DECREF(x);
   Py_DECREF(lambda);
   Py_DECREF(mu);
+
+  if (PyErr_Occurred()) return 0;
 
   if (feasible) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
@@ -558,15 +624,15 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V at LPInteriorPoint: unknown exception caught");
-    return 0;
   }
 
   Py_DECREF(x);
   Py_DECREF(mu);
+
+  if (PyErr_Occurred()) return 0;
 
   if (in_v) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
@@ -688,11 +754,9 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check if point is in VS at LPInteriorPoint: unknown exception caught");
-    return 0;
   }
 
   Py_DECREF(A);
@@ -702,8 +766,72 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
   Py_DECREF(lambda);
   Py_DECREF(mu);
 
+  if (PyErr_Occurred()) return 0;
+
   if (in_v_s) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
+
+}
+
+PyDoc_STRVAR(s_initialize_dual_lambda_mu_str, "initialize_dual_lambda_mu");
+PyDoc_STRVAR(s_initialize_dual_lambda_mu_doc,
+"o.initialize_dual_lambda_mu(A, c) -> None\n\
+\n\
+Initializes the dual variables `lambda' and `mu' by minimizing the\n\
+logarithmic barrier function.\n\
+\n\
+");
+
+static PyObject* PyBobMathLpInteriorPoint_initialize_dual_lambda_mu
+(PyBobMathLpInteriorPointObject* self, PyObject *args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"A", "c", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* A = 0;
+  PyBlitzArrayObject* c = 0;
+  double theta = 0.;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&d", kwlist,
+        &PyBlitzArray_Converter, &A,
+        &PyBlitzArray_Converter, &c,
+        &theta
+        )) return 0;
+
+  if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
+    PyErr_SetString(PyExc_TypeError, "Linear program initialize_dual_lambda_mu only supports 64-bit floats 2D arrays for input vector `A'");
+    Py_DECREF(A);
+    Py_DECREF(c);
+    return 0;
+  }
+
+  if (c->type_num != NPY_FLOAT64 || c->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "Linear program initialize_dual_lambda_mu only supports 64-bit floats 1D arrays for input vector `c'");
+    Py_DECREF(A);
+    Py_DECREF(c);
+    return 0;
+  }
+
+  try {
+    self->base->initializeDualLambdaMu(
+        *PyBlitzArrayCxx_AsBlitz<double,2>(A),
+        *PyBlitzArrayCxx_AsBlitz<double,1>(c)
+        );
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot initialize dual lambda-mu at LPInteriorPoint: unknown exception caught");
+  }
+
+  Py_DECREF(A);
+  Py_DECREF(c);
+
+  if (PyErr_Occurred()) return 0;
+
+  Py_RETURN_NONE;
 
 }
 
@@ -738,58 +866,77 @@ static PyMethodDef PyBobMathLpInteriorPoint_methods[] = {
       METH_NOARGS,
       s_is_in_v_s_doc
     },
+    {
+      s_initialize_dual_lambda_mu_str,
+      (PyCFunction)PyBobMathLpInteriorPoint_initialize_dual_lambda_mu,
+      METH_NOARGS,
+      s_initialize_dual_lambda_mu_doc
+    },
     {0}  /* Sentinel */
 };
 
+static PyObject* PyBobMathLpInteriorPoint_RichCompare
+(PyBobMathLpInteriorPointObject* self, PyBobMathLpInteriorPointObject* other, int op) {
+
+  switch (op) {
+    case Py_EQ:
+      if (*(self->base) == *(other->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    case Py_NE:
+      if (*(self->base) != *(other->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
+  }
+
+}
+
 PyTypeObject PyBobMathLpInteriorPoint_Type = {
     PyObject_HEAD_INIT(0)
-    0,                                          /*ob_size*/
-    s_lpinteriorpoint_str,                      /*tp_name*/
-    sizeof(PyBobMathLpInteriorPointObject),     /*tp_basicsize*/
-    0,                                          /*tp_itemsize*/
-    (destructor)PyBobMathLpInteriorPoint_delete,/*tp_dealloc*/
-    0,                                          /*tp_print*/
-    0,                                          /*tp_getattr*/
-    0,                                          /*tp_setattr*/
-    0,                                          /*tp_compare*/
-    0,                                          /*tp_repr*/
-    0,                                          /*tp_as_number*/
-    0,                                          /*tp_as_sequence*/
-    0,                                          /*tp_as_mapping*/
-    0,                                          /*tp_hash */
-    0,                                          /*tp_call*/
-    0,                                          /*tp_str*/
-    0,                                          /*tp_getattro*/
-    0,                                          /*tp_setattro*/
-    0,                                          /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /*tp_flags*/
-    s_lpinteriorpoint_doc,                      /* tp_doc */
-    0,		                                      /* tp_traverse */
-    0,		                                      /* tp_clear */
-    0,		                                      /* tp_richcompare */
-    0,		                                      /* tp_weaklistoffset */
-    0,		                                      /* tp_iter */
-    0,		                                      /* tp_iternext */
-    PyBobMathLpInteriorPoint_methods,           /* tp_methods */
-    0,                                          /* tp_members */
-    PyBobMathLpInteriorPoint_getseters,         /* tp_getset */
-    0,                                          /* tp_base */
-    0,                                          /* tp_dict */
-    0,                                          /* tp_descr_get */
-    0,                                          /* tp_descr_set */
-    0,                                          /* tp_dictoffset */
-    (initproc)PyBobMathLpInteriorPoint_init,    /* tp_init */
-    0,                                          /* tp_alloc */
-    PyBobMathLpInteriorPoint_new,               /* tp_new */
+    0,                                                 /*ob_size*/
+    s_lpinteriorpoint_str,                             /*tp_name*/
+    sizeof(PyBobMathLpInteriorPointObject),            /*tp_basicsize*/
+    0,                                                 /*tp_itemsize*/
+    (destructor)PyBobMathLpInteriorPoint_delete,       /*tp_dealloc*/
+    0,                                                 /*tp_print*/
+    0,                                                 /*tp_getattr*/
+    0,                                                 /*tp_setattr*/
+    0,                                                 /*tp_compare*/
+    0,                                                 /*tp_repr*/
+    0,                                                 /*tp_as_number*/
+    0,                                                 /*tp_as_sequence*/
+    0,                                                 /*tp_as_mapping*/
+    0,                                                 /*tp_hash */
+    0,                                                 /*tp_call*/
+    0,                                                 /*tp_str*/
+    0,                                                 /*tp_getattro*/
+    0,                                                 /*tp_setattro*/
+    0,                                                 /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,          /*tp_flags*/
+    s_lpinteriorpoint_doc,                             /* tp_doc */
+    0,		                                             /* tp_traverse */
+    0,		                                             /* tp_clear */
+    (richcmpfunc)PyBobMathLpInteriorPoint_RichCompare, /* tp_richcompare */
+    0,		                                             /* tp_weaklistoffset */
+    0,		                                             /* tp_iter */
+    0,		                                             /* tp_iternext */
+    PyBobMathLpInteriorPoint_methods,                  /* tp_methods */
+    0,                                                 /* tp_members */
+    PyBobMathLpInteriorPoint_getseters,                /* tp_getset */
+    0,                                                 /* tp_base */
+    0,                                                 /* tp_dict */
+    0,                                                 /* tp_descr_get */
+    0,                                                 /* tp_descr_set */
+    0,                                                 /* tp_dictoffset */
+    (initproc)PyBobMathLpInteriorPoint_init,           /* tp_init */
+    0,                                                 /* tp_alloc */
+    PyBobMathLpInteriorPoint_new,                      /* tp_new */
 };
 
 /**
-static void initialize_dual_lambda_mu(bob::math::LPInteriorPoint& op, bob::python::const_ndarray A,
-  bob::python::const_ndarray c)
-{
-  op.initializeDualLambdaMu(A.bz<double,2>(), c.bz<double,1>());
-}
-
 static bool is_in_vinf(bob::math::LPInteriorPointLongstep& op,
   bob::python::const_ndarray x, bob::python::const_ndarray mu,
   const double gamma)
@@ -802,8 +949,6 @@ void bind_math_lp_interiorpoint()
 {
     .def(self == self)
     .def(self != self)
-    .def("initialize_dual_lambda_mu", &initialize_dual_lambda_mu, (arg("self"), arg("A"), arg("c")), "Initialize the dual variables lambda and mu by minimizing the logarithmic barrier function")
-  ;
 
   class_<bob::math::LPInteriorPointShortstep, boost::shared_ptr<bob::math::LPInteriorPointShortstep>, bases<bob::math::LPInteriorPoint> >("LPInteriorPointShortstep", "A Linear Program solver based on a short step interior point method", init<const size_t, const size_t, const double, const double>((arg("self"), arg("M"), arg("N"), arg("theta"), arg("epsilon")), "Constructs a new LPInteriorPointShortstep solver"))
     .def(init<const bob::math::LPInteriorPointShortstep&>((arg("self"), arg("solver")), "Copy constructs a solver"))
