@@ -562,7 +562,7 @@ PyDoc_STRVAR(s_is_in_v_str, "is_in_v");
 PyDoc_STRVAR(s_is_in_v_doc, 
 "o.is_in_v(x, mu, theta) -> bool\n\
 \n\
-Check if a primal-dual point (x,lambda,mu) belongs to the V2\n\
+Checks if a primal-dual point (x,lambda,mu) belongs to the V2\n\
 neighborhood of the central path.\n\
 \n\
 ");
@@ -1749,13 +1749,89 @@ static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
 
 }
 
+PyDoc_STRVAR(s_is_in_vinf_str, "is_in_v");
+PyDoc_STRVAR(s_is_in_vinf_doc, 
+"o.is_in_v(x, mu, gamma) -> bool\n\
+\n\
+Checks if a primal-dual point (x,lambda,mu) belongs to the V-Inf\n\
+neighborhood of the central path.\n\
+\n\
+");
+
+static PyObject* PyBobMathLpInteriorPoint_is_in_vinf
+(PyBobMathLpInteriorPointObject* self, PyObject *args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"x", "mu", "gamma", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  PyBlitzArrayObject* x = 0;
+  PyBlitzArrayObject* mu = 0;
+  double gamma = 0.;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&d", kwlist,
+        &PyBlitzArray_Converter, &x,
+        &PyBlitzArray_Converter, &mu,
+        &gamma
+        )) return 0;
+
+  if (x->type_num != NPY_FLOAT64 || x->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "Linear program is_in_vinf only supports 64-bit floats 1D arrays for input vector `x0'");
+    Py_DECREF(x);
+    Py_DECREF(mu);
+    return 0;
+  }
+
+  if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
+    PyErr_SetString(PyExc_TypeError, "Linear program is_in_vinf only supports 64-bit floats 1D arrays for input vector `mu'");
+    Py_DECREF(x);
+    Py_DECREF(mu);
+    return 0;
+  }
+
+  bool in_vinf = false;
+
+  try {
+    in_vinf = self->base->isInV(
+        *PyBlitzArrayCxx_AsBlitz<double,1>(x),
+        *PyBlitzArrayCxx_AsBlitz<double,1>(mu),
+        gamma
+        );
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V-Inf at `%s': unknown exception caught", s_lpinteriorpoint_str);
+  }
+
+  Py_DECREF(x);
+  Py_DECREF(mu);
+
+  if (PyErr_Occurred()) return 0;
+
+  if (in_vinf) Py_RETURN_TRUE;
+  Py_RETURN_FALSE;
+
+}
+
+static PyMethodDef PyBobMathLpInteriorPointLongstep_methods[] = {
+    {
+      s_is_in_vinf_str,
+      (PyCFunction)PyBobMathLpInteriorPoint_is_in_vinf,
+      METH_VARARGS|METH_KEYWORDS,
+      s_is_in_vinf_doc
+    },
+    {0}  /* Sentinel */
+};
+
 PyTypeObject PyBobMathLpInteriorPointLongstep_Type = {
     PyObject_HEAD_INIT(0)
     0,                                                          /*ob_size*/
-    s_lpinteriorpointlongstep_str,                             /*tp_name*/
-    sizeof(PyBobMathLpInteriorPointLongstepObject),            /*tp_basicsize*/
+    s_lpinteriorpointlongstep_str,                              /*tp_name*/
+    sizeof(PyBobMathLpInteriorPointLongstepObject),             /*tp_basicsize*/
     0,                                                          /*tp_itemsize*/
-    (destructor)PyBobMathLpInteriorPointLongstep_delete,       /*tp_dealloc*/
+    (destructor)PyBobMathLpInteriorPointLongstep_delete,        /*tp_dealloc*/
     0,                                                          /*tp_print*/
     0,                                                          /*tp_getattr*/
     0,                                                          /*tp_setattr*/
@@ -1771,37 +1847,22 @@ PyTypeObject PyBobMathLpInteriorPointLongstep_Type = {
     0,                                                          /*tp_setattro*/
     0,                                                          /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,                   /*tp_flags*/
-    s_lpinteriorpointlongstep_doc,                             /* tp_doc */
+    s_lpinteriorpointlongstep_doc,                              /* tp_doc */
     0,		                                                      /* tp_traverse */
     0,		                                                      /* tp_clear */
-    (richcmpfunc)PyBobMathLpInteriorPointLongstep_RichCompare, /* tp_richcompare */
+    (richcmpfunc)PyBobMathLpInteriorPointLongstep_RichCompare,  /* tp_richcompare */
     0,		                                                      /* tp_weaklistoffset */
     0,		                                                      /* tp_iter */
     0,		                                                      /* tp_iternext */
-    0,                                                          /* tp_methods */
+    PyBobMathLpInteriorPointLongstep_methods,                   /* tp_methods */
     0,                                                          /* tp_members */
-    PyBobMathLpInteriorPointLongstep_getseters,                /* tp_getset */
+    PyBobMathLpInteriorPointLongstep_getseters,                 /* tp_getset */
     0,                                                          /* tp_base */
     0,                                                          /* tp_dict */
     0,                                                          /* tp_descr_get */
     0,                                                          /* tp_descr_set */
     0,                                                          /* tp_dictoffset */
-    (initproc)PyBobMathLpInteriorPointLongstep_init,           /* tp_init */
+    (initproc)PyBobMathLpInteriorPointLongstep_init,            /* tp_init */
     0,                                                          /* tp_alloc */
     0,                                                          /* tp_new */
 };
-
-/**
-static bool is_in_vinf(bob::math::LPInteriorPointLongstep& op,
-  bob::python::const_ndarray x, bob::python::const_ndarray mu,
-  const double gamma)
-{
-  return op.isInV(x.bz<double,1>(), mu.bz<double,1>(), gamma);
-}
-
-
-void bind_math_lp_interiorpoint()
-{
-    .def("is_in_v", &is_in_vinf, (arg("self"), arg("x"), arg("mu"), arg("gamma")), "Check if a primal-dual point (x,lambda,mu) belongs to the V-inf neighborhood of the central path")
-}
-**/
