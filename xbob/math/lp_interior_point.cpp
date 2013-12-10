@@ -14,6 +14,10 @@
 #include <bob/math/LPInteriorPoint.h>
 #include <structmember.h>
 
+/************************************************
+ * Implementation of LPInteriorPoint base class *
+ ************************************************/
+
 PyDoc_STRVAR(s_lpinteriorpoint_str, XBOB_EXT_MODULE_PREFIX ".LPInteriorPoint");
 
 PyDoc_STRVAR(s_lpinteriorpoint_doc,
@@ -42,38 +46,19 @@ typedef struct {
   PyObject_HEAD
 
   /* Type-specific fields go here. */
-  std::shared_ptr<bob::math::LPInteriorPoint> base;
+  bob::math::LPInteriorPoint* base;
 
 } PyBobMathLpInteriorPointObject;
 
 
-static PyObject* PyBobMathLpInteriorPoint_new(PyTypeObject* type, PyObject*, PyObject*) {
-
-  /* Allocates the python object itself */
-  PyBobMathLpInteriorPointObject* self = (PyBobMathLpInteriorPointObject*)type->tp_alloc(type, 0);
-
-  self->base.reset();
-
-  return reinterpret_cast<PyObject*>(self);
-
-}
-
 static int PyBobMathLpInteriorPoint_init(PyBobMathLpInteriorPointObject* self, PyObject*, PyObject*) {
 
   PyErr_SetString(PyExc_NotImplementedError, "cannot initialize object of base type `LPInteriorPoint' - use one of the inherited classes");
-
   return -1;
 
 }
 
-static void PyBobMathLpInteriorPoint_delete (PyBobMathLpInteriorPointObject* self) {
-  
-  self->base.reset();
-  self->ob_type->tp_free((PyObject*)self);
-
-}
-
-PyDoc_STRVAR(s_M_str, "M");
+PyDoc_STRVAR(s_M_str, "m");
 PyDoc_STRVAR(s_M_doc,
 "The first dimension of the problem/A matrix"
 );
@@ -105,7 +90,7 @@ static int PyBobMathLpInteriorPoint_setM (PyBobMathLpInteriorPointObject* self,
 
 }
 
-PyDoc_STRVAR(s_N_str, "N");
+PyDoc_STRVAR(s_N_str, "n");
 PyDoc_STRVAR(s_N_doc,
 "The second dimension of the problem/A matrix"
 );
@@ -168,7 +153,7 @@ static int PyBobMathLpInteriorPoint_setEpsilon (PyBobMathLpInteriorPointObject* 
 
 }
 
-PyDoc_STRVAR(s_lambda_str, "lambda");
+PyDoc_STRVAR(s_lambda_str, "lambda_");
 PyDoc_STRVAR(s_lambda_doc,
 "The value of the lambda dual variable (read-only)"
 );
@@ -350,7 +335,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
     return 0;
   }
 
-  if (lambda->type_num != NPY_FLOAT64 || lambda->ndim != 1) {
+  if (lambda && (lambda->type_num != NPY_FLOAT64 || lambda->ndim != 1)) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `lambda'");
     Py_DECREF(A);
     Py_DECREF(b);
@@ -361,7 +346,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
     return 0;
   }
 
-  if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
+  if (mu && (mu->type_num != NPY_FLOAT64 || mu->ndim != 1)) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `mu'");
     Py_DECREF(A);
     Py_DECREF(b);
@@ -791,12 +776,10 @@ static PyObject* PyBobMathLpInteriorPoint_initialize_dual_lambda_mu
 
   PyBlitzArrayObject* A = 0;
   PyBlitzArrayObject* c = 0;
-  double theta = 0.;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&d", kwlist,
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist,
         &PyBlitzArray_Converter, &A,
-        &PyBlitzArray_Converter, &c,
-        &theta
+        &PyBlitzArray_Converter, &c
         )) return 0;
 
   if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
@@ -839,37 +822,37 @@ static PyMethodDef PyBobMathLpInteriorPoint_methods[] = {
     {
       s_reset_str,
       (PyCFunction)PyBobMathLpInteriorPoint_reset,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_reset_doc
     },
     {
       s_solve_str,
       (PyCFunction)PyBobMathLpInteriorPoint_solve,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_solve_doc
     },
     {
       s_is_feasible_str,
       (PyCFunction)PyBobMathLpInteriorPoint_is_feasible,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_is_feasible_doc
     },
     {
       s_is_in_v_str,
       (PyCFunction)PyBobMathLpInteriorPoint_is_in_v,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_is_in_v_doc
     },
     {
       s_is_in_v_s_str,
       (PyCFunction)PyBobMathLpInteriorPoint_is_in_v_s,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_is_in_v_s_doc
     },
     {
       s_initialize_dual_lambda_mu_str,
       (PyCFunction)PyBobMathLpInteriorPoint_initialize_dual_lambda_mu,
-      METH_NOARGS,
+      METH_VARARGS|METH_KEYWORDS,
       s_initialize_dual_lambda_mu_doc
     },
     {0}  /* Sentinel */
@@ -900,7 +883,7 @@ PyTypeObject PyBobMathLpInteriorPoint_Type = {
     s_lpinteriorpoint_str,                             /*tp_name*/
     sizeof(PyBobMathLpInteriorPointObject),            /*tp_basicsize*/
     0,                                                 /*tp_itemsize*/
-    (destructor)PyBobMathLpInteriorPoint_delete,       /*tp_dealloc*/
+    0,                                                 /*tp_dealloc*/
     0,                                                 /*tp_print*/
     0,                                                 /*tp_getattr*/
     0,                                                 /*tp_setattr*/
@@ -933,7 +916,184 @@ PyTypeObject PyBobMathLpInteriorPoint_Type = {
     0,                                                 /* tp_dictoffset */
     (initproc)PyBobMathLpInteriorPoint_init,           /* tp_init */
     0,                                                 /* tp_alloc */
-    PyBobMathLpInteriorPoint_new,                      /* tp_new */
+    0,                                                 /* tp_new */
+};
+
+/****************************************************
+ * Implementation of LPInteriorPointShortstep class *
+ ****************************************************/
+
+PyDoc_STRVAR(s_lpinteriorpointshortstep_str, XBOB_EXT_MODULE_PREFIX ".LPInteriorPointShortstep");
+
+PyDoc_STRVAR(s_lpinteriorpointshortstep_doc,
+"LPInteriorPointShortstep(M, N, theta, epsilon) -> new LPInteriorPointShortstep\n\
+\n\
+A Linear Program solver based on a short step interior point method.\n\
+\n\
+See :py:class:`LPInteriorPoint` for more details on the base class.\n\
+\n\
+Constructor parameters:\n\
+\n\
+M\n\
+  (int) first dimension of the A matrix\n\
+\n\
+N\n\
+  (int) second dimension of the A matrix\n\
+\n\
+theta\n\
+  (float) theta The value defining the size of the V2 neighborhood\n\
+\n\
+epsilon\n\
+  (float) The precision to determine whether an equality constraint\n\
+  is fulfilled or not.\n\
+\n\
+");
+
+/* Type definition for PyBobMathLpInteriorPointObject */
+typedef struct {
+  PyBobMathLpInteriorPointObject parent;
+
+  /* Type-specific fields go here. */
+  bob::math::LPInteriorPointShortstep* base;
+
+} PyBobMathLpInteriorPointShortstepObject;
+
+static int PyBobMathLpInteriorPointShortstep_init(PyBobMathLpInteriorPointShortstepObject* self, PyObject* args, PyObject* kwds) {
+
+  /* Parses input arguments in a single shot */
+  static const char* const_kwlist[] = {"M", "N", "theta", "epsilon", 0};
+  static char** kwlist = const_cast<char**>(const_kwlist);
+
+  Py_ssize_t M = 0;
+  Py_ssize_t N = 0;
+  double theta = 0.;
+  double epsilon = 0.;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nndd", kwlist, 
+        &M, &N, &theta, &epsilon)) return -1;
+
+  self->base = new bob::math::LPInteriorPointShortstep(M, N, theta, epsilon);
+  if (!self->base) {
+    PyErr_SetString(PyExc_MemoryError, "could not allocate new LPInteriorPointShortstep object");
+    return -1;
+  }
+
+  self->parent.base = self->base;
+
+  return 0;
+
+}
+
+static void PyBobMathLpInteriorPointShortstep_delete (PyBobMathLpInteriorPointShortstepObject* self) {
+  
+  delete self->base;
+  self->parent.base = 0;
+  self->base = 0;
+  self->parent.ob_type->tp_free((PyObject*)self);
+
+}
+
+PyDoc_STRVAR(s_theta_str, "theta");
+PyDoc_STRVAR(s_theta_doc,
+"The value theta used to define a V2 neighborhood"
+);
+
+static PyObject* PyBobMathLpInteriorPointShortstep_getTheta (PyBobMathLpInteriorPointShortstepObject* self, void* /*closure*/) {
+  return Py_BuildValue("d", self->base->getTheta());
+}
+
+static int PyBobMathLpInteriorPointShortstep_setTheta (PyBobMathLpInteriorPointShortstepObject* self,
+    PyObject* o, void* /*closure*/) {
+
+  double e = PyFloat_AsDouble(o);
+  if (PyErr_Occurred()) return -1;
+
+  try {
+    self->base->setTheta(e);
+  }
+  catch (std::exception& ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `theta' of LPInteriorPointShortstep: unknown exception caught");
+    return -1;
+  }
+
+  return 0;
+
+}
+
+static PyGetSetDef PyBobMathLpInteriorPointShortstep_getseters[] = {
+    {
+      s_theta_str, 
+      (getter)PyBobMathLpInteriorPointShortstep_getTheta,
+      (setter)PyBobMathLpInteriorPointShortstep_setTheta,
+      s_theta_doc,
+      0
+    },
+    {0}  /* Sentinel */
+};
+
+static PyObject* PyBobMathLpInteriorPointShortstep_RichCompare
+(PyBobMathLpInteriorPointShortstepObject* self, PyBobMathLpInteriorPointShortstepObject* other, int op) {
+
+  switch (op) {
+    case Py_EQ:
+      if (*(self->base) == *(other->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    case Py_NE:
+      if (*(self->base) != *(other->base)) Py_RETURN_TRUE;
+      Py_RETURN_FALSE;
+      break;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
+  }
+
+}
+
+PyTypeObject PyBobMathLpInteriorPointShortstep_Type = {
+    PyObject_HEAD_INIT(0)
+    0,                                                          /*ob_size*/
+    s_lpinteriorpointshortstep_str,                             /*tp_name*/
+    sizeof(PyBobMathLpInteriorPointShortstepObject),            /*tp_basicsize*/
+    0,                                                          /*tp_itemsize*/
+    (destructor)PyBobMathLpInteriorPointShortstep_delete,       /*tp_dealloc*/
+    0,                                                          /*tp_print*/
+    0,                                                          /*tp_getattr*/
+    0,                                                          /*tp_setattr*/
+    0,                                                          /*tp_compare*/
+    0,                                                          /*tp_repr*/
+    0,                                                          /*tp_as_number*/
+    0,                                                          /*tp_as_sequence*/
+    0,                                                          /*tp_as_mapping*/
+    0,                                                          /*tp_hash */
+    0,                                                          /*tp_call*/
+    0,                                                          /*tp_str*/
+    0,                                                          /*tp_getattro*/
+    0,                                                          /*tp_setattro*/
+    0,                                                          /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,                   /*tp_flags*/
+    s_lpinteriorpointshortstep_doc,                             /* tp_doc */
+    0,		                                                      /* tp_traverse */
+    0,		                                                      /* tp_clear */
+    (richcmpfunc)PyBobMathLpInteriorPointShortstep_RichCompare, /* tp_richcompare */
+    0,		                                                      /* tp_weaklistoffset */
+    0,		                                                      /* tp_iter */
+    0,		                                                      /* tp_iternext */
+    0,                                                          /* tp_methods */
+    0,                                                          /* tp_members */
+    PyBobMathLpInteriorPointShortstep_getseters,                /* tp_getset */
+    0,                                                          /* tp_base */
+    0,                                                          /* tp_dict */
+    0,                                                          /* tp_descr_get */
+    0,                                                          /* tp_descr_set */
+    0,                                                          /* tp_dictoffset */
+    (initproc)PyBobMathLpInteriorPointShortstep_init,           /* tp_init */
+    0,                                                          /* tp_alloc */
+    0,                                                          /* tp_new */
 };
 
 /**
@@ -947,9 +1107,6 @@ static bool is_in_vinf(bob::math::LPInteriorPointLongstep& op,
 
 void bind_math_lp_interiorpoint()
 {
-    .def(self == self)
-    .def(self != self)
-
   class_<bob::math::LPInteriorPointShortstep, boost::shared_ptr<bob::math::LPInteriorPointShortstep>, bases<bob::math::LPInteriorPoint> >("LPInteriorPointShortstep", "A Linear Program solver based on a short step interior point method", init<const size_t, const size_t, const double, const double>((arg("self"), arg("M"), arg("N"), arg("theta"), arg("epsilon")), "Constructs a new LPInteriorPointShortstep solver"))
     .def(init<const bob::math::LPInteriorPointShortstep&>((arg("self"), arg("solver")), "Copy constructs a solver"))
     .def(self == self)

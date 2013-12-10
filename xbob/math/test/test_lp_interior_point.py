@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import LPInteriorPointShortstep, LPInteriorPointPredictorCorrector, LPInteriorPointLongstep
+from xbob.math import LPInteriorPointShortstep #, LPInteriorPointPredictorCorrector, LPInteriorPointLongstep
 import numpy
 import nose.tools
 

@@ -8,3 +8,4 @@
 #include <Python.h>
 
 extern PyTypeObject PyBobMathLpInteriorPoint_Type;
+extern PyTypeObject PyBobMathLpInteriorPointShortstep_Type;

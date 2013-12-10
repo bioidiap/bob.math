@@ -506,6 +506,9 @@ PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
   PyBobMathLpInteriorPoint_Type.tp_new = PyType_GenericNew;
   if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return;
 
+  PyBobMathLpInteriorPointShortstep_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
+  if (PyType_Ready(&PyBobMathLpInteriorPointShortstep_Type) < 0) return;
+
   PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME,
       module_methods, module_docstr);
 
@@ -515,6 +518,9 @@ PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
   /* register the types to python */
   Py_INCREF(&PyBobMathLpInteriorPoint_Type);
   PyModule_AddObject(m, "LPInteriorPoint", (PyObject *)&PyBobMathLpInteriorPoint_Type);
+
+  Py_INCREF(&PyBobMathLpInteriorPointShortstep_Type);
+  PyModule_AddObject(m, "LPInteriorPointShortstep", (PyObject *)&PyBobMathLpInteriorPointShortstep_Type);
 
   /* imports the NumPy C-API */
   import_array();
