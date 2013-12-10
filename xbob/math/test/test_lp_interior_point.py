@@ -74,7 +74,9 @@ def test_parameters():
   nose.tools.eq_(op1.theta, 0.4)
   nose.tools.eq_(op1.epsilon, 1e-6)
   op1b = LPInteriorPointShortstep(op1)
-  assert op1 == op1b
+  print '***************************************'
+  print op1b.m
+  nose.tools.eq_(op1, op1b)
   assert not (op1 != op1b)
   op1b.theta = 0.5
   assert not (op1 == op1b)
@@ -93,7 +95,7 @@ def test_parameters():
   nose.tools.eq_(op2.theta_corr, 0.25)
   nose.tools.eq_(op2.epsilon, 1e-6)
   op2b = LPInteriorPointPredictorCorrector(op2)
-  assert op2 == op2b
+  nose.tools.eq_(op2, op2b)
   assert not (op2 != op2b)
   op2b.theta_pred = 0.4
   assert not (op2 == op2b)
@@ -118,7 +120,7 @@ def test_parameters():
   nose.tools.eq_(op3.sigma, 0.6)
   nose.tools.eq_(op3.epsilon, 1e-6)
   op3b = LPInteriorPointLongstep(op3)
-  assert op3 == op3b
+  nose.tools.eq_(op3, op3b)
   assert not (op3 != op3b)
   op3b.gamma = 0.5
   assert not (op3 == op3b)
