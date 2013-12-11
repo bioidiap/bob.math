@@ -9,6 +9,7 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
+#include "cleanup.h"
 #include "lp_interior_point.h"
 #include <xbob.blitz/cppapi.h>
 #include <bob/math/LPInteriorPoint.h>
@@ -291,97 +292,56 @@ static PyObject* PyBobMathLpInteriorPoint_solve
         &PyBlitzArray_Converter, &mu
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+  auto c_ = make_safe(c);
+  auto x0_ = make_safe(x0);
+  auto lambda_ = make_xsafe(lambda);
+  auto mu_ = make_xsafe(mu);
+
   if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 2D arrays for input vector `A'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if (b->type_num != NPY_FLOAT64 || b->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `b'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if (c->type_num != NPY_FLOAT64 || c->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `c'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if (x0->type_num != NPY_FLOAT64 || x0->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `x0'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if (lambda && (lambda->type_num != NPY_FLOAT64 || lambda->ndim != 1)) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `lambda'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if (mu && (mu->type_num != NPY_FLOAT64 || mu->ndim != 1)) {
     PyErr_SetString(PyExc_TypeError, "Linear program solver only supports 64-bit floats 1D arrays for input vector `mu'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   if ( (lambda && !mu) || (mu && !lambda) ) {
     PyErr_SetString(PyExc_RuntimeError, "Linear program solver requires none or both `mu' and `lambda' - you cannot just specify one of them");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
 
   /* This is where the output is going to be stored */
   PyObject* retval = PyBlitzArray_SimpleNew(NPY_FLOAT64, x0->ndim, x0->shape);
   if (!retval) {
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x0);
-    Py_XDECREF(lambda);
-    Py_XDECREF(mu);
     return 0;
   }
   blitz::Array<double,1>* wrapper = PyBlitzArrayCxx_AsBlitz<double,1>(reinterpret_cast<PyBlitzArrayObject*>(retval));
   (*wrapper) = *PyBlitzArrayCxx_AsBlitz<double,1>(x0);
-  Py_DECREF(x0);
 
   try {
     if (lambda && mu) {
@@ -405,18 +365,11 @@ static PyObject* PyBobMathLpInteriorPoint_solve
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    Py_DECREF(retval);
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot solve `%s': unknown exception caught", s_lpinteriorpoint_str);
-  }
-
-  Py_DECREF(A);
-  Py_DECREF(b);
-  Py_DECREF(c);
-  Py_XDECREF(lambda);
-  Py_XDECREF(mu);
-
-  if (PyErr_Occurred()) {
     Py_DECREF(retval);
     return 0;
   }
@@ -459,69 +412,41 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
         &PyBlitzArray_Converter, &mu
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+  auto c_ = make_safe(c);
+  auto x_ = make_safe(x);
+  auto lambda_ = make_safe(lambda);
+  auto mu_ = make_safe(mu);
+
   if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 2D arrays for input vector `A'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (b->type_num != NPY_FLOAT64 || b->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 1D arrays for input vector `b'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (c->type_num != NPY_FLOAT64 || c->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 1D arrays for input vector `c'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (x->type_num != NPY_FLOAT64 || x->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 1D arrays for input vector `x0'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (lambda->type_num != NPY_FLOAT64 || lambda->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 1D arrays for input vector `lambda'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_feasible only supports 64-bit floats 1D arrays for input vector `mu'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
@@ -539,19 +464,12 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check feasibility of `%s': unknown exception caught", s_lpinteriorpoint_str);
+    return 0;
   }
-
-  Py_DECREF(A);
-  Py_DECREF(b);
-  Py_DECREF(c);
-  Py_DECREF(x);
-  Py_DECREF(lambda);
-  Py_DECREF(mu);
-
-  if (PyErr_Occurred()) return 0;
 
   if (feasible) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
@@ -584,17 +502,17 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
         &theta
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto x_ = make_safe(x);
+  auto mu_ = make_safe(mu);
+
   if (x->type_num != NPY_FLOAT64 || x->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v only supports 64-bit floats 1D arrays for input vector `x0'");
-    Py_DECREF(x);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v only supports 64-bit floats 1D arrays for input vector `mu'");
-    Py_DECREF(x);
-    Py_DECREF(mu);
     return 0;
   }
 
@@ -609,15 +527,12 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    return 0;
   }
-
-  Py_DECREF(x);
-  Py_DECREF(mu);
-
-  if (PyErr_Occurred()) return 0;
 
   if (in_v) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
@@ -658,69 +573,41 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
         &theta
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+  auto c_ = make_safe(c);
+  auto x_ = make_safe(x);
+  auto lambda_ = make_safe(lambda);
+  auto mu_ = make_safe(mu);
+
   if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 2D arrays for input vector `A'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (b->type_num != NPY_FLOAT64 || b->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 1D arrays for input vector `b'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (c->type_num != NPY_FLOAT64 || c->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 1D arrays for input vector `c'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (x->type_num != NPY_FLOAT64 || x->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 1D arrays for input vector `x0'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (lambda->type_num != NPY_FLOAT64 || lambda->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 1D arrays for input vector `lambda'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_v_s only supports 64-bit floats 1D arrays for input vector `mu'");
-    Py_DECREF(A);
-    Py_DECREF(b);
-    Py_DECREF(c);
-    Py_DECREF(x);
-    Py_DECREF(lambda);
-    Py_DECREF(mu);
     return 0;
   }
 
@@ -739,19 +626,12 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check if point is in VS at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    return 0;
   }
-
-  Py_DECREF(A);
-  Py_DECREF(b);
-  Py_DECREF(c);
-  Py_DECREF(x);
-  Py_DECREF(lambda);
-  Py_DECREF(mu);
-
-  if (PyErr_Occurred()) return 0;
 
   if (in_v_s) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
@@ -782,17 +662,17 @@ static PyObject* PyBobMathLpInteriorPoint_initialize_dual_lambda_mu
         &PyBlitzArray_Converter, &c
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto c_ = make_safe(c);
+
   if (A->type_num != NPY_FLOAT64 || A->ndim != 2) {
     PyErr_SetString(PyExc_TypeError, "Linear program initialize_dual_lambda_mu only supports 64-bit floats 2D arrays for input vector `A'");
-    Py_DECREF(A);
-    Py_DECREF(c);
     return 0;
   }
 
   if (c->type_num != NPY_FLOAT64 || c->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program initialize_dual_lambda_mu only supports 64-bit floats 1D arrays for input vector `c'");
-    Py_DECREF(A);
-    Py_DECREF(c);
     return 0;
   }
 
@@ -804,15 +684,12 @@ static PyObject* PyBobMathLpInteriorPoint_initialize_dual_lambda_mu
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot initialize dual lambda-mu at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    return 0;
   }
-
-  Py_DECREF(A);
-  Py_DECREF(c);
-
-  if (PyErr_Occurred()) return 0;
 
   Py_RETURN_NONE;
 
@@ -1775,17 +1652,17 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_vinf
         &gamma
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto x_ = make_safe(x);
+  auto mu_ = make_safe(mu);
+
   if (x->type_num != NPY_FLOAT64 || x->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_vinf only supports 64-bit floats 1D arrays for input vector `x0'");
-    Py_DECREF(x);
-    Py_DECREF(mu);
     return 0;
   }
 
   if (mu->type_num != NPY_FLOAT64 || mu->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "Linear program is_in_vinf only supports 64-bit floats 1D arrays for input vector `mu'");
-    Py_DECREF(x);
-    Py_DECREF(mu);
     return 0;
   }
 
@@ -1800,15 +1677,12 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_vinf
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V-Inf at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    return 0;
   }
-
-  Py_DECREF(x);
-  Py_DECREF(mu);
-
-  if (PyErr_Occurred()) return 0;
 
   if (in_vinf) Py_RETURN_TRUE;
   Py_RETURN_FALSE;
