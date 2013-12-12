@@ -168,7 +168,7 @@ static PyObject* PyBobMathLpInteriorPoint_lambda (PyBobMathLpInteriorPointObject
     (reinterpret_cast<PyBlitzArrayObject*>(retval));
   (*wrapper) = self->base->getLambda();
 
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 }
 
 PyDoc_STRVAR(s_mu_str, "mu");
@@ -185,7 +185,7 @@ static PyObject* PyBobMathLpInteriorPoint_mu (PyBobMathLpInteriorPointObject* se
     (reinterpret_cast<PyBlitzArrayObject*>(retval));
   (*wrapper) = self->base->getMu();
 
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 }
 
 static PyGetSetDef PyBobMathLpInteriorPoint_getseters[] = {
@@ -364,19 +364,19 @@ static PyObject* PyBobMathLpInteriorPoint_solve
     }
   }
   catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
     Py_DECREF(retval);
+    PyErr_SetString(PyExc_RuntimeError, e.what());
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot solve `%s': unknown exception caught", s_lpinteriorpoint_str);
     Py_DECREF(retval);
+    PyErr_Format(PyExc_RuntimeError, "cannot solve `%s': unknown exception caught", s_lpinteriorpoint_str);
     return 0;
   }
 
   /* We only "return" the first half of the `x' vector */
   (reinterpret_cast<PyBlitzArrayObject*>(retval))->shape[0] /= 2;
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 
 }
 

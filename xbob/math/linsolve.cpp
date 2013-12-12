@@ -8,6 +8,7 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
+#include "cleanup.h"
 #include "histogram.h"
 #include <xbob.blitz/cppapi.h>
 #include "bob/math/linsolve.h"
@@ -28,33 +29,28 @@ static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (b->ndim != x->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -65,8 +61,6 @@ static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
             *PyBlitzArrayCxx_AsBlitz<double,1>(x),
             *PyBlitzArrayCxx_AsBlitz<double,1>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       case 2:
@@ -75,26 +69,24 @@ static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
             *PyBlitzArrayCxx_AsBlitz<double,2>(x),
             *PyBlitzArrayCxx_AsBlitz<double,2>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }
 
@@ -112,17 +104,17 @@ static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
@@ -153,6 +145,7 @@ static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
 
     }
 
@@ -160,15 +153,15 @@ static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
   catch (std::exception& e) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, "linsolve failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(b);
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 
 }
 
@@ -217,25 +210,22 @@ PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != x->ndim || A->ndim != b->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -246,8 +236,6 @@ PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
             *PyBlitzArrayCxx_AsBlitz<double,1>(x),
             *PyBlitzArrayCxx_AsBlitz<double,1>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       case 2:
@@ -256,26 +244,24 @@ PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
             *PyBlitzArrayCxx_AsBlitz<double,2>(x),
             *PyBlitzArrayCxx_AsBlitz<double,2>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve_ failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }
 
@@ -295,33 +281,27 @@ static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds)
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (b->ndim != x->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -332,8 +312,6 @@ static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds)
             *PyBlitzArrayCxx_AsBlitz<double,1>(x),
             *PyBlitzArrayCxx_AsBlitz<double,1>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       case 2:
@@ -342,26 +320,24 @@ static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds)
             *PyBlitzArrayCxx_AsBlitz<double,2>(x),
             *PyBlitzArrayCxx_AsBlitz<double,2>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }
 
@@ -379,17 +355,17 @@ static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds)
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
@@ -427,15 +403,15 @@ static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds)
   catch (std::exception& e) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(b);
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 
 }
 
@@ -484,25 +460,22 @@ PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) 
         &PyBlitzArray_Converter, &b
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != x->ndim || A->ndim != b->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -513,8 +486,6 @@ PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) 
             *PyBlitzArrayCxx_AsBlitz<double,1>(x),
             *PyBlitzArrayCxx_AsBlitz<double,1>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       case 2:
@@ -523,26 +494,24 @@ PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) 
             *PyBlitzArrayCxx_AsBlitz<double,2>(x),
             *PyBlitzArrayCxx_AsBlitz<double,2>(b)
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D or 2D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve_sympos_ failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }
 
@@ -567,33 +536,27 @@ static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kw
         &acc, &max_iter
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (b->ndim != x->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of x and b (respectively %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d)", x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -605,26 +568,24 @@ static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kw
             *PyBlitzArrayCxx_AsBlitz<double,1>(b),
             acc, max_iter
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver with conjugate gradients can only work with 1D problems, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }
 
@@ -645,17 +606,17 @@ static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kw
         &acc, &max_iter
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 || b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != 2) {
     PyErr_Format(PyExc_TypeError, "A matrix should be two-dimensional");
-    Py_DECREF(A);
-    Py_DECREF(b);
     return 0;
   }
 
@@ -677,6 +638,7 @@ static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kw
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver can only work with 1D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
 
     }
 
@@ -684,15 +646,15 @@ static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kw
   catch (std::exception& e) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     Py_DECREF(retval);
     PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(b);
-  return retval;
+  return PyBlitzArray_NUMPY_WRAP(retval);
 
 }
 
@@ -746,25 +708,22 @@ PyObject* py_linsolve_cg_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwd
         acc, max_iter
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto A_ = make_safe(A);
+  auto x_ = make_safe(x);
+  auto b_ = make_safe(b);
+
   if (A->type_num != NPY_FLOAT64 ||
       x->type_num != NPY_FLOAT64 ||
       b->type_num != NPY_FLOAT64) {
     PyErr_Format(PyExc_TypeError, "linear solver only supports float type (i.e., `numpy.float64' equivalents) - make sure all your input conforms");
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
 
   if (A->ndim != x->ndim || A->ndim != b->ndim) {
     PyErr_Format(PyExc_TypeError, "mismatch between the number of dimensions of A, x and b (respectively %" PY_FORMAT_SIZE_T "d, %" PY_FORMAT_SIZE_T "d and %" PY_FORMAT_SIZE_T "d) - all input must have the same number of dimensions", A->ndim, x->ndim, b->ndim);
-    Py_DECREF(A);
-    Py_DECREF(x);
-    Py_DECREF(b);
     return 0;
   }
-
-  PyObject* retval = 0;
 
   try {
 
@@ -776,25 +735,23 @@ PyObject* py_linsolve_cg_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwd
             *PyBlitzArrayCxx_AsBlitz<double,1>(b),
             acc, max_iter
             );
-        retval = Py_None;
-        Py_INCREF(retval);
         break;
 
       default:
         PyErr_Format(PyExc_TypeError, "linear solver with conjugate gradients can only work with 1D arrays, but your b array has %" PY_FORMAT_SIZE_T "d dimensions", b->ndim);
+        return 0;
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "linsolve_cg_sympos_ failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(A);
-  Py_DECREF(x);
-  Py_DECREF(b);
-  return retval;
+  Py_RETURN_NONE;
 
 }

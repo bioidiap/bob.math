@@ -7,6 +7,7 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
+#include "cleanup.h"
 #include "scatter.h"
 #include <xbob.blitz/cppapi.h>
 #include <bob/math/stats.h>
@@ -28,27 +29,25 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_OutputConverter, &m
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto a_ = make_safe(a);
+  auto s_ = make_xsafe(s);
+  auto m_ = make_xsafe(m);
+
   // basic checks
   if (a->ndim != 2 || (a->type_num != NPY_FLOAT32 && a->type_num != NPY_FLOAT64)) {
     PyErr_SetString(PyExc_TypeError, "input data matrix `a' should be either a 32 or 64-bit float 2D array");
-    Py_DECREF(a);
-    Py_XDECREF(s);
-    Py_XDECREF(m);
     return 0;
   }
 
   if (s && (s->ndim != 2 || (s->type_num != a->type_num))) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `s' should be either a 32 or 64-bit float 2D array, matching the data type of `a'");
-    Py_DECREF(a);
-    Py_DECREF(s);
-    Py_XDECREF(m);
+    return 0;
   }
 
   if (m && (m->ndim != 1 || (m->type_num != a->type_num))) {
     PyErr_SetString(PyExc_TypeError, "output data vector `m' should be either a 32 or 64-bit float 1D array, matching the data type of `a'");
-    Py_DECREF(a);
-    Py_XDECREF(s);
-    Py_DECREF(m);
+    return 0;
   }
 
   // allocates data not passed by the user
@@ -56,10 +55,14 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
   if (!s) {
     Py_ssize_t sshape[2] = {a->shape[1], a->shape[1]};
     s = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(a->type_num, 2, sshape);
+    s_ = make_safe(s);
   }
 
   bool user_m = m;
-  if (!m) m = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(a->type_num, 1, &a->shape[1]);
+  if (!m) {
+    m = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(a->type_num, 1, &a->shape[1]);
+    m_ = make_safe(m);
+  }
 
   try {
     switch (a->type_num) {
@@ -81,19 +84,15 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
 
       default:
         PyErr_Format(PyExc_TypeError, "scatter calculation currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(a->type_num));
+        return 0;
     }
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "scatter calculation failed: unknown exception caught");
-  }
-
-  Py_DECREF(a);
-  if (PyErr_Occurred()) {
-    Py_DECREF(s);
-    Py_DECREF(m);
     return 0;
   }
 
@@ -102,10 +101,14 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
   PyObject* retval = PyTuple_New(returns);
 
   // fill from the back
-  if (!user_m) PyTuple_SET_ITEM(retval, --returns, (PyObject*)m);
-  else Py_DECREF(m);
-  if (!user_s) PyTuple_SET_ITEM(retval, --returns, (PyObject*)s);
-  else Py_DECREF(s);
+  if (!user_m) {
+    Py_INCREF(m); //avoid clean-up as user has requested this object
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)m));
+  }
+  if (!user_s) {
+    Py_INCREF(s); //avoid clean-up as user has requested this object
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)s));
+  }
 
   return retval;
 
@@ -128,27 +131,25 @@ PyObject* py_scatter_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_OutputConverter, &m
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto a_ = make_safe(a);
+  auto s_ = make_safe(s);
+  auto m_ = make_safe(m);
+
   // basic checks
   if (a->ndim != 2 || (a->type_num != NPY_FLOAT32 && a->type_num != NPY_FLOAT64)) {
     PyErr_SetString(PyExc_TypeError, "input data matrix `a' should be either a 32 or 64-bit float 2D array");
-    Py_DECREF(a);
-    Py_DECREF(s);
-    Py_DECREF(m);
     return 0;
   }
 
   if (s->ndim != 2 || (s->type_num != a->type_num)) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `s' should be either a 32 or 64-bit float 2D array, matching the data type of `a'");
-    Py_DECREF(a);
-    Py_DECREF(s);
-    Py_DECREF(m);
+    return 0;
   }
 
   if (m->ndim != 1 || (m->type_num != a->type_num)) {
     PyErr_SetString(PyExc_TypeError, "output data vector `m' should be either a 32 or 64-bit float 1D array, matching the data type of `a'");
-    Py_DECREF(a);
-    Py_DECREF(s);
-    Py_DECREF(m);
+    return 0;
   }
 
   try {
@@ -171,20 +172,17 @@ PyObject* py_scatter_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
 
       default:
         PyErr_Format(PyExc_TypeError, "(no-check) scatter calculation currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(a->type_num));
+        return 0;
     }
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "(no-check) scatter calculation failed: unknown exception caught");
+    return 0;
   }
-
-  Py_DECREF(a);
-  Py_DECREF(s);
-  Py_DECREF(m);
-
-  if (PyErr_Occurred()) return 0;
 
   Py_RETURN_NONE; 
 
@@ -283,30 +281,27 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_OutputConverter, &m
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto data_ = make_safe(data);
+  auto sw_ = make_xsafe(sw);
+  auto sb_ = make_xsafe(sb);
+  auto m_ = make_xsafe(m);
+
   PyBlitzArrayObject* first = (PyBlitzArrayObject*)PyTuple_GET_ITEM(data, 0);
 
   if (sw && (sw->ndim != 2 || (sw->type_num != first->type_num))) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `sw' should be either a 32 or 64-bit float 2D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_DECREF(sw);
-    Py_XDECREF(sb);
-    Py_XDECREF(m);
+    return 0;
   }
 
   if (sb && (sb->ndim != 2 || (sb->type_num != first->type_num))) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `sb' should be either a 32 or 64-bit float 2D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_XDECREF(sw);
-    Py_DECREF(sb);
-    Py_XDECREF(m);
+    return 0;
   }
 
   if (m && (m->ndim != 1 || (m->type_num != first->type_num))) {
     PyErr_SetString(PyExc_TypeError, "output data vector `m' should be either a 32 or 64-bit float 1D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_XDECREF(sw);
-    Py_XDECREF(sb);
-    Py_DECREF(m);
+    return 0;
   }
 
   // allocates data not passed by the user
@@ -314,16 +309,21 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
   if (!sw) {
     Py_ssize_t sshape[2] = {first->shape[1], first->shape[1]};
     sw = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(first->type_num, 2, sshape);
+    sw_ = make_safe(sw);
   }
 
   bool user_sb = sb;
   if (!sb) {
     Py_ssize_t sshape[2] = {first->shape[1], first->shape[1]};
     sb = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(first->type_num, 2, sshape);
+    sb_ = make_safe(sb);
   }
 
   bool user_m = m;
-  if (!m) m = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(first->type_num, 1, &first->shape[1]);
+  if (!m) {
+    m = (PyBlitzArrayObject*)PyBlitzArray_SimpleNew(first->type_num, 1, &first->shape[1]);
+    m_ = make_safe(m);
+  }
 
   try {
     switch (first->type_num) {
@@ -359,20 +359,15 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
 
       default:
         PyErr_Format(PyExc_TypeError, "scatters calculation currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(first->type_num));
+        return 0;
     }
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "scatters calculation failed: unknown exception caught");
-  }
-
-  Py_DECREF(data);
-  if (PyErr_Occurred()) {
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
     return 0;
   }
 
@@ -381,12 +376,18 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
   PyObject* retval = PyTuple_New(returns);
 
   // fill from the back
-  if (!user_m) PyTuple_SET_ITEM(retval, --returns, (PyObject*)m);
-  else Py_DECREF(m);
-  if (!user_sb) PyTuple_SET_ITEM(retval, --returns, (PyObject*)sb);
-  else Py_DECREF(sb);
-  if (!user_sw) PyTuple_SET_ITEM(retval, --returns, (PyObject*)sw);
-  else Py_DECREF(sw);
+  if (!user_m) {
+    Py_INCREF(m);
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)m));
+  }
+  if (!user_sb) {
+    Py_INCREF(sb);
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)sb));
+  }
+  if (!user_sw) {
+    Py_INCREF(sw);
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)sw));
+  }
 
   return retval;
 
@@ -410,30 +411,27 @@ PyObject* py_scatters_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_OutputConverter, &m
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto data_ = make_safe(data);
+  auto sw_ = make_safe(sw);
+  auto sb_ = make_safe(sb);
+  auto m_ = make_safe(m);
+
   PyBlitzArrayObject* first = (PyBlitzArrayObject*)PyTuple_GET_ITEM(data, 0);
 
   if (sw->ndim != 2 || (sw->type_num != first->type_num)) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `sw' should be either a 32 or 64-bit float 2D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
+    return 0;
   }
 
   if (sb->ndim != 2 || (sb->type_num != first->type_num)) {
     PyErr_SetString(PyExc_TypeError, "output data matrix `sb' should be either a 32 or 64-bit float 2D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
+    return 0;
   }
 
   if (m->ndim != 1 || (m->type_num != first->type_num)) {
     PyErr_SetString(PyExc_TypeError, "output data vector `m' should be either a 32 or 64-bit float 1D array, matching the data type of `data'");
-    Py_DECREF(data);
-    Py_DECREF(sw);
-    Py_DECREF(sb);
-    Py_DECREF(m);
+    return 0;
   }
 
   try {
@@ -470,21 +468,17 @@ PyObject* py_scatters_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
 
       default:
         PyErr_Format(PyExc_TypeError, "(no-check) scatters calculation currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(first->type_num));
+        return 0;
     }
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "(no-check) scatters calculation failed: unknown exception caught");
+    return 0;
   }
-
-  Py_DECREF(data);
-  Py_DECREF(sw);
-  Py_DECREF(sb);
-  Py_DECREF(m);
-
-  if (PyErr_Occurred()) return 0;
 
   Py_RETURN_NONE;
 

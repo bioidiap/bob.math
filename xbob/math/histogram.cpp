@@ -8,6 +8,7 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
+#include "cleanup.h"
 #include "histogram.h"
 #include <xbob.blitz/cppapi.h>
 #include "bob/math/histogram.h"
@@ -25,18 +26,18 @@ static PyObject* py_histogram_intersection_1
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
         kwlist, &PyBlitzArray_Converter, &h1, &PyBlitzArray_Converter, &h2)) return 0;
 
+  //protects acquired resources through this scope
+  auto h1_ = make_safe(h1);
+  auto h2_ = make_safe(h2);
+
   // checks for type mismatch
   if (h1->type_num != h2->type_num) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `h1' and `h2' (%s != %s)", PyBlitzArray_TypenumAsString(h1->type_num), PyBlitzArray_TypenumAsString(h2->type_num));
     return 0;
   }
 
   // input arrays must be 1d
   if (h1->ndim != 1 || h2->ndim != 1) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_SetString(PyExc_TypeError, "both `h1' and `h2' must be 1D arrays");
     return 0;
   }
@@ -69,19 +70,20 @@ static PyObject* py_histogram_intersection_1
 
       default:
         PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for type '%s'", PyBlitzArray_TypenumAsString(h1->type_num));
+        return 0;
 
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "histogram intersection failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(h1);
-  Py_DECREF(h2);
   return retval;
 
 }
@@ -156,21 +158,19 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto index1_ = make_safe(index1);
+  auto value1_ = make_safe(value1);
+  auto index2_ = make_safe(index2);
+  auto value2_ = make_safe(value2);
+
   // checks for type mismatch
   if (index1->type_num != index2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `index_1' and `index_2' (%s != %s)", PyBlitzArray_TypenumAsString(index1->type_num), PyBlitzArray_TypenumAsString(index2->type_num));
     return 0;
   }
 
   if (value1->type_num != value2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `value_1' and `value_2' (%s != %s)", PyBlitzArray_TypenumAsString(value1->type_num), PyBlitzArray_TypenumAsString(value2->type_num));
     return 0;
   }
@@ -178,10 +178,6 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
   // input arrays must be 1d
   if (index1->ndim != 1 || index2->ndim != 1 || 
       value1->ndim != 1 || value2->ndim != 1) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
   }
@@ -219,21 +215,20 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
 
       default:
         PyErr_Format(PyExc_TypeError, "Histogram intersection currently not implemented for index type '%s'", PyBlitzArray_TypenumAsString(index1->type_num));
+        return 0;
 
     }
 
   }
   catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
   }
   catch (...) {
     PyErr_SetString(PyExc_RuntimeError, "histogram intersection failed: unknown exception caught");
+    return 0;
   }
 
-  Py_DECREF(index1);
-  Py_DECREF(value1);
-  Py_DECREF(index2);
-  Py_DECREF(value2);
   return retval;
 
 }
@@ -280,18 +275,18 @@ static PyObject* py_chi_square_1
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
         kwlist, &PyBlitzArray_Converter, &h1, &PyBlitzArray_Converter, &h2)) return 0;
 
+  //protects acquired resources through this scope
+  auto h1_ = make_safe(h1);
+  auto h2_ = make_safe(h2);
+
   // checks for type mismatch
   if (h1->type_num != h2->type_num) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `h1' and `h2' (%s != %s)", PyBlitzArray_TypenumAsString(h1->type_num), PyBlitzArray_TypenumAsString(h2->type_num));
     return 0;
   }
 
   // input arrays must be 1d
   if (h1->ndim != 1 || h2->ndim != 1) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_SetString(PyExc_TypeError, "both `h1' and `h2' must be 1D arrays");
     return 0;
   }
@@ -325,8 +320,6 @@ static PyObject* py_chi_square_1
 
   }
 
-  Py_DECREF(h1);
-  Py_DECREF(h2);
   return retval;
 
 }
@@ -401,21 +394,19 @@ static PyObject* py_chi_square_2(PyObject*, PyObject* args, PyObject* kwds) {
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto index1_ = make_safe(index1);
+  auto value1_ = make_safe(value1);
+  auto index2_ = make_safe(index2);
+  auto value2_ = make_safe(value2);
+
   // checks for type mismatch
   if (index1->type_num != index2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `index_1' and `index_2' (%s != %s)", PyBlitzArray_TypenumAsString(index1->type_num), PyBlitzArray_TypenumAsString(index2->type_num));
     return 0;
   }
 
   if (value1->type_num != value2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `value_1' and `value_2' (%s != %s)", PyBlitzArray_TypenumAsString(value1->type_num), PyBlitzArray_TypenumAsString(value2->type_num));
     return 0;
   }
@@ -423,10 +414,6 @@ static PyObject* py_chi_square_2(PyObject*, PyObject* args, PyObject* kwds) {
   // input arrays must be 1d
   if (index1->ndim != 1 || index2->ndim != 1 || 
       value1->ndim != 1 || value2->ndim != 1) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
   }
@@ -465,10 +452,6 @@ static PyObject* py_chi_square_2(PyObject*, PyObject* args, PyObject* kwds) {
 
   }
 
-  Py_DECREF(index1);
-  Py_DECREF(value1);
-  Py_DECREF(index2);
-  Py_DECREF(value2);
   return retval;
 
 }
@@ -516,18 +499,18 @@ static PyObject* py_kullback_leibler_1
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
         kwlist, &PyBlitzArray_Converter, &h1, &PyBlitzArray_Converter, &h2)) return 0;
 
+  //protects acquired resources through this scope
+  auto h1_ = make_safe(h1);
+  auto h2_ = make_safe(h2);
+
   // checks for type mismatch
   if (h1->type_num != h2->type_num) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `h1' and `h2' (%s != %s)", PyBlitzArray_TypenumAsString(h1->type_num), PyBlitzArray_TypenumAsString(h2->type_num));
     return 0;
   }
 
   // input arrays must be 1d
   if (h1->ndim != 1 || h2->ndim != 1) {
-    Py_DECREF(h1);
-    Py_DECREF(h2);
     PyErr_SetString(PyExc_TypeError, "both `h1' and `h2' must be 1D arrays");
     return 0;
   }
@@ -561,8 +544,6 @@ static PyObject* py_kullback_leibler_1
 
   }
 
-  Py_DECREF(h1);
-  Py_DECREF(h2);
   return retval;
 
 }
@@ -637,21 +618,19 @@ static PyObject* py_kullback_leibler_2(PyObject*, PyObject* args, PyObject* kwds
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
+  //protects acquired resources through this scope
+  auto index1_ = make_safe(index1);
+  auto value1_ = make_safe(value1);
+  auto index2_ = make_safe(index2);
+  auto value2_ = make_safe(value2);
+
   // checks for type mismatch
   if (index1->type_num != index2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `index_1' and `index_2' (%s != %s)", PyBlitzArray_TypenumAsString(index1->type_num), PyBlitzArray_TypenumAsString(index2->type_num));
     return 0;
   }
 
   if (value1->type_num != value2->type_num) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_Format(PyExc_TypeError, "data type mismatch between `value_1' and `value_2' (%s != %s)", PyBlitzArray_TypenumAsString(value1->type_num), PyBlitzArray_TypenumAsString(value2->type_num));
     return 0;
   }
@@ -659,10 +638,6 @@ static PyObject* py_kullback_leibler_2(PyObject*, PyObject* args, PyObject* kwds
   // input arrays must be 1d
   if (index1->ndim != 1 || index2->ndim != 1 || 
       value1->ndim != 1 || value2->ndim != 1) {
-    Py_DECREF(index1);
-    Py_DECREF(value1);
-    Py_DECREF(index2);
-    Py_DECREF(value2);
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
   }
@@ -701,10 +676,6 @@ static PyObject* py_kullback_leibler_2(PyObject*, PyObject* args, PyObject* kwds
 
   }
 
-  Py_DECREF(index1);
-  Py_DECREF(value1);
-  Py_DECREF(index2);
-  Py_DECREF(value2);
   return retval;
 
 }

@@ -44,13 +44,11 @@ def test_scatter():
 
   # This test demonstrates how to use the scatter matrix function of bob.
   S, M = scatter(data)
-  S = S.as_ndarray()
-  M = M.as_ndarray()
   S /= (data.shape[0]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(data.T))
+  K = numpy.cov(data.T)
   M_ = means(data)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
@@ -62,12 +60,12 @@ def test_scatter_variation_1():
   # This test demonstrates how to use the scatter matrix function of bob.
   M = numpy.ndarray((data.shape[1],), dtype=float)
   S = scatter(data, m=M)
-  S = S[0].as_ndarray()
+  S = S[0]
   S /= (data.shape[0]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(data.T))
+  K = numpy.cov(data.T)
   M_ = means(data)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
@@ -79,12 +77,12 @@ def test_scatter_variation_2():
   # This test demonstrates how to use the scatter matrix function of bob.
   S = numpy.ndarray((data.shape[1], data.shape[1]), dtype=float)
   M = scatter(data, s=S)
-  M = M[0].as_ndarray()
+  M = M[0]
   S /= (data.shape[0]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(data.T))
+  K = numpy.cov(data.T)
   M_ = means(data)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
@@ -102,7 +100,7 @@ def test_scatter_variation_3():
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(data.T))
+  K = numpy.cov(data.T)
   M_ = means(data)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
@@ -119,7 +117,7 @@ def test_fast_scatter():
 
   # Do the same with numpy and compare. Note that with numpy we are computing
   # the covariance matrix which is the scatter matrix divided by (N-1).
-  K = numpy.array(numpy.cov(data.T))
+  K = numpy.cov(data.T)
   M_ = means(data)
   assert  (abs(S-K) < 1e-10).all()
   assert  (abs(M-M_) < 1e-10).all()
