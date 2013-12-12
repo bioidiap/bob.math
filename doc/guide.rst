@@ -12,8 +12,8 @@
 ============
 
 The math module provides python bindings for C++/LAPACK_ vector and matrix
-operations which are not implemented by NumPy_. For NumPy_ supported operations,
-consult the NumPy_ manual.
+operations which are not implemented by NumPy_. For NumPy_ supported
+operations, consult the NumPy_ manual.
 
 
 .. include:: links.rst
