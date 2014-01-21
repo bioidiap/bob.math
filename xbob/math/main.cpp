@@ -501,22 +501,55 @@ static PyMethodDef module_methods[] = {
 
 PyDoc_STRVAR(module_docstr, "bob::math classes and methods");
 
+#if PY_VERSION_HEX >= 0x03000000
+static PyModuleDef module_definition = {
+  PyModuleDef_HEAD_INIT,
+  XBOB_EXT_MODULE_NAME,
+  module_docstr,
+  -1,
+  module_methods, 
+  0, 0, 0, 0
+};
+#endif
+
 PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
 
   PyBobMathLpInteriorPoint_Type.tp_new = PyType_GenericNew;
-  if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return;
+  if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return
+# if PY_VERSION_HEX >= 0x03000000
+    0
+# endif
+    ;
 
   PyBobMathLpInteriorPointShortstep_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointShortstep_Type) < 0) return;
+  if (PyType_Ready(&PyBobMathLpInteriorPointShortstep_Type) < 0) return
+# if PY_VERSION_HEX >= 0x03000000
+    0
+# endif
+    ;
 
   PyBobMathLpInteriorPointPredictorCorrector_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointPredictorCorrector_Type) < 0) return;
+  if (PyType_Ready(&PyBobMathLpInteriorPointPredictorCorrector_Type) < 0) return
+# if PY_VERSION_HEX >= 0x03000000
+    0
+# endif
+    ;
 
   PyBobMathLpInteriorPointLongstep_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointLongstep_Type) < 0) return;
+  if (PyType_Ready(&PyBobMathLpInteriorPointLongstep_Type) < 0) return
+# if PY_VERSION_HEX >= 0x03000000
+    0
+# endif
+    ;
 
-  PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME,
+# if PY_VERSION_HEX >= 0x03000000
+  PyObject* m = PyModule_Create(&module_definition);
+  if (!m) return 0;
+# else
+  PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME, 
       module_methods, module_docstr);
+  if (!m) return;
+# endif
 
   /* register some constants */
   PyModule_AddStringConstant(m, "__version__", XBOB_EXT_MODULE_VERSION);
@@ -539,5 +572,9 @@ PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
 
   /* imports xbob.blitz C-API */
   import_xbob_blitz();
+
+# if PY_VERSION_HEX >= 0x03000000
+  return m;
+# endif
 
 }

@@ -54,7 +54,7 @@ typedef struct {
 
 static int PyBobMathLpInteriorPoint_init(PyBobMathLpInteriorPointObject* self, PyObject*, PyObject*) {
 
-  PyErr_Format(PyExc_NotImplementedError, "cannot initialize object of base type `%s' - use one of the inherited classes", s_lpinteriorpoint_str);
+  PyErr_Format(PyExc_NotImplementedError, "cannot initialize object of base type `%s' - use one of the inherited classes", Py_TYPE(self)->tp_name);
   return -1;
 
 }
@@ -83,7 +83,7 @@ static int PyBobMathLpInteriorPoint_setM (PyBobMathLpInteriorPointObject* self,
     return -1;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot reset size M of `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot reset size M of `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return -1;
   }
 
@@ -115,7 +115,7 @@ static int PyBobMathLpInteriorPoint_setN (PyBobMathLpInteriorPointObject* self,
     return -1;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot reset size N of `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot reset size N of `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return -1;
   }
 
@@ -146,7 +146,7 @@ static int PyBobMathLpInteriorPoint_setEpsilon (PyBobMathLpInteriorPointObject* 
     return -1;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot reset `epsilon' of `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `epsilon' of `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return -1;
   }
 
@@ -254,7 +254,7 @@ static PyObject* PyBobMathLpInteriorPoint_reset
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot reset `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot reset `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -370,7 +370,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
   }
   catch (...) {
     Py_DECREF(retval);
-    PyErr_Format(PyExc_RuntimeError, "cannot solve `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot solve `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -467,7 +467,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot check feasibility of `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot check feasibility of `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -530,7 +530,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V at `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -629,7 +629,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in VS at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in VS at `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -687,7 +687,7 @@ static PyObject* PyBobMathLpInteriorPoint_initialize_dual_lambda_mu
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot initialize dual lambda-mu at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot initialize dual lambda-mu at `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -743,7 +743,7 @@ static PyObject* PyBobMathLpInteriorPoint_RichCompare (PyBobMathLpInteriorPointO
 
   if (!PyBobMathLpInteriorPoint_Check(other)) {
     PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'",
-        s_lpinteriorpoint_str, other->ob_type->tp_name);
+        Py_TYPE(self)->tp_name, other->ob_type->tp_name);
     return 0;
   }
   
@@ -766,8 +766,7 @@ static PyObject* PyBobMathLpInteriorPoint_RichCompare (PyBobMathLpInteriorPointO
 }
 
 PyTypeObject PyBobMathLpInteriorPoint_Type = {
-    PyObject_HEAD_INIT(0)
-    0,                                                 /*ob_size*/
+    PyVarObject_HEAD_INIT(0, 0)
     s_lpinteriorpoint_str,                             /*tp_name*/
     sizeof(PyBobMathLpInteriorPointObject),            /*tp_basicsize*/
     0,                                                 /*tp_itemsize*/
@@ -952,7 +951,7 @@ static void PyBobMathLpInteriorPointShortstep_delete (PyBobMathLpInteriorPointSh
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
-  self->parent.ob_type->tp_free((PyObject*)self);
+  Py_TYPE(&self->parent)->tp_free((PyObject*)self);
 
 }
 
@@ -1026,8 +1025,7 @@ static PyObject* PyBobMathLpInteriorPointShortstep_RichCompare
 }
 
 PyTypeObject PyBobMathLpInteriorPointShortstep_Type = {
-    PyObject_HEAD_INIT(0)
-    0,                                                          /*ob_size*/
+    PyVarObject_HEAD_INIT(0, 0)
     s_lpinteriorpointshortstep_str,                             /*tp_name*/
     sizeof(PyBobMathLpInteriorPointShortstepObject),            /*tp_basicsize*/
     0,                                                          /*tp_itemsize*/
@@ -1217,7 +1215,7 @@ static void PyBobMathLpInteriorPointPredictorCorrector_delete (PyBobMathLpInteri
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
-  self->parent.ob_type->tp_free((PyObject*)self);
+  Py_TYPE(&self->parent)->tp_free((PyObject*)self);
 
 }
 
@@ -1327,8 +1325,7 @@ static PyObject* PyBobMathLpInteriorPointPredictorCorrector_RichCompare
 }
 
 PyTypeObject PyBobMathLpInteriorPointPredictorCorrector_Type = {
-    PyObject_HEAD_INIT(0)
-    0,                                                          /*ob_size*/
+    PyVarObject_HEAD_INIT(0, 0)
     s_lpinteriorpointpredictorcorrector_str,                    /*tp_name*/
     sizeof(PyBobMathLpInteriorPointPredictorCorrectorObject),   /*tp_basicsize*/
     0,                                                          /*tp_itemsize*/
@@ -1515,7 +1512,7 @@ static void PyBobMathLpInteriorPointLongstep_delete (PyBobMathLpInteriorPointLon
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
-  self->parent.ob_type->tp_free((PyObject*)self);
+  Py_TYPE(&self->parent)->tp_free((PyObject*)self);
 
 }
 
@@ -1680,7 +1677,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_vinf
     return 0;
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V-Inf at `%s': unknown exception caught", s_lpinteriorpoint_str);
+    PyErr_Format(PyExc_RuntimeError, "cannot check if point is in V-Inf at `%s': unknown exception caught", Py_TYPE(self)->tp_name);
     return 0;
   }
 
@@ -1700,8 +1697,7 @@ static PyMethodDef PyBobMathLpInteriorPointLongstep_methods[] = {
 };
 
 PyTypeObject PyBobMathLpInteriorPointLongstep_Type = {
-    PyObject_HEAD_INIT(0)
-    0,                                                          /*ob_size*/
+    PyVarObject_HEAD_INIT(0, 0)
     s_lpinteriorpointlongstep_str,                              /*tp_name*/
     sizeof(PyBobMathLpInteriorPointLongstepObject),             /*tp_basicsize*/
     0,                                                          /*tp_itemsize*/
