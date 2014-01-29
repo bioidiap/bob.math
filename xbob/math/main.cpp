@@ -9,6 +9,7 @@
 #undef NO_IMPORT_ARRAY
 #endif
 #include <xbob.blitz/capi.h>
+#include <xbob.blitz/cleanup.h>
 
 #include "histogram.h"
 #include "linsolve.h"
@@ -512,69 +513,60 @@ static PyModuleDef module_definition = {
 };
 #endif
 
-PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
+static PyObject* create_module (void) {
 
   PyBobMathLpInteriorPoint_Type.tp_new = PyType_GenericNew;
-  if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return
-# if PY_VERSION_HEX >= 0x03000000
-    0
-# endif
-    ;
+  if (PyType_Ready(&PyBobMathLpInteriorPoint_Type) < 0) return 0;
 
   PyBobMathLpInteriorPointShortstep_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointShortstep_Type) < 0) return
-# if PY_VERSION_HEX >= 0x03000000
-    0
-# endif
-    ;
+  if (PyType_Ready(&PyBobMathLpInteriorPointShortstep_Type) < 0) return 0;
 
   PyBobMathLpInteriorPointPredictorCorrector_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointPredictorCorrector_Type) < 0) return
-# if PY_VERSION_HEX >= 0x03000000
-    0
-# endif
-    ;
+  if (PyType_Ready(&PyBobMathLpInteriorPointPredictorCorrector_Type) < 0) return 0;
 
   PyBobMathLpInteriorPointLongstep_Type.tp_base = &PyBobMathLpInteriorPoint_Type;
-  if (PyType_Ready(&PyBobMathLpInteriorPointLongstep_Type) < 0) return
-# if PY_VERSION_HEX >= 0x03000000
-    0
-# endif
-    ;
+  if (PyType_Ready(&PyBobMathLpInteriorPointLongstep_Type) < 0) return 0;
 
 # if PY_VERSION_HEX >= 0x03000000
   PyObject* m = PyModule_Create(&module_definition);
-  if (!m) return 0;
 # else
-  PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME, 
-      module_methods, module_docstr);
-  if (!m) return;
+  PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME, module_methods, module_docstr);
 # endif
+  if (!m) return 0;
+  auto m_ = make_safe(m); ///< protects against early returns
 
-  /* register some constants */
-  PyModule_AddStringConstant(m, "__version__", XBOB_EXT_MODULE_VERSION);
+  /* register version numbers and constants */
+  if (PyModule_AddStringConstant(m, "__version__", XBOB_EXT_MODULE_VERSION) < 0)
+    return 0;
 
   /* register the types to python */
   Py_INCREF(&PyBobMathLpInteriorPoint_Type);
-  PyModule_AddObject(m, "LPInteriorPoint", (PyObject *)&PyBobMathLpInteriorPoint_Type);
+  if (PyModule_AddObject(m, "LPInteriorPoint",
+        (PyObject *)&PyBobMathLpInteriorPoint_Type) < 0) return 0;
 
   Py_INCREF(&PyBobMathLpInteriorPointShortstep_Type);
-  PyModule_AddObject(m, "LPInteriorPointShortstep", (PyObject *)&PyBobMathLpInteriorPointShortstep_Type);
+  if (PyModule_AddObject(m, "LPInteriorPointShortstep",
+        (PyObject *)&PyBobMathLpInteriorPointShortstep_Type) < 0) return 0;
 
   Py_INCREF(&PyBobMathLpInteriorPointPredictorCorrector_Type);
-  PyModule_AddObject(m, "LPInteriorPointPredictorCorrector", (PyObject *)&PyBobMathLpInteriorPointPredictorCorrector_Type);
+  if (PyModule_AddObject(m, "LPInteriorPointPredictorCorrector",
+        (PyObject *)&PyBobMathLpInteriorPointPredictorCorrector_Type) < 0) return 0;
 
   Py_INCREF(&PyBobMathLpInteriorPointLongstep_Type);
-  PyModule_AddObject(m, "LPInteriorPointLongstep", (PyObject *)&PyBobMathLpInteriorPointLongstep_Type);
-
-  /* imports the NumPy C-API */
-  import_array();
+  if (PyModule_AddObject(m, "LPInteriorPointLongstep",
+        (PyObject *)&PyBobMathLpInteriorPointLongstep_Type) < 0) return 0;
 
   /* imports xbob.blitz C-API */
   import_xbob_blitz();
 
-# if PY_VERSION_HEX >= 0x03000000
+  Py_INCREF(m);
   return m;
-# endif
 
+}
+
+PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
+# if PY_VERSION_HEX >= 0x03000000
+  return
+# endif
+    create_module();
 }
