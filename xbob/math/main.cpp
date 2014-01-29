@@ -557,7 +557,7 @@ static PyObject* create_module (void) {
         (PyObject *)&PyBobMathLpInteriorPointLongstep_Type) < 0) return 0;
 
   /* imports xbob.blitz C-API */
-  import_xbob_blitz();
+  if (import_xbob_blitz() < 0) return 0;
 
   Py_INCREF(m);
   return m;
