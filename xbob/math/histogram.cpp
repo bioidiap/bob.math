@@ -8,9 +8,9 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "cleanup.h"
 #include "histogram.h"
 #include <xbob.blitz/cppapi.h>
+#include <xbob.blitz/cleanup.h>
 #include "bob/math/histogram.h"
 
 static PyObject* py_histogram_intersection_1

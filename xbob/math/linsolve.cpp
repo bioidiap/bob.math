@@ -8,9 +8,9 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "cleanup.h"
 #include "histogram.h"
 #include <xbob.blitz/cppapi.h>
+#include <xbob.blitz/cleanup.h>
 #include "bob/math/linsolve.h"
 
 static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {

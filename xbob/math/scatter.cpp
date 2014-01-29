@@ -7,9 +7,9 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "cleanup.h"
 #include "scatter.h"
 #include <xbob.blitz/cppapi.h>
+#include <xbob.blitz/cleanup.h>
 #include <bob/math/stats.h>
 
 PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {

@@ -9,9 +9,9 @@
  * Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "cleanup.h"
 #include "lp_interior_point.h"
 #include <xbob.blitz/cppapi.h>
+#include <xbob.blitz/cleanup.h>
 #include <bob/math/LPInteriorPoint.h>
 #include <structmember.h>
 
