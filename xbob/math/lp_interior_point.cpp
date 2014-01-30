@@ -924,7 +924,7 @@ static int PyBobMathLpInteriorPointShortstep_init4(PyBobMathLpInteriorPointShort
 
 static int PyBobMathLpInteriorPointShortstep_init(PyBobMathLpInteriorPointShortstepObject* self, PyObject* args, PyObject* kwds) {
 
-  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwds?PyDict_Size(kwds):0;
+  Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwds?PyDict_Size(kwds):0);
 
   switch (nargs) {
 
@@ -1188,7 +1188,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_init5(PyBobMathLpInteriorP
 
 static int PyBobMathLpInteriorPointPredictorCorrector_init(PyBobMathLpInteriorPointPredictorCorrectorObject* self, PyObject* args, PyObject* kwds) {
 
-  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwds?PyDict_Size(kwds):0;
+  Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwds?PyDict_Size(kwds):0);
 
   switch (nargs) {
 
@@ -1485,7 +1485,7 @@ static int PyBobMathLpInteriorPointLongstep_init5(PyBobMathLpInteriorPointLongst
 
 static int PyBobMathLpInteriorPointLongstep_init(PyBobMathLpInteriorPointLongstepObject* self, PyObject* args, PyObject* kwds) {
 
-  Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwds?PyDict_Size(kwds):0;
+  Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwds?PyDict_Size(kwds):0);
 
   switch (nargs) {
 
