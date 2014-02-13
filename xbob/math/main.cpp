@@ -508,7 +508,7 @@ static PyModuleDef module_definition = {
   XBOB_EXT_MODULE_NAME,
   module_docstr,
   -1,
-  module_methods, 
+  module_methods,
   0, 0, 0, 0
 };
 #endif
