@@ -190,35 +190,35 @@ static PyObject* PyBobMathLpInteriorPoint_mu (PyBobMathLpInteriorPointObject* se
 
 static PyGetSetDef PyBobMathLpInteriorPoint_getseters[] = {
     {
-      s_M_str, 
+      s_M_str,
       (getter)PyBobMathLpInteriorPoint_getM,
       (setter)PyBobMathLpInteriorPoint_setM,
       s_M_doc,
       0
     },
     {
-      s_N_str, 
+      s_N_str,
       (getter)PyBobMathLpInteriorPoint_getN,
       (setter)PyBobMathLpInteriorPoint_setN,
       s_N_doc,
       0
     },
     {
-      s_epsilon_str, 
+      s_epsilon_str,
       (getter)PyBobMathLpInteriorPoint_getEpsilon,
       (setter)PyBobMathLpInteriorPoint_setEpsilon,
       s_epsilon_doc,
       0
     },
     {
-      s_lambda_str, 
+      s_lambda_str,
       (getter)PyBobMathLpInteriorPoint_lambda,
       0,
       s_lambda_doc,
       0
     },
     {
-      s_mu_str, 
+      s_mu_str,
       (getter)PyBobMathLpInteriorPoint_mu,
       0,
       s_mu_doc,
@@ -234,7 +234,7 @@ PyDoc_STRVAR(s_reset_doc,
 Resets the size of the problem (M and N correspond to the dimensions of the\n\
 A matrix");
 
-static PyObject* PyBobMathLpInteriorPoint_reset 
+static PyObject* PyBobMathLpInteriorPoint_reset
 (PyBobMathLpInteriorPointObject* self, PyObject *args, PyObject* kwds) {
 
   /* Parses input arguments in a single shot */
@@ -263,13 +263,13 @@ static PyObject* PyBobMathLpInteriorPoint_reset
 }
 
 PyDoc_STRVAR(s_solve_str, "solve");
-PyDoc_STRVAR(s_solve_doc, 
+PyDoc_STRVAR(s_solve_doc,
 "o.solve(A, b, c, x0, [lambda, mu]) -> x\n\
 \n\
 Solves an LP problem\n\
 ");
 
-static PyObject* PyBobMathLpInteriorPoint_solve 
+static PyObject* PyBobMathLpInteriorPoint_solve
 (PyBobMathLpInteriorPointObject* self, PyObject *args, PyObject* kwds) {
 
   /* Parses input arguments in a single shot */
@@ -283,7 +283,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
   PyBlitzArrayObject* lambda = 0;
   PyBlitzArrayObject* mu = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&|O&O&", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&|O&O&", kwlist,
         &PyBlitzArray_Converter, &A,
         &PyBlitzArray_Converter, &b,
         &PyBlitzArray_Converter, &c,
@@ -381,7 +381,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
 }
 
 PyDoc_STRVAR(s_is_feasible_str, "is_feasible");
-PyDoc_STRVAR(s_is_feasible_doc, 
+PyDoc_STRVAR(s_is_feasible_doc,
 "o.is_feasible(A, b, c, x, lambda, mu) -> bool\n\
 \n\
 Checks if a primal-dual point (x,lambda,mu) belongs to the set of\n\
@@ -477,7 +477,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
 }
 
 PyDoc_STRVAR(s_is_in_v_str, "is_in_v");
-PyDoc_STRVAR(s_is_in_v_doc, 
+PyDoc_STRVAR(s_is_in_v_doc,
 "o.is_in_v(x, mu, theta) -> bool\n\
 \n\
 Checks if a primal-dual point (x,lambda,mu) belongs to the V2\n\
@@ -540,7 +540,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
 }
 
 PyDoc_STRVAR(s_is_in_v_s_str, "is_in_v_s");
-PyDoc_STRVAR(s_is_in_v_s_doc, 
+PyDoc_STRVAR(s_is_in_v_s_doc,
 "o.is_in_v_s(A, b, c, x, lambda, mu) -> bool\n\
 \n\
 Checks if a primal-dual point (x,lambda,mu) belongs to the V\n\
@@ -642,7 +642,7 @@ PyDoc_STRVAR(s_initialize_dual_lambda_mu_str, "initialize_dual_lambda_mu");
 PyDoc_STRVAR(s_initialize_dual_lambda_mu_doc,
 "o.initialize_dual_lambda_mu(A, c) -> None\n\
 \n\
-Initializes the dual variables `lambda' and `mu' by minimizing the\n\
+Initializes the dual variables ``lambda`` and ``mu`` by minimizing the\n\
 logarithmic barrier function.\n\
 \n\
 ");
@@ -746,7 +746,7 @@ static PyObject* PyBobMathLpInteriorPoint_RichCompare (PyBobMathLpInteriorPointO
         Py_TYPE(self)->tp_name, other->ob_type->tp_name);
     return 0;
   }
-  
+
   PyBobMathLpInteriorPointObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointObject*>(other);
 
   switch (op) {
@@ -881,7 +881,7 @@ static int PyBobMathLpInteriorPointShortstep_init1(PyBobMathLpInteriorPointShort
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointshortstep_str);
   }
-  
+
   self->parent.base = self->base;
 
   if (PyErr_Occurred()) return -1;
@@ -901,7 +901,7 @@ static int PyBobMathLpInteriorPointShortstep_init4(PyBobMathLpInteriorPointShort
   double theta = 0.;
   double epsilon = 0.;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nndd", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nndd", kwlist,
         &M, &N, &theta, &epsilon)) return -1;
 
   try {
@@ -915,7 +915,7 @@ static int PyBobMathLpInteriorPointShortstep_init4(PyBobMathLpInteriorPointShort
     PyErr_Format(PyExc_RuntimeError, "cannot construct object of type %s: unknown exception caught", s_lpinteriorpointshortstep_str);
     return -1;
   }
-  
+
   self->parent.base = self->base;
 
   return 0;
@@ -947,7 +947,7 @@ static int PyBobMathLpInteriorPointShortstep_init(PyBobMathLpInteriorPointShorts
 }
 
 static void PyBobMathLpInteriorPointShortstep_delete (PyBobMathLpInteriorPointShortstepObject* self) {
-  
+
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
@@ -988,7 +988,7 @@ static int PyBobMathLpInteriorPointShortstep_setTheta (PyBobMathLpInteriorPointS
 
 static PyGetSetDef PyBobMathLpInteriorPointShortstep_getseters[] = {
     {
-      s_theta_str, 
+      s_theta_str,
       (getter)PyBobMathLpInteriorPointShortstep_getTheta,
       (setter)PyBobMathLpInteriorPointShortstep_setTheta,
       s_theta_doc,
@@ -1005,7 +1005,7 @@ static PyObject* PyBobMathLpInteriorPointShortstep_RichCompare
         s_lpinteriorpointshortstep_str, other->ob_type->tp_name);
     return 0;
   }
-  
+
   PyBobMathLpInteriorPointShortstepObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointShortstepObject*>(other);
 
   switch (op) {
@@ -1144,7 +1144,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_init1(PyBobMathLpInteriorP
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
   }
-  
+
   self->parent.base = self->base;
 
   if (PyErr_Occurred()) return -1;
@@ -1165,7 +1165,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_init5(PyBobMathLpInteriorP
   double theta_corr = 0.;
   double epsilon = 0.;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist,
         &M, &N, &theta_pred, &theta_corr, &epsilon)) return -1;
 
   try {
@@ -1179,7 +1179,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_init5(PyBobMathLpInteriorP
     PyErr_Format(PyExc_RuntimeError, "cannot construct object of type %s: unknown exception caught", s_lpinteriorpointpredictorcorrector_str);
     return -1;
   }
-  
+
   self->parent.base = self->base;
 
   return 0;
@@ -1211,7 +1211,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_init(PyBobMathLpInteriorPo
 }
 
 static void PyBobMathLpInteriorPointPredictorCorrector_delete (PyBobMathLpInteriorPointPredictorCorrectorObject* self) {
-  
+
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
@@ -1281,14 +1281,14 @@ static int PyBobMathLpInteriorPointPredictorCorrector_setThetaCorr (PyBobMathLpI
 
 static PyGetSetDef PyBobMathLpInteriorPointPredictorCorrector_getseters[] = {
     {
-      s_theta_pred_str, 
+      s_theta_pred_str,
       (getter)PyBobMathLpInteriorPointPredictorCorrector_getThetaPred,
       (setter)PyBobMathLpInteriorPointPredictorCorrector_setThetaPred,
       s_theta_pred_doc,
       0
     },
     {
-      s_theta_corr_str, 
+      s_theta_corr_str,
       (getter)PyBobMathLpInteriorPointPredictorCorrector_getThetaCorr,
       (setter)PyBobMathLpInteriorPointPredictorCorrector_setThetaCorr,
       s_theta_corr_doc,
@@ -1305,7 +1305,7 @@ static PyObject* PyBobMathLpInteriorPointPredictorCorrector_RichCompare
         s_lpinteriorpointpredictorcorrector_str, other->ob_type->tp_name);
     return 0;
   }
-  
+
   PyBobMathLpInteriorPointPredictorCorrectorObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointPredictorCorrectorObject*>(other);
 
   switch (op) {
@@ -1442,7 +1442,7 @@ static int PyBobMathLpInteriorPointLongstep_init1(PyBobMathLpInteriorPointLongst
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot deep-copy object of type %s: unknown exception caught", s_lpinteriorpointlongstep_str);
   }
-  
+
   self->parent.base = self->base;
 
   if (PyErr_Occurred()) return -1;
@@ -1463,7 +1463,7 @@ static int PyBobMathLpInteriorPointLongstep_init5(PyBobMathLpInteriorPointLongst
   double sigma = 0.;
   double epsilon = 0.;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "nnddd", kwlist,
         &M, &N, &gamma, &sigma, &epsilon)) return -1;
 
   try {
@@ -1476,7 +1476,7 @@ static int PyBobMathLpInteriorPointLongstep_init5(PyBobMathLpInteriorPointLongst
   catch (...) {
     PyErr_Format(PyExc_RuntimeError, "cannot construct object of type %s: unknown exception caught", s_lpinteriorpointlongstep_str);
     return -1;
-  } 
+  }
   self->parent.base = self->base;
 
   return 0;
@@ -1508,7 +1508,7 @@ static int PyBobMathLpInteriorPointLongstep_init(PyBobMathLpInteriorPointLongste
 }
 
 static void PyBobMathLpInteriorPointLongstep_delete (PyBobMathLpInteriorPointLongstepObject* self) {
-  
+
   delete self->base;
   self->parent.base = 0;
   self->base = 0;
@@ -1580,14 +1580,14 @@ static int PyBobMathLpInteriorPointLongstep_setSigma (PyBobMathLpInteriorPointLo
 
 static PyGetSetDef PyBobMathLpInteriorPointLongstep_getseters[] = {
     {
-      s_gamma_str, 
+      s_gamma_str,
       (getter)PyBobMathLpInteriorPointLongstep_getGamma,
       (setter)PyBobMathLpInteriorPointLongstep_setGamma,
       s_gamma_doc,
       0
     },
     {
-      s_sigma_str, 
+      s_sigma_str,
       (getter)PyBobMathLpInteriorPointLongstep_getSigma,
       (setter)PyBobMathLpInteriorPointLongstep_setSigma,
       s_sigma_doc,
@@ -1604,7 +1604,7 @@ static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
         s_lpinteriorpointlongstep_str, other->ob_type->tp_name);
     return 0;
   }
-  
+
   PyBobMathLpInteriorPointLongstepObject* other_ = reinterpret_cast<PyBobMathLpInteriorPointLongstepObject*>(other);
 
   switch (op) {
@@ -1624,7 +1624,7 @@ static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
 }
 
 PyDoc_STRVAR(s_is_in_vinf_str, "is_in_v");
-PyDoc_STRVAR(s_is_in_vinf_doc, 
+PyDoc_STRVAR(s_is_in_vinf_doc,
 "o.is_in_v(x, mu, gamma) -> bool\n\
 \n\
 Checks if a primal-dual point (x,lambda,mu) belongs to the V-Inf\n\
