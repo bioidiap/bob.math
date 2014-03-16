@@ -69,7 +69,7 @@ PyDoc_STRVAR(s_linsolve_doc,
 "linsolve(A, b) -> array\n\
 linsolve(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method uses LAPACK's ``dgesv`` generic solver.\n\
 \n\
 You can use this method in two different formats. The first interface\n\
@@ -84,7 +84,7 @@ PyDoc_STRVAR(s_linsolve_nocheck_doc,
 "linsolve_(A, b) -> array\n\
 linsolve_(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method uses LAPACK's ``dgesv`` generic solver.\n\
 \n\
 .. warning::\n\
@@ -105,7 +105,7 @@ PyDoc_STRVAR(s_linsolve_sympos_doc,
 "linsolve_sympos(A, b) -> array\n\
 linsolve_sympos(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
 positive definite matrix.\n\
 \n\
@@ -121,7 +121,7 @@ PyDoc_STRVAR(s_linsolve_sympos_nocheck_doc,
 "linsolve_sympos_(A, b) -> array\n\
 linsolve_sympos_(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
 positive definite matrix.\n\
 \n\
@@ -143,7 +143,7 @@ PyDoc_STRVAR(s_linsolve_cg_sympos_doc,
 "linsolve_cg_sympos(A, b) -> array\n\
 linsolve_cg_sympos(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method solves the linear system via conjugate gradients and assumes\n\
 ``A`` is a symmetric positive definite matrix.\n\
 \n\
@@ -159,7 +159,7 @@ PyDoc_STRVAR(s_linsolve_cg_sympos_nocheck_doc,
 "linsolve_cg_sympos_(A, b) -> array\n\
 linsolve_cg_sympos_(A, x, b) -> None\n\
 \n\
-Solves the linear system :py:math:`Ax=b` and returns the result in ``x``.\n\
+Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
 This method solves the linear system via conjugate gradients and assumes\n\
 ``A`` is a symmetric positive definite matrix.\n\
 \n\
