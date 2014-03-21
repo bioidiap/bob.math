@@ -2,6 +2,9 @@
 .. Andre Anjos <andre.anjos@idiap.ch>
 .. Thu 29 Aug 2013 16:07:57 CEST
 
+.. image:: https://travis-ci.org/bioidiap/xbob.math.svg?branch=master
+   :target: https://travis-ci.org/bioidiap/xbob.math
+
 =================================
  Python bindings for bob.math
 =================================
