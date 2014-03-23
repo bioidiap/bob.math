@@ -40,6 +40,14 @@ setup(
       ],
 
     ext_modules = [
+      Extension("xbob.math.version",
+        [
+          "xbob/math/version.cpp",
+          ],
+        packages = packages,
+        version = version,
+        include_dirs = include_dirs,
+        ),
       Extension("xbob.math._library",
         [
           "xbob/math/histogram.cpp",
