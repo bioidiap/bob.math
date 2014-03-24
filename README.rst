@@ -4,6 +4,14 @@
 
 .. image:: https://travis-ci.org/bioidiap/xbob.math.svg?branch=master
    :target: https://travis-ci.org/bioidiap/xbob.math
+.. image:: https://coveralls.io/repos/bioidiap/xbob.math/badge.png
+   :target: https://coveralls.io/r/bioidiap/xbob.math
+.. image:: http://img.shields.io/github/tag/bioidiap/xbob.math.png
+   :target: https://github.com/bioidiap/xbob.math
+.. image:: http://img.shields.io/pypi/v/xbob.math.png
+   :target: https://pypi.python.org/pypi/xbob.math
+.. image:: http://img.shields.io/pypi/dm/xbob.math.png
+   :target: https://pypi.python.org/pypi/xbob.math
 
 =================================
  Python bindings for bob.math
