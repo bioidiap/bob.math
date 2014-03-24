@@ -11,6 +11,8 @@
 #include <xbob.blitz/capi.h>
 #include <xbob.blitz/cleanup.h>
 
+#include <xbob.extension/documentation.h>
+
 #include "histogram.h"
 #include "linsolve.h"
 #include "pavx.h"
@@ -18,484 +20,454 @@
 #include "scatter.h"
 #include "lp_interior_point.h"
 
-PyDoc_STRVAR(s_histogram_intersection_str, "histogram_intersection");
-PyDoc_STRVAR(s_histogram_intersection_doc,
-"histogram_intersection(h1, h2) -> scalar\n\
-histogram_intersection(index_1, value_1, index_2, value_2) -> scalar\n\
-\n\
-Computes the histogram intersection between the given histograms, which\n\
-might be of singular dimension only. The histogram intersection defines\n\
-a similarity measure, so higher values are better.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts non-sparse histograms. The second interface accepts sparse\n\
-histograms represented by index and values.\n\
-"
-);
+static xbob::extension::FunctionDoc s_histogram_intersection = xbob::extension::FunctionDoc(
+    "histogram_intersection",
+    "Computes the histogram intersection between the given histograms, which might be of singular dimension only.",
+    "The histogram intersection is computed as follows:\n"
+    ".. math:: sim(h_1,h_2) = \\sum_i \\min \\{h_{1i}, h_{2i}\\}\n"
+    "The histogram intersection defines a similarity measure, so higher values are better. "
+    "You can use this method in two different formats. "
+    "The first interface accepts non-sparse histograms. "
+    "The second interface accepts sparse histograms represented by indexes and values.\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
+  )
+  .add_prototype("h1, h2", "sim")
+  .add_prototype("index_1, value_1, index_2, value_2", "sim")
+  .add_parameter("h1, h2", "array_like (1D)", "Histograms to compute the histogram intersection for")
+  .add_parameter("index_1, index_2", "array_like (int, 1D)", "Indices of the sparse histograms value_1 and value_2")
+  .add_parameter("value_1, value_2", "array_like (1D)", "Sparse histograms to compute the histogram intersection for")
+  .add_return("sim", "float", "The histogram intersection value for the given histograms.")
+;
 
-PyDoc_STRVAR(s_chi_square_str, "chi_square");
-PyDoc_STRVAR(s_chi_square_doc,
-"chi_square(h1, h2) -> scalar\n\
-chi_square(index_1, value_1, index_2, value_2) -> scalar\n\
-\n\
-Computes the chi square distance between the given histograms, which\n\
-might be of singular dimension only. The chi square function is a \n\
-distance measure, so lower values are better.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts non-sparse histograms. The second interface accepts sparse\n\
-histograms represented by index and values.\n\
-"
-);
+static xbob::extension::FunctionDoc s_chi_square = xbob::extension::FunctionDoc(
+    "chi_square",
+    "Computes the chi square distance between the given histograms, which might be of singular dimension only.",
+    "The chi square distance is computed as follows:\n"
+    ".. math:: dist(h_1,h_2) = \\sum_i \\frac{(h_{1i} - h_{2i})^2}{h_{1i} + h_{2i}}\n"
+    "Chi square defines a distance metric, so lower values are better. "
+    "You can use this method in two different formats. "
+    "The first interface accepts non-sparse histograms. "
+    "The second interface accepts sparse histograms represented by indexes and values.\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
+  )
+  .add_prototype("h1, h2", "dist")
+  .add_prototype("index_1, value_1, index_2, value_2", "dist")
+  .add_parameter("h1, h2", "array_like (1D)", "Histograms to compute the chi square distance for")
+  .add_parameter("index_1, index_2", "array_like (int, 1D)", "Indices of the sparse histograms value_1 and value_2")
+  .add_parameter("value_1, value_2", "array_like (1D)", "Sparse histograms to compute the chi square distance for")
+  .add_return("dist", "float", "The chi square distance value for the given histograms.")
+;
 
-PyDoc_STRVAR(s_kullback_leibler_str, "kullback_leibler");
-PyDoc_STRVAR(s_kullback_leibler_doc,
-"kullback_leibler(h1, h2) -> scalar\n\
-kullback_leibler(index_1, value_1, index_2, value_2) -> scalar\n\
-\n\
-Computes the Kullback-Leibler histogram divergence between the given\n\
-histograms, which might be of singular dimension only. The\n\
-Kullback-Leibler divergence is a distance measure, so lower values\n\
-are better.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts non-sparse histograms. The second interface accepts sparse\n\
-histograms represented by index and values.\n\
-"
-);
+static xbob::extension::FunctionDoc s_kullback_leibler = xbob::extension::FunctionDoc(
+    "kullback_leibler",
+    "Computes the Kullback-Leibler histogram divergence between the given histograms, which might be of singular dimension only.",
+    "The chi square distance is inspired by `link <http://www.informatik.uni-freiburg.de/~tipaldi/FLIRTLib/HistogramDistances_8hpp_source.html>`_ and computed as follows:\n"
+    ".. math:: dist(h_1,h_2) = \\sum_i (h_{1i} - h_{2i}) * \\log (h_{1i} / h_{2i})\n"
+    "The Kullback-Leibler divergence defines a distance metric, so lower values are better. "
+    "You can use this method in two different formats. "
+    "The first interface accepts non-sparse histograms. "
+    "The second interface accepts sparse histograms represented by indexes and values.\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
+  )
+  .add_prototype("h1, h2", "dist")
+  .add_prototype("index_1, value_1, index_2, value_2", "dist")
+  .add_parameter("h1, h2", "array_like (1D)", "Histograms to compute the Kullback-Leibler divergence for")
+  .add_parameter("index_1, index_2", "array_like (int, 1D)", "Indices of the sparse histograms value_1 and value_2")
+  .add_parameter("value_1, value_2", "array_like (1D)", "Sparse histograms to compute the Kullback-Leibler divergence for")
+  .add_return("dist", "float", "The Kullback-Leibler divergence value for the given histograms.")
+;
 
-PyDoc_STRVAR(s_linsolve_str, "linsolve");
-PyDoc_STRVAR(s_linsolve_doc,
-"linsolve(A, b) -> array\n\
-linsolve(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method uses LAPACK's ``dgesv`` generic solver.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve = xbob::extension::FunctionDoc(
+  "linsolve",
+  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
+  "This method uses LAPACK's ``dgesv`` generic solver. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_linsolve_nocheck_str, "linsolve_");
-PyDoc_STRVAR(s_linsolve_nocheck_doc,
-"linsolve_(A, b) -> array\n\
-linsolve_(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method uses LAPACK's ``dgesv`` generic solver.\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input matrices sizes match.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve_nocheck = xbob::extension::FunctionDoc(
+  "linsolve_",
+  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "This method uses LAPACK's ``dgesv`` generic solver. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution.\n"
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_linsolve_sympos_str, "linsolve_sympos");
-PyDoc_STRVAR(s_linsolve_sympos_doc,
-"linsolve_sympos(A, b) -> array\n\
-linsolve_sympos(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
-positive definite matrix.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve_sympos = xbob::extension::FunctionDoc(
+  "linsolve_sympos",
+  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
+  "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_linsolve_sympos_nocheck_str, "linsolve_sympos_");
-PyDoc_STRVAR(s_linsolve_sympos_nocheck_doc,
-"linsolve_sympos_(A, b) -> array\n\
-linsolve_sympos_(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method uses LAPACK's ``dposv`` solver, assuming ``A`` is a symmetric.\n\
-positive definite matrix.\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input matrices sizes match.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve_sympos_nocheck = xbob::extension::FunctionDoc(
+  "linsolve_sympos_",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_sympos`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
+  "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_linsolve_cg_sympos_str, "linsolve_cg_sympos");
-PyDoc_STRVAR(s_linsolve_cg_sympos_doc,
-"linsolve_cg_sympos(A, b) -> array\n\
-linsolve_cg_sympos(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method solves the linear system via conjugate gradients and assumes\n\
-``A`` is a symmetric positive definite matrix.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve_cg_sympos = xbob::extension::FunctionDoc(
+  "linsolve_cg_sympos",
+  "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
+  "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_linsolve_cg_sympos_nocheck_str, "linsolve_cg_sympos_");
-PyDoc_STRVAR(s_linsolve_cg_sympos_nocheck_doc,
-"linsolve_cg_sympos_(A, b) -> array\n\
-linsolve_cg_sympos_(A, x, b) -> None\n\
-\n\
-Solves the linear system :math:`Ax=b` and returns the result in ``x``.\n\
-This method solves the linear system via conjugate gradients and assumes\n\
-``A`` is a symmetric positive definite matrix.\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input matrices sizes match.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the matrices ``A`` and ``b`` returning ``x``. The second one\n\
-accepts a pre-allocated ``x`` matrix and sets it with the linear system\n\
-solution.\n\
-"
-);
+static xbob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = xbob::extension::FunctionDoc(
+  "linsolve_cg_sympos_",
+  "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_cg_sympos`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
+  "You can use this method in two different formats. "
+  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
+  )
+  .add_prototype("A, b", "x")
+  .add_prototype("A, b, x")
+  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
+  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
+  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
+  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
+;
 
-PyDoc_STRVAR(s_pavx_str, "pavx");
-PyDoc_STRVAR(s_pavx_doc,
-"pavx(input, output) -> None\n\
-pavx(input) -> array\n\
-\n\
-Applies the Pool-Adjacent-Violators Algorithm to ``input``. The ``input``\n\
-and ``output`` arrays should have the same size. This is a simplified\n\
-C++ port of the isotonic regression code made available at the `University\n\
-of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\
-\n\
-You can use this method in two different formats. The first interface\n\
-accepts the 1D float arrays ``input`` and ``output``. The second one\n\
-accepts the input array ``input`` and allocates a new ``output`` array\n\
-which is returned. In such a case, the ``output`` is a 1D float array\n\
-with the same length as ``input``.\n\
-");
+static xbob::extension::FunctionDoc s_pavx = xbob::extension::FunctionDoc(
+  "pavx",
+  "Applies the Pool-Adjacent-Violators Algorithm",
+  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n"
+  "You can use this method in two different formats. "
+  "The first interface accepts the ``input`` and ``output``. "
+  "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
+  )
+  .add_prototype("input, output")
+  .add_prototype("input", "output")
+  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
+  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
+  .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
+;
 
-PyDoc_STRVAR(s_pavx_nocheck_str, "pavx_");
-PyDoc_STRVAR(s_pavx_nocheck_doc,
-"pavx(input, output) -> None\n\
-\n\
-Applies the Pool-Adjacent-Violators Algorithm to ``input`` and places the\n\
-result on ``output``. The ``input`` and ``output`` arrays should be 1D\n\
-float arrays with the same length.\n\
-\n\
-This is a simplified C++ port of the isotonic regression code\n\
-made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input and output vector sizes match.\n\
-\n\
-");
+static xbob::extension::FunctionDoc s_pavx_nocheck = xbob::extension::FunctionDoc(
+  "pavx_",
+  "Applies the Pool-Adjacent-Violators Algorithm",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`pavx`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n"
+  "You can use this method in two different formats. "
+  "The first interface accepts the ``input`` and ``output``. "
+  "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
+  )
+  .add_prototype("input, output")
+  .add_prototype("input", "output")
+  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
+  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
+  .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
+;
 
-PyDoc_STRVAR(s_pavx_width_str, "pavxWidth");
-PyDoc_STRVAR(s_pavx_width_doc,
-"pavxWidth(input, output) -> array\n\
-\n\
-Applies the Pool-Adjacent-Violators Algorithm to ``input`` and places the\n\
-result on ``output``. The ``input`` and ``output`` arrays should be 1D\n\
-float arrays with the same length.\n\
-\n\
-The width array (64-bit unsigned integer 1D) is returned and has the\n\
-same size as ``input`` and ``output``.\n\
-");
+static xbob::extension::FunctionDoc s_pavx_width = xbob::extension::FunctionDoc(
+  "pavxWidth",
+  "Applies the Pool-Adjacent-Violators Algorithm and returns the width.",
+  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_."
+  )
+  .add_prototype("input, output", "width")
+  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
+  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
+  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n.. todo:: Explain, what width means in this case")
+;
 
-PyDoc_STRVAR(s_pavx_width_height_str, "pavxWidthHeight");
-PyDoc_STRVAR(s_pavx_width_height_doc,
-"pavxWidthHeight(input, output) -> (array, array)\n\
-\n\
-Applies the Pool-Adjacent-Violators Algorithm to ``input`` and sets the\n\
-result on ``output``. The ``input`` and ``output`` arrays should be 1D\n\
-float arrays of the same length.\n\
-\n\
-This is a simplified C++ port of the isotonic regression code\n\
-made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\
-\n\
-The width and height arrays are returned. The width array is a 64-bit\n\
-**unsigned integer** 1D array, while the height array (second component\n\
-of the returned tuple) is a 64-bit **float** 1D array of the same size.\n\
-");
+static xbob::extension::FunctionDoc s_pavx_width_height = xbob::extension::FunctionDoc(
+  "pavxWidthHeight",
+  "Applies the Pool-Adjacent-Violators Algorithm and returns the width and the height.",
+  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_."
+  )
+  .add_prototype("input, output", "width, height")
+  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
+  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
+  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n.. todo:: Explain, what width means in this case")
+  .add_return("height", "array_like (float, 1D)", "The height matrix will be created in the same size as ``input``\n.. todo:: Explain, what height means in this case")
+;
 
-PyDoc_STRVAR(s_norminv_str, "norminv");
-PyDoc_STRVAR(s_norminv_doc,
-"norminv(p, mu, sigma) -> scalar\n\
-\n\
-Computes the inverse normal cumulative distribution for a probability\n\
-``p``, given a distribution with mean ``mu`` and standard deviation\n\
-``sigma``. The value ``p`` must lie in the range [0,1].\n\
-\n\
-Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
-");
+static xbob::extension::FunctionDoc s_norminv = xbob::extension::FunctionDoc(
+  "norminv",
+  "Computes the inverse normal cumulative distribution",
+  "Computes the inverse normal cumulative distribution for a probability :math:`p`, given a distribution with mean :math:`\\mu` and standard deviation :math:`\\sigma`. "
+  "Reference: http://home.online.no/~pjacklam/notes/invnorm/"
+  )
+  .add_prototype("p, mu, sigma", "inv")
+  .add_parameter("p", "float", "The value to get the inverse distribution of, must lie in the range :math:`[0,1]`")
+  .add_parameter("mu", "float", "The mean :math:`\\mu` of the normal distribution")
+  .add_parameter("sigma", "float", "The standard deviation :math:`\\sigma` of the normal distribution")
+  .add_return("inv", "float", "The inverse of the normal distribution")
+;
 
-PyDoc_STRVAR(s_normsinv_str, "normsinv");
-PyDoc_STRVAR(s_normsinv_doc,
-"normsinv(p) -> scalar\n\
-\n\
-Computes the inverse normal cumulative distribution for a probability\n\
-``p``, given a distribution with mean 0.0 and standard deviation 1.0.\n\
-It is equivalent as calling :py:func:`norminv(p, 0, 1)`. The value\n\
-``p`` must lie in the range [0,1].\n\
-\n\
-Reference: `<http://home.online.no/~pjacklam/notes/invnorm/>`_\n\
-");
+static xbob::extension::FunctionDoc s_normsinv = xbob::extension::FunctionDoc(
+  "normsinv",
+  "Computes the inverse normal cumulative distribution",
+  "Computes the inverse normal cumulative distribution for a probability :math:`p`, given a distribution with mean :math:`\\mu=0` and standard deviation :math:`\\sigma=1`. "
+  "It is equivalent as calling ``norminv(p, 0, 1)`` (see :func:`norminv`). "
+  "Reference: http://home.online.no/~pjacklam/notes/invnorm/"
+  )
+  .add_prototype("p", "inv")
+  .add_parameter("p", "float", "The value to get the inverse distribution of, must lie in the range :math:`[0,1]`")
+  .add_return("inv", "float", "The inverse of the normal distribution")
+;
 
-PyDoc_STRVAR(s_scatter_str, "scatter");
-PyDoc_STRVAR(s_scatter_doc,
-"scatter(a, [s, [m]]) -> tuple\n\
-\n\
-Computes the scatter matrix of a 2D array *considering data is organized\n\
-row-wise* (each sample is a row, each feature is a column). The\n\
-resulting array ``s`` is squared with extents equal to the\n\
-number of columns in ``a``. The resulting array ``m`` is a 1D array\n\
-with the row means of ``a``. This method supports only 32 or 64-bit\n\
-float arrays as input.\n\
-\n\
-This function supports many calling modes, but you should provide, at\n\
-least, the input data matrix ``a``. All non-provided arguments will be\n\
-allocated internally and returned.\n\
-");
+static xbob::extension::FunctionDoc s_scatter = xbob::extension::FunctionDoc(
+  "scatter",
+  "Computes scatter matrix of a 2D array.",
+  "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
+  "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
+  "The resulting array ``m`` is a 1D array with the row means of ``a``. "
+  "This function supports many calling modes, but you should provide, at least, the input data matrix ``a``. "
+  "All non-provided arguments will be allocated internally and returned."
+  )
+  .add_prototype("a", "s, m")
+  .add_prototype("a, s", "m")
+  .add_prototype("a, m", "s")
+  .add_prototype("a, s, m")
+  .add_parameter("a", "array_like (float, 2D)", "The sample matrix, *considering data is organized row-wise* (each sample is a row, each feature is a column)")
+  .add_parameter("s", "array_like (float, 2D)", "The scatter matrix, squared with extents equal to the number of columns in ``a``")
+  .add_parameter("m", "array_like (float,1D)", "The mean matrix, with with the row means of ``a``")
+  .add_return("s", "array_like (float, 2D)", "The scatter matrix, squared with extents equal to the number of columns in ``a``")
+  .add_return("m", "array_like (float, 1D)", "The mean matrix, with with the row means of ``a``")
+;
 
-PyDoc_STRVAR(s_scatter_nocheck_str, "scatter_");
-PyDoc_STRVAR(s_scatter_nocheck_doc,
-"scatter_(a, s, m) -> None\n\
-\n\
-Computes the scatter matrix of a 2D array *considering data is organized\n\
-row-wise* (each sample is a row, each feature is a column). The\n\
-resulting array ``s`` is squared with extents equal to the\n\
-number of columns in ``a``. The resulting array ``m`` is a 1D array\n\
-with the row means of ``a``. This method supports only 32 or 64-bit\n\
-float arrays as input.\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input matrices sizes match.\n\
-");
+static xbob::extension::FunctionDoc s_scatter_nocheck = xbob::extension::FunctionDoc(
+  "scatter_",
+  "Computes scatter matrix of a 2D array.",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatter`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
+  "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
+  "The resulting array ``m`` is a 1D array with the row means of ``a``. "
+  "This function supports many calling modes, but you should provide, at least, the input data matrix ``a``. "
+  "All non-provided arguments will be allocated internally and returned."
+  )
+  .add_prototype("a, s, m")
+  .add_parameter("a", "array_like (float, 2D)", "The sample matrix, *considering data is organized row-wise* (each sample is a row, each feature is a column)")
+  .add_parameter("s", "array_like (float, 2D)", "The scatter matrix, squared with extents equal to the number of columns in ``a``")
+  .add_parameter("m", "array_like (float,1D)", "The mean matrix, with with the row means of ``a``")
+;
 
-PyDoc_STRVAR(s_scatters_str, "scatters");
-PyDoc_STRVAR(s_scatters_doc,
-"scatters(data, [sw, [sb, [m]]]) -> tuple\n\
-\n\
-Computes the within-class (``sw``) and between-class (``sb``) scatter\n\
-matrices of a set of 2D arrays considering data is organized row-wise\n\
-(each sample is a row, each feature is a column).\n\
-\n\
-This function supports many calling modes, but you should provide, at\n\
-least, the input data matrices ``data``, which should be sequence of\n\
-2D 32-bit or 64-bit float values in which every row of each matrix\n\
-represents one observation for a given class. **Every matrix in\n\
-``data`` should have exactly the same number of columns.**\n\
-\n\
-The returned values ``sw`` and ``sb`` are square matrices with the\n\
-same number of rows and columns as the number of columns in ``data``.\n\
-The returned value ``m`` (last call variant) is a 1D array with the\n\
-same length as number of columns in each ``data`` matrix and represents\n\
-the ensemble mean with no prior (i.e., biased towards classes with more\n\
-samples.\n\
-\n\
-Strategy implemented:\n\
-\n\
-1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the\n\
-   total class counts (:math:`N`).\n\
-2. Evaluate ``sw`` and ``sb`` using normal loops.\n\
-\n\
-Note that ``sw`` and ``sb``, in this implementation, will be normalized\n\
-by N-1 (number of samples) and K (number of classes). This procedure\n\
-makes the eigen values scaled by (N-1)/K, effectively increasing their\n\
-values. The main motivation for this normalization are numerical\n\
-precision concerns with the increasing number of samples causing a\n\
-rather large Sw matrix. A normalization strategy mitigates this\n\
-problem. The eigen vectors will see no effect on this normalization as\n\
-they are normalized in the euclidean sense (:math:`||a|| = 1`) so that\n\
-does not change those.\n\
-");
 
-PyDoc_STRVAR(s_scatters_nocheck_str, "scatters_");
-PyDoc_STRVAR(s_scatters_nocheck_doc,
-"scatters_(data, sw, sb) -> None\n\
-scatters_(data, sw, sb, m) -> None\n\
-\n\
-Computes the within-class (``sw``) and between-class (``sb``) scatter\n\
-matrices of a set of 2D arrays considering data is organized row-wise\n\
-(each sample is a row, each feature is a column).\n\
-\n\
-.. warning::\n\
-\n\
-   THIS VARIANT DOES NOT PERFORM ANY CHECKS ON THE INPUT MATRICES AND IS,\n\
-   FASTER THEN THE VARIANT NOT ENDING IN ``_``. Use it when you are sure\n\
-   your input matrices sizes match.\n\
-\n\
-This function supports many calling modes, but you should provide, at\n\
-least, the input data matrices ``data``, which should be sequence of\n\
-2D 32-bit or 64-bit float values in which every row of each matrix\n\
-represents one observation for a given class. **Every matrix in\n\
-``data`` should have exactly the same number of columns.**\n\
-\n\
-The returned values ``sw`` and ``sb`` are square matrices with the\n\
-same number of rows and columns as the number of columns in ``data``.\n\
-The returned value ``m`` (last call variant) is a 1D array with the\n\
-same length as number of columns in each ``data`` matrix and represents\n\
-the ensemble mean with no prior (i.e., biased towards classes with more\n\
-samples. **In this variant, you should pre-allocate all output matrices\n\
-so that scatters (and the overall mean) are stored on your provided\n\
-arrays**.\n\
-\n\
-Strategy implemented:\n\
-\n\
-1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the\n\
-   total class counts (:math:`N`).\n\
-2. Evaluate ``sw`` and ``sb`` using normal loops.\n\
-\n\
-Note that ``sw`` and ``sb``, in this implementation, will be normalized\n\
-by N-1 (number of samples) and K (number of classes). This procedure\n\
-makes the eigen values scaled by (N-1)/K, effectively increasing their\n\
-values. The main motivation for this normalization are numerical\n\
-precision concerns with the increasing number of samples causing a\n\
-rather large Sw matrix. A normalization strategy mitigates this\n\
-problem. The eigen vectors will see no effect on this normalization as\n\
-they are normalized in the euclidean sense (:math:`||a|| = 1`) so that\n\
-does not change those.\n\
-");
+static xbob::extension::FunctionDoc s_scatters = xbob::extension::FunctionDoc(
+  "scatters",
+  "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
+  "Computes the within-class :math:`S_w` and between-class :math:`S_b` scatter matrices of a set of 2D arrays considering data is organized row-wise (each sample is a row, each feature is a column), and each matrix contains data of one class. "
+  "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
+  "The implemented strategy is:\n"
+  "1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the  total class counts (:math:`N`).\n"
+  "2. Evaluate ``sw`` and ``sb`` using normal loops.\n"
+  "Note that in this implementation, ``sw`` and ``sb`` will be normalized by N-1 (number of samples) and K (number of classes). "
+  "This procedure makes the eigen values scaled by (N-1)/K, effectively increasing their values. "
+  "The main motivation for this normalization are numerical precision concerns with the increasing number of samples causing a rather large :math:`S_w` matrix. "
+  "A normalization strategy mitigates this problem. "
+  "The eigen vectors will see no effect on this normalization as they are normalized in the euclidean sense (:math:`||a|| = 1`) so that does not change those.\n"
+  "This function supports many calling modes, but you should provide, at least, the input ``data``. "
+  "All non-provided arguments will be allocated internally and returned."
+  )
+  .add_prototype("data", "sw, sb, m")
+  .add_prototype("data, sw, sb", "m")
+  .add_prototype("data, sw, sb, m")
+  .add_parameter("data", "[array_like (float, 2D)]", "The list of sample matrices. "
+      "In each sample matrix the data is organized row-wise (each sample is a row, each feature is a column). "
+      "Each matrix stores the data of a particular class. "
+      "**Every matrix in ``data`` must have exactly the same number of columns.**")
+  .add_parameter("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`, squared with extents equal to the number of columns in ``data``")
+  .add_parameter("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`, squared with extents equal to the number of columns in ``data``")
+  .add_parameter("m", "array_like (float,1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
+  .add_return("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`")
+  .add_return("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`")
+  .add_return("m", "array_like (float, 1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
+;
+
+static xbob::extension::FunctionDoc s_scatters_nocheck = xbob::extension::FunctionDoc(
+  "scatters_",
+  "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatters`. "
+  "Use it when you are sure your input matrices sizes match.\n"
+  "For a detailed description of the function, please see :func:`scatters`."
+  )
+  .add_prototype("data, sw, sb, m")
+  .add_prototype("data, sw, sb")
+  .add_parameter("data", "[array_like (float, 2D)]", "The list of sample matrices. "
+      "In each sample matrix the data is organized row-wise (each sample is a row, each feature is a column). "
+      "Each matrix stores the data of a particular class. "
+      "**Every matrix in ``data`` must have exactly the same number of columns.**")
+  .add_parameter("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`, squared with extents equal to the number of columns in ``data``")
+  .add_parameter("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`, squared with extents equal to the number of columns in ``data``")
+  .add_parameter("m", "array_like (float,1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
+;
+
 
 static PyMethodDef module_methods[] = {
     {
-      s_histogram_intersection_str,
+      s_histogram_intersection.name(),
       (PyCFunction)py_histogram_intersection,
       METH_VARARGS|METH_KEYWORDS,
-      s_histogram_intersection_doc
+      s_histogram_intersection.doc()
     },
     {
-      s_chi_square_str,
+      s_chi_square.name(),
       (PyCFunction)py_chi_square,
       METH_VARARGS|METH_KEYWORDS,
-      s_chi_square_doc
+      s_chi_square.doc()
     },
     {
-      s_kullback_leibler_str,
+      s_kullback_leibler.name(),
       (PyCFunction)py_kullback_leibler,
       METH_VARARGS|METH_KEYWORDS,
-      s_kullback_leibler_doc
+      s_kullback_leibler.doc()
     },
     {
-      s_linsolve_str,
+      s_linsolve.name(),
       (PyCFunction)py_linsolve,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_doc
+      s_linsolve.doc()
     },
     {
-      s_linsolve_nocheck_str,
+      s_linsolve_nocheck.name(),
       (PyCFunction)py_linsolve_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_nocheck_doc
+      s_linsolve_nocheck.doc()
     },
     {
-      s_linsolve_sympos_str,
+      s_linsolve_sympos.name(),
       (PyCFunction)py_linsolve_sympos,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_sympos_doc
+      s_linsolve_sympos.doc()
     },
     {
-      s_linsolve_sympos_nocheck_str,
+      s_linsolve_sympos_nocheck.name(),
       (PyCFunction)py_linsolve_sympos_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_sympos_nocheck_doc
+      s_linsolve_sympos_nocheck.doc()
     },
     {
-      s_linsolve_cg_sympos_str,
+      s_linsolve_cg_sympos.name(),
       (PyCFunction)py_linsolve_cg_sympos,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_cg_sympos_doc
+      s_linsolve_cg_sympos.doc()
     },
     {
-      s_linsolve_cg_sympos_nocheck_str,
+      s_linsolve_cg_sympos_nocheck.name(),
       (PyCFunction)py_linsolve_cg_sympos_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_cg_sympos_nocheck_doc
+      s_linsolve_cg_sympos_nocheck.doc()
     },
     {
-      s_pavx_str,
+      s_pavx.name(),
       (PyCFunction)py_pavx,
       METH_VARARGS|METH_KEYWORDS,
-      s_pavx_doc
+      s_pavx.doc()
     },
     {
-      s_pavx_nocheck_str,
+      s_pavx_nocheck.name(),
       (PyCFunction)py_pavx_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_pavx_nocheck_doc
+      s_pavx_nocheck.doc()
     },
     {
-      s_pavx_width_str,
+      s_pavx_width.name(),
       (PyCFunction)py_pavx_width,
       METH_VARARGS|METH_KEYWORDS,
-      s_pavx_width_doc
+      s_pavx_width.doc()
     },
     {
-      s_pavx_width_height_str,
+      s_pavx_width_height.name(),
       (PyCFunction)py_pavx_width_height,
       METH_VARARGS|METH_KEYWORDS,
-      s_pavx_width_height_doc
+      s_pavx_width_height.doc()
     },
     {
-      s_norminv_str,
+      s_norminv.name(),
       (PyCFunction)py_norminv,
       METH_VARARGS|METH_KEYWORDS,
-      s_norminv_doc
+      s_norminv.doc()
     },
     {
-      s_normsinv_str,
+      s_normsinv.name(),
       (PyCFunction)py_normsinv,
       METH_VARARGS|METH_KEYWORDS,
-      s_normsinv_doc
+      s_normsinv.doc()
     },
     {
-      s_scatter_str,
+      s_scatter.name(),
       (PyCFunction)py_scatter,
       METH_VARARGS|METH_KEYWORDS,
-      s_scatter_doc
+      s_scatter.doc()
     },
     {
-      s_scatter_nocheck_str,
+      s_scatter_nocheck.name(),
       (PyCFunction)py_scatter_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_scatter_nocheck_doc
+      s_scatter_nocheck.doc()
     },
     {
-      s_scatters_str,
+      s_scatters.name(),
       (PyCFunction)py_scatters,
       METH_VARARGS|METH_KEYWORDS,
-      s_scatters_doc
+      s_scatters.doc()
     },
     {
-      s_scatters_nocheck_str,
+      s_scatters_nocheck.name(),
       (PyCFunction)py_scatters_nocheck,
       METH_VARARGS|METH_KEYWORDS,
-      s_scatters_nocheck_doc
+      s_scatters_nocheck.doc()
     },
     {0}  /* Sentinel */
 };

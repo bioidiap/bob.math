@@ -31,7 +31,13 @@ extensions = [
   'sphinx.ext.autosummary',
   'sphinx.ext.doctest',
   'sphinx.ext.intersphinx',
+  'numpydoc',
   ]
+
+# See: https://github.com/phn/pytpm/issues/3
+numpydoc_show_class_members = False
+# See... figured out myself :-(
+numpydoc_class_members_toctree = False
 
 # The viewcode extension appeared only on Sphinx >= 1.0.0
 import sphinx
@@ -143,7 +149,7 @@ html_favicon = ''
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -250,6 +256,7 @@ autodoc_member_order = 'bysource'
 autodoc_default_flags = [
   'members',
   'undoc-members',
+  'private-members', 
   'inherited-members',
   'show-inheritance',
   ]

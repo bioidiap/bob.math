@@ -8,5 +8,17 @@
 
 This section includes information for using the pure Python API of ``xbob.math``.
 
+Summary
+.......
+
+.. autosummary::
+  xbob.math.LPInteriorPoint
+  xbob.math.LPInteriorPointShortstep
+  xbob.math.LPInteriorPointLongstep
+
+
+Details
+.......
+
 .. automodule:: xbob.math
    :members:

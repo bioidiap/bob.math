@@ -1,6 +1,10 @@
 from ._library import __version__
 from ._library import *
 
+# To get the full API documentation automatically
+__all__ = dir()
+
+
 def get_config():
   """Returns a string containing the configuration information.
   """

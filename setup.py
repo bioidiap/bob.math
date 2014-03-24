@@ -4,8 +4,9 @@
 # Mon 16 Apr 08:18:08 2012 CEST
 
 from setuptools import setup, find_packages, dist
-dist.Distribution(dict(setup_requires=['xbob.blitz']))
+dist.Distribution(dict(setup_requires=['xbob.blitz','xbob.extension']))
 from xbob.blitz.extension import Extension
+import xbob.extension
 
 import os
 package_dir = os.path.dirname(os.path.realpath(__file__))
@@ -33,6 +34,8 @@ setup(
     install_requires=[
       'setuptools',
       'xbob.blitz',
+      'xbob.extension',
+      'numpydoc',
     ],
 
     namespace_packages=[
@@ -61,8 +64,9 @@ setup(
         packages = packages,
         version = version,
         include_dirs = include_dirs,
-        ),
-      ],
+#        define_macros = [('XBOB_SHORT_DOCSTRINGS',1)],
+      ),
+    ],
 
     entry_points={
       },

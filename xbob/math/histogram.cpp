@@ -1,7 +1,7 @@
 /**
  * @author Manuel Guenther <Manuel.Guenther@idiap.ch>
  * @author Andre Anjos <andre.anjos@idiap.ch>
- * @date Tue  3 Dec 14:23:42 2013 CET 
+ * @date Tue  3 Dec 14:23:42 2013 CET
  *
  * @brief Binds fast versions of some histogram measures
  *
@@ -89,45 +89,45 @@ static PyObject* py_histogram_intersection_1
 }
 
 template <typename T1> PyObject* py_histogram_intersection_2_inner(
-    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1, 
+    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1,
     PyBlitzArrayObject* index2, PyBlitzArrayObject* value2) {
 
   switch(value1->type_num) {
 
     case NPY_UINT8:
       return PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2)));
 
     case NPY_UINT16:
       return PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2)));
 
     case NPY_INT32:
       return PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2)));
 
     case NPY_INT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2)));
 
     case NPY_FLOAT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::histogram_intersection(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value2)));
 
     default:
       break;
@@ -151,10 +151,10 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
   PyBlitzArrayObject* value2 = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &index1, 
+        kwlist,
+        &PyBlitzArray_Converter, &index1,
         &PyBlitzArray_Converter, &value1,
-        &PyBlitzArray_Converter, &index2, 
+        &PyBlitzArray_Converter, &index2,
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
@@ -176,7 +176,7 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
   }
 
   // input arrays must be 1d
-  if (index1->ndim != 1 || index2->ndim != 1 || 
+  if (index1->ndim != 1 || index2->ndim != 1 ||
       value1->ndim != 1 || value2->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
@@ -237,7 +237,7 @@ static PyObject* py_histogram_intersection_2(PyObject*, PyObject* args, PyObject
  * Note: Dispatcher function.
  */
 PyObject* py_histogram_intersection (PyObject*, PyObject* args, PyObject* kwargs) {
-  
+
   Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
 
   PyObject* retval = 0;
@@ -325,45 +325,45 @@ static PyObject* py_chi_square_1
 }
 
 template <typename T1> PyObject* py_chi_square_2_inner(
-    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1, 
+    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1,
     PyBlitzArrayObject* index2, PyBlitzArrayObject* value2) {
 
   switch(value1->type_num) {
 
     case NPY_UINT8:
       return PyBlitzArrayCxx_FromCScalar(bob::math::chi_square(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2)));
 
     case NPY_UINT16:
       return PyBlitzArrayCxx_FromCScalar(bob::math::chi_square(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2)));
 
     case NPY_INT32:
       return PyBlitzArrayCxx_FromCScalar(bob::math::chi_square(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2)));
 
     case NPY_INT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::chi_square(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2)));
 
     case NPY_FLOAT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::chi_square(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value2)));
 
     default:
       break;
@@ -387,10 +387,10 @@ static PyObject* py_chi_square_2(PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* value2 = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &index1, 
+        kwlist,
+        &PyBlitzArray_Converter, &index1,
         &PyBlitzArray_Converter, &value1,
-        &PyBlitzArray_Converter, &index2, 
+        &PyBlitzArray_Converter, &index2,
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
@@ -412,7 +412,7 @@ static PyObject* py_chi_square_2(PyObject*, PyObject* args, PyObject* kwds) {
   }
 
   // input arrays must be 1d
-  if (index1->ndim != 1 || index2->ndim != 1 || 
+  if (index1->ndim != 1 || index2->ndim != 1 ||
       value1->ndim != 1 || value2->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
@@ -549,45 +549,45 @@ static PyObject* py_kullback_leibler_1
 }
 
 template <typename T1> PyObject* py_kullback_leibler_2_inner(
-    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1, 
+    PyBlitzArrayObject* index1, PyBlitzArrayObject* value1,
     PyBlitzArrayObject* index2, PyBlitzArrayObject* value2) {
 
   switch(value1->type_num) {
 
     case NPY_UINT8:
       return PyBlitzArrayCxx_FromCScalar(bob::math::kullback_leibler(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint8_t,1>(value2)));
 
     case NPY_UINT16:
       return PyBlitzArrayCxx_FromCScalar(bob::math::kullback_leibler(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<uint16_t,1>(value2)));
 
     case NPY_INT32:
       return PyBlitzArrayCxx_FromCScalar(bob::math::kullback_leibler(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int32_t,1>(value2)));
 
     case NPY_INT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::kullback_leibler(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<int64_t,1>(value2)));
 
     case NPY_FLOAT64:
       return PyBlitzArrayCxx_FromCScalar(bob::math::kullback_leibler(
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value1), 
-            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2), 
-            *PyBlitzArrayCxx_AsBlitz<double,1>(value2))); 
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index1),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value1),
+            *PyBlitzArrayCxx_AsBlitz<T1,1>(index2),
+            *PyBlitzArrayCxx_AsBlitz<double,1>(value2)));
 
     default:
       break;
@@ -611,10 +611,10 @@ static PyObject* py_kullback_leibler_2(PyObject*, PyObject* args, PyObject* kwds
   PyBlitzArrayObject* value2 = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &index1, 
+        kwlist,
+        &PyBlitzArray_Converter, &index1,
         &PyBlitzArray_Converter, &value1,
-        &PyBlitzArray_Converter, &index2, 
+        &PyBlitzArray_Converter, &index2,
         &PyBlitzArray_Converter, &value2
         )) return 0;
 
@@ -636,7 +636,7 @@ static PyObject* py_kullback_leibler_2(PyObject*, PyObject* args, PyObject* kwds
   }
 
   // input arrays must be 1d
-  if (index1->ndim != 1 || index2->ndim != 1 || 
+  if (index1->ndim != 1 || index2->ndim != 1 ||
       value1->ndim != 1 || value2->ndim != 1) {
     PyErr_SetString(PyExc_TypeError, "all input arrays must be 1D");
     return 0;
