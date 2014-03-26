@@ -24,7 +24,7 @@
 static auto s_lpinteriorpoint = xbob::extension::ClassDoc(
   XBOB_EXT_MODULE_PREFIX ".LPInteriorPoint",
   "Base class to solve a linear program using interior point methods.",
-  "For more details about the algorithms,please refer to the following book: *'Primal-Dual Interior-Point Methods', Stephen J. Wright, ISBN: 978-0898713824, Chapter 5, 'Path-Following Algorithms'*. "
+  "For more details about the algorithms,please refer to the following book: *'Primal-Dual Interior-Point Methods', Stephen J. Wright, ISBN: 978-0898713824, Chapter 5, 'Path-Following Algorithms'*.\n"
   ".. warning:: You cannot instantiate an object of this type directly, you must use it through one of the inherited types.\n"
   "The primal linear program (LP) is defined as follows:\n"
   ".. math:: \\min c^T*x \\text{, s.t. } A*x=b, x>=0\n"
