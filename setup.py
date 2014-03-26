@@ -35,7 +35,6 @@ setup(
       'setuptools',
       'xbob.blitz',
       'xbob.extension',
-      'numpydoc',
     ],
 
     namespace_packages=[

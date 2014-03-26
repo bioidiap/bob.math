@@ -1595,7 +1595,7 @@ static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
 static auto s_is_in_vinf = xbob::extension::FunctionDoc(
     "is_in_v",
     "Checks if a primal-dual point (x, lambda, mu) belongs to the V-Inf neighborhood of the central path.",
-    ".. todo:: This documenation looks wrong since lambda is not part of the parameters"
+    ".. todo:: This documentation looks wrong since lambda is not part of the parameters"
   )
   .add_prototype("x, mu, gamma", "test")
   .add_return("test", "bool", "``True`` if (x, lambda, mu) belong to the  V-Inf neighborhood of the central path, otherwise ``False``")
