@@ -23,13 +23,13 @@
 static xbob::extension::FunctionDoc s_histogram_intersection = xbob::extension::FunctionDoc(
     "histogram_intersection",
     "Computes the histogram intersection between the given histograms, which might be of singular dimension only.",
-    "The histogram intersection is computed as follows:\n"
-    ".. math:: sim(h_1,h_2) = \\sum_i \\min \\{h_{1i}, h_{2i}\\}\n"
+    "The histogram intersection is computed as follows:\n\n"
+    ".. math:: sim(h_1,h_2) = \\sum_i \\min \\{h_{1i}, h_{2i}\\}\n\n"
     "The histogram intersection defines a similarity measure, so higher values are better. "
     "You can use this method in two different formats. "
     "The first interface accepts non-sparse histograms. "
-    "The second interface accepts sparse histograms represented by indexes and values.\n"
-    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    "The second interface accepts sparse histograms represented by indexes and values.\n\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n\n"
     ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
   )
   .add_prototype("h1, h2", "sim")
@@ -43,13 +43,13 @@ static xbob::extension::FunctionDoc s_histogram_intersection = xbob::extension::
 static xbob::extension::FunctionDoc s_chi_square = xbob::extension::FunctionDoc(
     "chi_square",
     "Computes the chi square distance between the given histograms, which might be of singular dimension only.",
-    "The chi square distance is computed as follows:\n"
-    ".. math:: dist(h_1,h_2) = \\sum_i \\frac{(h_{1i} - h_{2i})^2}{h_{1i} + h_{2i}}\n"
+    "The chi square distance is computed as follows:\n\n"
+    ".. math:: dist(h_1,h_2) = \\sum_i \\frac{(h_{1i} - h_{2i})^2}{h_{1i} + h_{2i}}\n\n"
     "Chi square defines a distance metric, so lower values are better. "
     "You can use this method in two different formats. "
     "The first interface accepts non-sparse histograms. "
-    "The second interface accepts sparse histograms represented by indexes and values.\n"
-    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    "The second interface accepts sparse histograms represented by indexes and values.\n\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n\n"
     ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
   )
   .add_prototype("h1, h2", "dist")
@@ -63,13 +63,13 @@ static xbob::extension::FunctionDoc s_chi_square = xbob::extension::FunctionDoc(
 static xbob::extension::FunctionDoc s_kullback_leibler = xbob::extension::FunctionDoc(
     "kullback_leibler",
     "Computes the Kullback-Leibler histogram divergence between the given histograms, which might be of singular dimension only.",
-    "The chi square distance is inspired by `link <http://www.informatik.uni-freiburg.de/~tipaldi/FLIRTLib/HistogramDistances_8hpp_source.html>`_ and computed as follows:\n"
-    ".. math:: dist(h_1,h_2) = \\sum_i (h_{1i} - h_{2i}) * \\log (h_{1i} / h_{2i})\n"
+    "The chi square distance is inspired by `link <http://www.informatik.uni-freiburg.de/~tipaldi/FLIRTLib/HistogramDistances_8hpp_source.html>`_ and computed as follows:\n\n"
+    ".. math:: dist(h_1,h_2) = \\sum_i (h_{1i} - h_{2i}) * \\log (h_{1i} / h_{2i})\n\n"
     "The Kullback-Leibler divergence defines a distance metric, so lower values are better. "
     "You can use this method in two different formats. "
     "The first interface accepts non-sparse histograms. "
-    "The second interface accepts sparse histograms represented by indexes and values.\n"
-    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n"
+    "The second interface accepts sparse histograms represented by indexes and values.\n\n"
+    ".. note:: Histograms are given as two matrices, one with the indexes and one with the data. All data points that for which no index exists are considered to be zero.\n\n"
     ".. note:: In general, histogram intersection with sparse histograms needs more time to be computed."
   )
   .add_prototype("h1, h2", "dist")
@@ -100,11 +100,11 @@ static xbob::extension::FunctionDoc s_linsolve_nocheck = xbob::extension::Functi
   "linsolve_",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve`. "
-  "Use it when you are sure your input matrices sizes match.\n"
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses LAPACK's ``dgesv`` generic solver. "
   "You can use this method in two different formats. "
   "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution.\n"
+  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
   )
   .add_prototype("A, b", "x")
   .add_prototype("A, b, x")
@@ -132,9 +132,9 @@ static xbob::extension::FunctionDoc s_linsolve_sympos = xbob::extension::Functio
 
 static xbob::extension::FunctionDoc s_linsolve_sympos_nocheck = xbob::extension::FunctionDoc(
   "linsolve_sympos_",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_sympos`. "
-  "Use it when you are sure your input matrices sizes match.\n"
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_sympos`. "
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
   "You can use this method in two different formats. "
   "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
@@ -168,7 +168,7 @@ static xbob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = xbob::extensi
   "linsolve_cg_sympos_",
   "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_cg_sympos`. "
-  "Use it when you are sure your input matrices sizes match.\n"
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
   "You can use this method in two different formats. "
   "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
@@ -186,7 +186,7 @@ static xbob::extension::FunctionDoc s_pavx = xbob::extension::FunctionDoc(
   "pavx",
   "Applies the Pool-Adjacent-Violators Algorithm",
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
-  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n"
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
   "You can use this method in two different formats. "
   "The first interface accepts the ``input`` and ``output``. "
   "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
@@ -202,9 +202,9 @@ static xbob::extension::FunctionDoc s_pavx_nocheck = xbob::extension::FunctionDo
   "pavx_",
   "Applies the Pool-Adjacent-Violators Algorithm",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`pavx`. "
-  "Use it when you are sure your input matrices sizes match.\n"
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
-  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n"
+  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
   "You can use this method in two different formats. "
   "The first interface accepts the ``input`` and ``output``. "
   "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
@@ -225,7 +225,7 @@ static xbob::extension::FunctionDoc s_pavx_width = xbob::extension::FunctionDoc(
   .add_prototype("input, output", "width")
   .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
   .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
-  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n.. todo:: Explain, what width means in this case")
+  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n\n.. todo:: Explain, what width means in this case")
 ;
 
 static xbob::extension::FunctionDoc s_pavx_width_height = xbob::extension::FunctionDoc(
@@ -237,8 +237,8 @@ static xbob::extension::FunctionDoc s_pavx_width_height = xbob::extension::Funct
   .add_prototype("input, output", "width, height")
   .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
   .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
-  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n.. todo:: Explain, what width means in this case")
-  .add_return("height", "array_like (float, 1D)", "The height matrix will be created in the same size as ``input``\n.. todo:: Explain, what height means in this case")
+  .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n\n.. todo:: Explain, what width means in this case")
+  .add_return("height", "array_like (float, 1D)", "The height matrix will be created in the same size as ``input``\n\n.. todo:: Explain, what height means in this case")
 ;
 
 static xbob::extension::FunctionDoc s_norminv = xbob::extension::FunctionDoc(
@@ -289,8 +289,8 @@ static xbob::extension::FunctionDoc s_scatter = xbob::extension::FunctionDoc(
 static xbob::extension::FunctionDoc s_scatter_nocheck = xbob::extension::FunctionDoc(
   "scatter_",
   "Computes scatter matrix of a 2D array.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatter`. "
-  "Use it when you are sure your input matrices sizes match.\n"
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatter`."
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
   "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
   "The resulting array ``m`` is a 1D array with the row means of ``a``. "
@@ -309,14 +309,14 @@ static xbob::extension::FunctionDoc s_scatters = xbob::extension::FunctionDoc(
   "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
   "Computes the within-class :math:`S_w` and between-class :math:`S_b` scatter matrices of a set of 2D arrays considering data is organized row-wise (each sample is a row, each feature is a column), and each matrix contains data of one class. "
   "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
-  "The implemented strategy is:\n"
+  "The implemented strategy is:\n\n"
   "1. Evaluate the overall mean (``m``), class means (:math:`m_k`) and the  total class counts (:math:`N`).\n"
-  "2. Evaluate ``sw`` and ``sb`` using normal loops.\n"
+  "2. Evaluate ``sw`` and ``sb`` using normal loops.\n\n"
   "Note that in this implementation, ``sw`` and ``sb`` will be normalized by N-1 (number of samples) and K (number of classes). "
   "This procedure makes the eigen values scaled by (N-1)/K, effectively increasing their values. "
   "The main motivation for this normalization are numerical precision concerns with the increasing number of samples causing a rather large :math:`S_w` matrix. "
   "A normalization strategy mitigates this problem. "
-  "The eigen vectors will see no effect on this normalization as they are normalized in the euclidean sense (:math:`||a|| = 1`) so that does not change those.\n"
+  "The eigen vectors will see no effect on this normalization as they are normalized in the euclidean sense (:math:`||a|| = 1`) so that does not change those.\n\n"
   "This function supports many calling modes, but you should provide, at least, the input ``data``. "
   "All non-provided arguments will be allocated internally and returned."
   )
@@ -339,7 +339,7 @@ static xbob::extension::FunctionDoc s_scatters_nocheck = xbob::extension::Functi
   "scatters_",
   "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatters`. "
-  "Use it when you are sure your input matrices sizes match.\n"
+  "Use it when you are sure your input matrices sizes match.\n\n"
   "For a detailed description of the function, please see :func:`scatters`."
   )
   .add_prototype("data, sw, sb, m")
