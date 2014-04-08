@@ -30,9 +30,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-To-Do list
-----------
-
-.. todolist::
-
 .. include:: links.rst
