@@ -8,6 +8,8 @@
  Bob's Math Routines
 =====================
 
+.. todolist::
+
 This module contains base functionality from Bob bound to Python, available in
 the C++ counter-part ``bob::math``. It includes input and output operations to
 and from files.
