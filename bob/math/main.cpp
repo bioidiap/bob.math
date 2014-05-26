@@ -8,10 +8,10 @@
 #ifdef NO_IMPORT_ARRAY
 #undef NO_IMPORT_ARRAY
 #endif
-#include <xbob.blitz/capi.h>
-#include <xbob.blitz/cleanup.h>
+#include <bob.blitz/capi.h>
+#include <bob.blitz/cleanup.h>
 
-#include <xbob.extension/documentation.h>
+#include <bob.extension/documentation.h>
 
 #include "histogram.h"
 #include "linsolve.h"
@@ -20,7 +20,7 @@
 #include "scatter.h"
 #include "lp_interior_point.h"
 
-static xbob::extension::FunctionDoc s_histogram_intersection = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_histogram_intersection = bob::extension::FunctionDoc(
     "histogram_intersection",
     "Computes the histogram intersection between the given histograms, which might be of singular dimension only.",
     "The histogram intersection is computed as follows:\n\n"
@@ -40,7 +40,7 @@ static xbob::extension::FunctionDoc s_histogram_intersection = xbob::extension::
   .add_return("sim", "float", "The histogram intersection value for the given histograms.")
 ;
 
-static xbob::extension::FunctionDoc s_chi_square = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_chi_square = bob::extension::FunctionDoc(
     "chi_square",
     "Computes the chi square distance between the given histograms, which might be of singular dimension only.",
     "The chi square distance is computed as follows:\n\n"
@@ -60,7 +60,7 @@ static xbob::extension::FunctionDoc s_chi_square = xbob::extension::FunctionDoc(
   .add_return("dist", "float", "The chi square distance value for the given histograms.")
 ;
 
-static xbob::extension::FunctionDoc s_kullback_leibler = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_kullback_leibler = bob::extension::FunctionDoc(
     "kullback_leibler",
     "Computes the Kullback-Leibler histogram divergence between the given histograms, which might be of singular dimension only.",
     "The chi square distance is inspired by `link <http://www.informatik.uni-freiburg.de/~tipaldi/FLIRTLib/HistogramDistances_8hpp_source.html>`_ and computed as follows:\n\n"
@@ -80,7 +80,7 @@ static xbob::extension::FunctionDoc s_kullback_leibler = xbob::extension::Functi
   .add_return("dist", "float", "The Kullback-Leibler divergence value for the given histograms.")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve = bob::extension::FunctionDoc(
   "linsolve",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
   "This method uses LAPACK's ``dgesv`` generic solver. "
@@ -96,7 +96,7 @@ static xbob::extension::FunctionDoc s_linsolve = xbob::extension::FunctionDoc(
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve_nocheck = bob::extension::FunctionDoc(
   "linsolve_",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve`. "
@@ -114,7 +114,7 @@ static xbob::extension::FunctionDoc s_linsolve_nocheck = xbob::extension::Functi
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve_sympos = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve_sympos = bob::extension::FunctionDoc(
   "linsolve_sympos",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
   "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
@@ -130,7 +130,7 @@ static xbob::extension::FunctionDoc s_linsolve_sympos = xbob::extension::Functio
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve_sympos_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve_sympos_nocheck = bob::extension::FunctionDoc(
   "linsolve_sympos_",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_sympos`. "
@@ -148,7 +148,7 @@ static xbob::extension::FunctionDoc s_linsolve_sympos_nocheck = xbob::extension:
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve_cg_sympos = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve_cg_sympos = bob::extension::FunctionDoc(
   "linsolve_cg_sympos",
   "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
   "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
@@ -164,7 +164,7 @@ static xbob::extension::FunctionDoc s_linsolve_cg_sympos = xbob::extension::Func
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = bob::extension::FunctionDoc(
   "linsolve_cg_sympos_",
   "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_cg_sympos`. "
@@ -182,7 +182,7 @@ static xbob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = xbob::extensi
   .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
 ;
 
-static xbob::extension::FunctionDoc s_pavx = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_pavx = bob::extension::FunctionDoc(
   "pavx",
   "Applies the Pool-Adjacent-Violators Algorithm",
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
@@ -198,7 +198,7 @@ static xbob::extension::FunctionDoc s_pavx = xbob::extension::FunctionDoc(
   .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
 ;
 
-static xbob::extension::FunctionDoc s_pavx_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_pavx_nocheck = bob::extension::FunctionDoc(
   "pavx_",
   "Applies the Pool-Adjacent-Violators Algorithm",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`pavx`. "
@@ -216,7 +216,7 @@ static xbob::extension::FunctionDoc s_pavx_nocheck = xbob::extension::FunctionDo
   .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
 ;
 
-static xbob::extension::FunctionDoc s_pavx_width = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_pavx_width = bob::extension::FunctionDoc(
   "pavxWidth",
   "Applies the Pool-Adjacent-Violators Algorithm and returns the width.",
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
@@ -228,7 +228,7 @@ static xbob::extension::FunctionDoc s_pavx_width = xbob::extension::FunctionDoc(
   .add_return("width", "array_like (uint64, 1D)", "The width matrix will be created in the same size as ``input``\n\n.. todo:: Explain, what width means in this case")
 ;
 
-static xbob::extension::FunctionDoc s_pavx_width_height = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_pavx_width_height = bob::extension::FunctionDoc(
   "pavxWidthHeight",
   "Applies the Pool-Adjacent-Violators Algorithm and returns the width and the height.",
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
@@ -241,7 +241,7 @@ static xbob::extension::FunctionDoc s_pavx_width_height = xbob::extension::Funct
   .add_return("height", "array_like (float, 1D)", "The height matrix will be created in the same size as ``input``\n\n.. todo:: Explain, what height means in this case")
 ;
 
-static xbob::extension::FunctionDoc s_norminv = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_norminv = bob::extension::FunctionDoc(
   "norminv",
   "Computes the inverse normal cumulative distribution",
   "Computes the inverse normal cumulative distribution for a probability :math:`p`, given a distribution with mean :math:`\\mu` and standard deviation :math:`\\sigma`. "
@@ -254,7 +254,7 @@ static xbob::extension::FunctionDoc s_norminv = xbob::extension::FunctionDoc(
   .add_return("inv", "float", "The inverse of the normal distribution")
 ;
 
-static xbob::extension::FunctionDoc s_normsinv = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_normsinv = bob::extension::FunctionDoc(
   "normsinv",
   "Computes the inverse normal cumulative distribution",
   "Computes the inverse normal cumulative distribution for a probability :math:`p`, given a distribution with mean :math:`\\mu=0` and standard deviation :math:`\\sigma=1`. "
@@ -266,7 +266,7 @@ static xbob::extension::FunctionDoc s_normsinv = xbob::extension::FunctionDoc(
   .add_return("inv", "float", "The inverse of the normal distribution")
 ;
 
-static xbob::extension::FunctionDoc s_scatter = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_scatter = bob::extension::FunctionDoc(
   "scatter",
   "Computes scatter matrix of a 2D array.",
   "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
@@ -286,7 +286,7 @@ static xbob::extension::FunctionDoc s_scatter = xbob::extension::FunctionDoc(
   .add_return("m", "array_like (float, 1D)", "The mean matrix, with with the row means of ``a``")
 ;
 
-static xbob::extension::FunctionDoc s_scatter_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_scatter_nocheck = bob::extension::FunctionDoc(
   "scatter_",
   "Computes scatter matrix of a 2D array.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatter`."
@@ -304,7 +304,7 @@ static xbob::extension::FunctionDoc s_scatter_nocheck = xbob::extension::Functio
 ;
 
 
-static xbob::extension::FunctionDoc s_scatters = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
   "scatters",
   "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
   "Computes the within-class :math:`S_w` and between-class :math:`S_b` scatter matrices of a set of 2D arrays considering data is organized row-wise (each sample is a row, each feature is a column), and each matrix contains data of one class. "
@@ -335,7 +335,7 @@ static xbob::extension::FunctionDoc s_scatters = xbob::extension::FunctionDoc(
   .add_return("m", "array_like (float, 1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
 ;
 
-static xbob::extension::FunctionDoc s_scatters_nocheck = xbob::extension::FunctionDoc(
+static bob::extension::FunctionDoc s_scatters_nocheck = bob::extension::FunctionDoc(
   "scatters_",
   "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
   ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatters`. "
@@ -477,7 +477,7 @@ PyDoc_STRVAR(module_docstr, "bob::math classes and methods");
 #if PY_VERSION_HEX >= 0x03000000
 static PyModuleDef module_definition = {
   PyModuleDef_HEAD_INIT,
-  XBOB_EXT_MODULE_NAME,
+  BOB_EXT_MODULE_NAME,
   module_docstr,
   -1,
   module_methods,
@@ -502,13 +502,13 @@ static PyObject* create_module (void) {
 # if PY_VERSION_HEX >= 0x03000000
   PyObject* m = PyModule_Create(&module_definition);
 # else
-  PyObject* m = Py_InitModule3(XBOB_EXT_MODULE_NAME, module_methods, module_docstr);
+  PyObject* m = Py_InitModule3(BOB_EXT_MODULE_NAME, module_methods, module_docstr);
 # endif
   if (!m) return 0;
   auto m_ = make_safe(m); ///< protects against early returns
 
   /* register version numbers and constants */
-  if (PyModule_AddStringConstant(m, "__version__", XBOB_EXT_MODULE_VERSION) < 0)
+  if (PyModule_AddStringConstant(m, "__version__", BOB_EXT_MODULE_VERSION) < 0)
     return 0;
 
   /* register the types to python */
@@ -528,15 +528,15 @@ static PyObject* create_module (void) {
   if (PyModule_AddObject(m, "LPInteriorPointLongstep",
         (PyObject *)&PyBobMathLpInteriorPointLongstep_Type) < 0) return 0;
 
-  /* imports xbob.blitz C-API */
-  if (import_xbob_blitz() < 0) return 0;
+  /* imports bob.blitz C-API */
+  if (import_bob_blitz() < 0) return 0;
 
   Py_INCREF(m);
   return m;
 
 }
 
-PyMODINIT_FUNC XBOB_EXT_ENTRY_NAME (void) {
+PyMODINIT_FUNC BOB_EXT_ENTRY_NAME (void) {
 # if PY_VERSION_HEX >= 0x03000000
   return
 # endif

@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import linsolve, linsolve_sympos, linsolve_cg_sympos
+from bob.math import linsolve, linsolve_sympos, linsolve_cg_sympos
 import numpy
 import nose.tools
 

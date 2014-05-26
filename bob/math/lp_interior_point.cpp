@@ -10,19 +10,19 @@
  */
 
 #include "lp_interior_point.h"
-#include <xbob.blitz/cppapi.h>
-#include <xbob.blitz/cleanup.h>
+#include <bob.blitz/cppapi.h>
+#include <bob.blitz/cleanup.h>
 #include <bob/math/LPInteriorPoint.h>
 #include <structmember.h>
 
-#include <xbob.extension/documentation.h>
+#include <bob.extension/documentation.h>
 
 /************************************************
  * Implementation of LPInteriorPoint base class *
  ************************************************/
 
-static auto s_lpinteriorpoint = xbob::extension::ClassDoc(
-  XBOB_EXT_MODULE_PREFIX ".LPInteriorPoint",
+static auto s_lpinteriorpoint = bob::extension::ClassDoc(
+  BOB_EXT_MODULE_PREFIX ".LPInteriorPoint",
   "Base class to solve a linear program using interior point methods.",
   "For more details about the algorithms,please refer to the following book: *'Primal-Dual Interior-Point Methods', Stephen J. Wright, ISBN: 978-0898713824, Chapter 5, 'Path-Following Algorithms'*.\n\n"
   ".. warning:: You cannot instantiate an object of this type directly, you must use it through one of the inherited types.\n\n"
@@ -49,7 +49,7 @@ static int PyBobMathLpInteriorPoint_init(PyBobMathLpInteriorPointObject* self, P
 
 }
 
-static auto s_M = xbob::extension::VariableDoc(
+static auto s_M = bob::extension::VariableDoc(
   "m",
   "int",
   "The first dimension of the problem/A matrix"
@@ -83,7 +83,7 @@ static int PyBobMathLpInteriorPoint_setM (PyBobMathLpInteriorPointObject* self,
 
 }
 
-static auto s_N = xbob::extension::VariableDoc(
+static auto s_N = bob::extension::VariableDoc(
   "n",
   "int",
   "The second dimension of the problem/A matrix"
@@ -116,7 +116,7 @@ static int PyBobMathLpInteriorPoint_setN (PyBobMathLpInteriorPointObject* self,
 
 }
 
-static auto s_epsilon = xbob::extension::VariableDoc(
+static auto s_epsilon = bob::extension::VariableDoc(
   "epsilon",
   "float",
   "The precision to determine whether an equality constraint is fulfilled or not"
@@ -148,7 +148,7 @@ static int PyBobMathLpInteriorPoint_setEpsilon (PyBobMathLpInteriorPointObject* 
 
 }
 
-static auto s_lambda = xbob::extension::VariableDoc(
+static auto s_lambda = bob::extension::VariableDoc(
   "lambda_",
   "float",
   "The value of the :math:`\\lambda` dual variable (read-only)"
@@ -166,7 +166,7 @@ static PyObject* PyBobMathLpInteriorPoint_lambda (PyBobMathLpInteriorPointObject
   return PyBlitzArray_NUMPY_WRAP(retval);
 }
 
-static auto s_mu = xbob::extension::VariableDoc(
+static auto s_mu = bob::extension::VariableDoc(
   "mu",
   "float",
   "The value of the :math:`\\mu` dual variable (read-only)"
@@ -223,7 +223,7 @@ static PyGetSetDef PyBobMathLpInteriorPoint_getseters[] = {
     {0}  /* Sentinel */
 };
 
-static auto s_reset = xbob::extension::FunctionDoc(
+static auto s_reset = bob::extension::FunctionDoc(
     "reset",
     "Resets the size of the problem (M and N correspond to the dimensions of the A matrix)"
   )
@@ -260,7 +260,7 @@ static PyObject* PyBobMathLpInteriorPoint_reset
 
 }
 
-static auto s_solve = xbob::extension::FunctionDoc(
+static auto s_solve = bob::extension::FunctionDoc(
     "solve",
     "Solves an LP problem"
   )
@@ -381,7 +381,7 @@ static PyObject* PyBobMathLpInteriorPoint_solve
 
 }
 
-static auto s_is_feasible = xbob::extension::FunctionDoc(
+static auto s_is_feasible = bob::extension::FunctionDoc(
     "is_feasible",
     "Checks if a primal-dual point (x, lambda, mu) belongs to the set of feasible points (i.e. fulfills the constraints)."
   )
@@ -476,7 +476,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_feasible
 
 }
 
-static auto s_is_in_v = xbob::extension::FunctionDoc(
+static auto s_is_in_v = bob::extension::FunctionDoc(
     "is_in_v",
     "Checks if a primal-dual point (x, lambda, mu) belongs to the V2 neighborhood of the central path.",
     ".. todo:: This documentation seems wrong since lambda is not in the list of parameters."
@@ -540,7 +540,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v
 
 }
 
-static auto s_is_in_v_s = xbob::extension::FunctionDoc(
+static auto s_is_in_v_s = bob::extension::FunctionDoc(
     "is_in_v_s",
     "Checks if a primal-dual point (x,lambda,mu) belongs to the V neighborhood of the central path and the set of feasible points."
   )
@@ -638,7 +638,7 @@ static PyObject* PyBobMathLpInteriorPoint_is_in_v_s
 
 }
 
-static auto s_initialize_dual_lambda_mu = xbob::extension::FunctionDoc(
+static auto s_initialize_dual_lambda_mu = bob::extension::FunctionDoc(
     "initialize_dual_lambda_mu",
     "Initializes the dual variables ``lambda`` and ``mu`` by minimizing the logarithmic barrier function."
   )
@@ -808,12 +808,12 @@ PyTypeObject PyBobMathLpInteriorPoint_Type = {
  * Implementation of LPInteriorPointShortstep class *
  ****************************************************/
 
-const auto s_lpinteriorpointshortstep = xbob::extension::ClassDoc(
-    XBOB_EXT_MODULE_PREFIX ".LPInteriorPointShortstep",
+const auto s_lpinteriorpointshortstep = bob::extension::ClassDoc(
+    BOB_EXT_MODULE_PREFIX ".LPInteriorPointShortstep",
     "A Linear Program solver based on a short step interior point method.\n"
     "See :py:class:`LPInteriorPoint` for more details on the base class."
   )
-  .add_constructor(xbob::extension::FunctionDoc(
+  .add_constructor(bob::extension::FunctionDoc(
       "LPInteriorPointShortstep",
       "Objects of this class can be initialized in two different ways: "
       "a detailed constructor with the parameters described below or "
@@ -945,7 +945,7 @@ static void PyBobMathLpInteriorPointShortstep_delete (PyBobMathLpInteriorPointSh
 
 }
 
-static auto s_theta = xbob::extension::VariableDoc(
+static auto s_theta = bob::extension::VariableDoc(
   "theta",
   "float",
   "The value theta used to define a V2 neighborhood"
@@ -1061,12 +1061,12 @@ PyTypeObject PyBobMathLpInteriorPointShortstep_Type = {
  * Implementation of LPInteriorPointPredictorCorrector class *
  *************************************************************/
 
-static auto s_lpinteriorpointpredictorcorrector = xbob::extension::ClassDoc(
-    XBOB_EXT_MODULE_PREFIX ".LPInteriorPointPredictorCorrector",
+static auto s_lpinteriorpointpredictorcorrector = bob::extension::ClassDoc(
+    BOB_EXT_MODULE_PREFIX ".LPInteriorPointPredictorCorrector",
     "A Linear Program solver based on a predictor-corrector interior point method.",
     "See :py:class:`LPInteriorPoint` for more details on the base class."
   )
-  .add_constructor(xbob::extension::FunctionDoc(
+  .add_constructor(bob::extension::FunctionDoc(
       "LPInteriorPointPredictorCorrector",
       "Objects of this class can be initialized in two different ways: "
       "a detailed constructor with the parameters described below or "
@@ -1197,7 +1197,7 @@ static void PyBobMathLpInteriorPointPredictorCorrector_delete (PyBobMathLpInteri
 
 }
 
-static auto s_theta_pred = xbob::extension::VariableDoc(
+static auto s_theta_pred = bob::extension::VariableDoc(
   "theta_pred",
   "float",
   "The value theta_pred used to define a V2 neighborhood"
@@ -1228,7 +1228,7 @@ static int PyBobMathLpInteriorPointPredictorCorrector_setThetaPred (PyBobMathLpI
 
 }
 
-static auto s_theta_corr = xbob::extension::VariableDoc(
+static auto s_theta_corr = bob::extension::VariableDoc(
   "theta_corr",
   "float",
   "The value theta_corr used to define a V2 neighborhood"
@@ -1349,12 +1349,12 @@ PyTypeObject PyBobMathLpInteriorPointPredictorCorrector_Type = {
  * Implementation of LPInteriorPointLongstep class *
  ****************************************************/
 
-static auto s_lpinteriorpointlongstep = xbob::extension::ClassDoc(
-    XBOB_EXT_MODULE_PREFIX ".LPInteriorPointLongstep",
+static auto s_lpinteriorpointlongstep = bob::extension::ClassDoc(
+    BOB_EXT_MODULE_PREFIX ".LPInteriorPointLongstep",
     "A Linear Program solver based on a long step interior point method.",
     "See :py:class:`LPInteriorPoint` for more details on the base class."
   )
-  .add_constructor(xbob::extension::FunctionDoc(
+  .add_constructor(bob::extension::FunctionDoc(
       "LPInteriorPointLongstep",
       "Objects of this class can be initialized in two different ways: "
       "a detailed constructor with the parameters described below or "
@@ -1483,7 +1483,7 @@ static void PyBobMathLpInteriorPointLongstep_delete (PyBobMathLpInteriorPointLon
 
 }
 
-static auto s_gamma = xbob::extension::VariableDoc(
+static auto s_gamma = bob::extension::VariableDoc(
   "gamma",
   "float",
   "The value gamma used to define a V-Inf neighborhood"
@@ -1515,7 +1515,7 @@ static int PyBobMathLpInteriorPointLongstep_setGamma (PyBobMathLpInteriorPointLo
 
 }
 
-static auto s_sigma = xbob::extension::VariableDoc(
+static auto s_sigma = bob::extension::VariableDoc(
   "sigma",
   "float",
   "The value sigma used to define a V-Inf neighborhood"
@@ -1592,7 +1592,7 @@ static PyObject* PyBobMathLpInteriorPointLongstep_RichCompare
 
 }
 
-static auto s_is_in_vinf = xbob::extension::FunctionDoc(
+static auto s_is_in_vinf = bob::extension::FunctionDoc(
     "is_in_v",
     "Checks if a primal-dual point (x, lambda, mu) belongs to the V-Inf neighborhood of the central path.",
     ".. todo:: This documentation looks wrong since lambda is not part of the parameters"

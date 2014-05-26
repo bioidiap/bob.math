@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import scatter, scatter_, scatters, scatters_
+from bob.math import scatter, scatter_, scatters, scatters_
 import numpy
 import nose.tools
 

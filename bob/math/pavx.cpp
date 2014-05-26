@@ -7,8 +7,8 @@
  */
 
 #include "pavx.h"
-#include <xbob.blitz/cppapi.h>
-#include <xbob.blitz/cleanup.h>
+#include <bob.blitz/cppapi.h>
+#include <bob.blitz/cleanup.h>
 #include "bob/math/pavx.h"
 #include "bob/core/cast.h"
 

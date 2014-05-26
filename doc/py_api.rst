@@ -6,19 +6,19 @@
  Python API
 ============
 
-This section includes information for using the pure Python API of ``xbob.math``.
+This section includes information for using the pure Python API of ``bob.math``.
 
 Summary
 .......
 
 .. autosummary::
-  xbob.math.LPInteriorPoint
-  xbob.math.LPInteriorPointShortstep
-  xbob.math.LPInteriorPointLongstep
+  bob.math.LPInteriorPoint
+  bob.math.LPInteriorPointShortstep
+  bob.math.LPInteriorPointLongstep
 
 
 Details
 .......
 
-.. automodule:: xbob.math
+.. automodule:: bob.math
    :members:

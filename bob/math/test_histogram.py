@@ -5,11 +5,11 @@
 #
 # Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
 
-"""Tests xbob interior point Linear Programming solvers
+"""Tests bob interior point Linear Programming solvers
 """
 
 import os, sys
-from xbob.math import histogram_intersection, kullback_leibler, chi_square
+from bob.math import histogram_intersection, kullback_leibler, chi_square
 import numpy
 import nose.tools
 
@@ -48,7 +48,7 @@ values = numpy.array([1,1,1,1,1], dtype = numpy.float64)
 
 def test_histogram_intersection():
 
-  # compare our implementation with xbob.math
+  # compare our implementation with bob.math
   nose.tools.eq_(histogram_intersection(m_h1, m_h2), py_histogram_intersection(m_h1, m_h2))
   nose.tools.eq_(histogram_intersection(m_h3, m_h4), py_histogram_intersection(m_h3, m_h4))
 
@@ -61,7 +61,7 @@ def test_histogram_intersection():
 
 def test_chi_square():
 
-  # compare our implementation with xbob.math
+  # compare our implementation with bob.math
   nose.tools.eq_(chi_square(m_h1, m_h2), py_chi_square(m_h1, m_h2))
   nose.tools.eq_(chi_square(m_h3, m_h4), py_chi_square(m_h3, m_h4))
 
@@ -74,7 +74,7 @@ def test_chi_square():
 
 def test_kullback_leibler():
 
-  # compare our implementation with xbob.math
+  # compare our implementation with bob.math
   nose.tools.eq_(chi_square(m_h1, m_h2), py_chi_square(m_h1, m_h2))
   nose.tools.eq_(chi_square(m_h3, m_h4), py_chi_square(m_h3, m_h4))
 

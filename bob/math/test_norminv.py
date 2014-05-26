@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import norminv, normsinv
+from bob.math import norminv, normsinv
 import numpy
 
 def test_norminv():

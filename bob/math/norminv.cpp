@@ -7,7 +7,7 @@
  */
 
 #include "pavx.h"
-#include <xbob.blitz/cppapi.h>
+#include <bob.blitz/cppapi.h>
 #include <bob/math/norminv.h>
 
 PyObject* py_norminv (PyObject*, PyObject* args, PyObject* kwds) {

@@ -5,7 +5,7 @@
 .. testsetup:: mathtest
 
    import numpy
-   import xbob.math
+   import bob.math
 
 ============
  User Guide

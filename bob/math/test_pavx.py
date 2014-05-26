@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from xbob.math import pavx, pavx_, pavxWidth, pavxWidthHeight
+from bob.math import pavx, pavx_, pavxWidth, pavxWidthHeight
 import numpy
 
 def pavx_check(y, ghat_ref, w_ref, h_ref):

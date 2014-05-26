@@ -4,13 +4,13 @@
 # Mon 16 Apr 08:18:08 2012 CEST
 
 from setuptools import setup, find_packages, dist
-dist.Distribution(dict(setup_requires=['xbob.blitz','xbob.extension']))
-from xbob.blitz.extension import Extension
-import xbob.extension
+dist.Distribution(dict(setup_requires=['bob.blitz','bob.extension']))
+from bob.blitz.extension import Extension
+import bob.extension
 
 import os
 package_dir = os.path.dirname(os.path.realpath(__file__))
-package_dir = os.path.join(package_dir, 'xbob', 'math', 'include')
+package_dir = os.path.join(package_dir, 'bob', 'math', 'include')
 include_dirs = [package_dir]
 
 packages = ['bob-math >= 1.2.2']
@@ -18,10 +18,10 @@ version = '2.0.0a0'
 
 setup(
 
-    name='xbob.math',
+    name='bob.math',
     version=version,
     description='Bindings for bob.math',
-    url='http://github.com/bioidiap/xbob.math',
+    url='http://github.com/bioidiap/bob.math',
     license='BSD',
     author='Andre Anjos',
     author_email='andre.anjos@idiap.ch',
@@ -33,37 +33,37 @@ setup(
 
     install_requires=[
       'setuptools',
-      'xbob.blitz',
-      'xbob.extension',
+      'bob.blitz',
+      'bob.extension',
     ],
 
     namespace_packages=[
-      "xbob",
+      "bob",
       ],
 
     ext_modules = [
-      Extension("xbob.math.version",
+      Extension("bob.math.version",
         [
-          "xbob/math/version.cpp",
+          "bob/math/version.cpp",
           ],
         packages = packages,
         version = version,
         include_dirs = include_dirs,
         ),
-      Extension("xbob.math._library",
+      Extension("bob.math._library",
         [
-          "xbob/math/histogram.cpp",
-          "xbob/math/linsolve.cpp",
-          "xbob/math/pavx.cpp",
-          "xbob/math/norminv.cpp",
-          "xbob/math/scatter.cpp",
-          "xbob/math/lp_interior_point.cpp",
-          "xbob/math/main.cpp",
+          "bob/math/histogram.cpp",
+          "bob/math/linsolve.cpp",
+          "bob/math/pavx.cpp",
+          "bob/math/norminv.cpp",
+          "bob/math/scatter.cpp",
+          "bob/math/lp_interior_point.cpp",
+          "bob/math/main.cpp",
           ],
         packages = packages,
         version = version,
         include_dirs = include_dirs,
-#        define_macros = [('XBOB_SHORT_DOCSTRINGS',1)],
+#        define_macros = [('BOB_SHORT_DOCSTRINGS',1)],
       ),
     ],
 

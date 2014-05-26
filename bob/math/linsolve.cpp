@@ -9,8 +9,8 @@
  */
 
 #include "histogram.h"
-#include <xbob.blitz/cppapi.h>
-#include <xbob.blitz/cleanup.h>
+#include <bob.blitz/cppapi.h>
+#include <bob.blitz/cleanup.h>
 #include "bob/math/linsolve.h"
 
 static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
