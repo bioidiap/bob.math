@@ -1,33 +1,37 @@
-# After changing this file, run it through http://lint.travis-ci.org/
-# Generates 4 builds, the ones for python3 will install external wheels
 language: python
-python:
-  - 2.6
-  - 2.7
 matrix:
   include:
-    - python: 3.2
-      env:
-        - NUMPYSPEC===1.7.1
-    - python: 3.3
-      env:
-        - NUMPYSPEC===1.8.0
+  - python: 2.6
+  - python: 2.7
+    env:
+    - secure: DCsVw4Y5hFxTH8iYFb80gJyBu4IEOJzRNuA7YGXsh6Sx4hsLXJ5D2e7t7pUUSjE5fv5SfBj+J5zS3wyZfNtLx/yi3Le1WjBYxv4WPbaUcRgEdH5NUSamJKrf0eGuoIYvus8fPLeLcKyfj05sQYKhMiVlACtKkfBzUzoSVDEg7RE=
+    - secure: YLwf/svdpy6rI3YvfYb/1t4EzvBtoaluBMvr+tCOKwB/kWu5/UuDr/lujbCyMNAvRi1LQutAaqiNnKlbFMNOQD47n/yy5yHlC6cBm45ptWs1XV4hb5oqE2EAkNEfh7LIFus60RnlI1bq4D+jkBNLiFJ+0jj59h9WNqzLcpQxTKI=
+  - python: 3.2
+    env:
+    - NUMPYSPEC===1.7.1
+  - python: 3.3
+    env:
+    - NUMPYSPEC===1.8.0
 before_install:
-  - sudo add-apt-repository -y ppa:biometrics/bob
-  - sudo add-apt-repository -y ppa:biometrics/bob.preview
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq --force-yes bob-dev
-  - if [ -n "${NUMPYSPEC}" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
-  - if [ -n "${NUMPYSPEC}" ]; then pip install --upgrade pip setuptools; fi
-  - if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC sphinx nose; fi
-  - pip install cpp-coveralls
+- sudo add-apt-repository -y ppa:biometrics/bob
+- sudo add-apt-repository -y ppa:biometrics/bob.preview
+- sudo apt-get update -qq
+- sudo apt-get install -qq --force-yes bob-dev
+- if [ -n "${NUMPYSPEC}" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev
+  liblapack-dev gfortran; fi
+- if [ -n "${NUMPYSPEC}" ]; then pip install --upgrade pip setuptools; fi
+- if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/
+  --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC sphinx nose;
+  fi
+- pip install cpp-coveralls
 install:
-  - "python bootstrap.py"
-  - "CFLAGS=-coverage ./bin/buildout"
+- python bootstrap.py
+- CFLAGS=-coverage ./bin/buildout
 script:
-  - "./bin/python -c 'from bob.math import get_config; print(get_config())'"
-  - "./bin/coverage run --source=bob.math ./bin/nosetests -sv"
-  - "./bin/sphinx-build -b doctest doc sphinx"
-  - "./bin/sphinx-build -b html doc sphinx"
+- ./bin/python -c 'from bob.math import get_config; print(get_config())'
+- ./bin/coverage run --source=bob.math ./bin/nosetests -sv
+- ./bin/sphinx-build -b doctest doc sphinx
+- ./bin/sphinx-build -b html doc sphinx
 after_success:
-  - "coveralls --build-root=`pwd` --exclude=src"
+- coveralls --build-root=`pwd` --exclude=src
+- ./src/bob.extension/scripts/upload-sphinx.sh
