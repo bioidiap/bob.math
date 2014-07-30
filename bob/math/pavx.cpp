@@ -11,7 +11,7 @@
 
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include <bob/core/cast.h>
+#include <bob.core/cast.h>
 
 PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
 
