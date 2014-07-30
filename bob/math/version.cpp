@@ -7,8 +7,6 @@
 
 #include <Python.h>
 
-#include <bob/config.h>
-
 #include <string>
 #include <cstdlib>
 #include <blitz/blitz.h>
@@ -81,13 +79,6 @@ static PyObject* python_version() {
 }
 
 /**
- * Bob version, API version and platform
- */
-static PyObject* bob_version() {
-  return Py_BuildValue("sis", BOB_VERSION, BOB_API_VERSION, BOB_PLATFORM);
-}
-
-/**
  * Numpy version
  */
 static PyObject* numpy_version() {
@@ -99,6 +90,13 @@ static PyObject* numpy_version() {
  * bob.blitz c/c++ api version
  */
 static PyObject* bob_blitz_version() {
+  return Py_BuildValue("{ss}", "api", BOOST_PP_STRINGIZE(BOB_BLITZ_API_VERSION));
+}
+
+/**
+ * bob.core c/c++ api version
+ */
+static PyObject* bob_core_version() {
   return Py_BuildValue("{ss}", "api", BOOST_PP_STRINGIZE(BOB_BLITZ_API_VERSION));
 }
 
@@ -114,7 +112,7 @@ static PyObject* build_version_dictionary() {
   if (!dict_steal(retval, "Python", python_version())) return 0;
   if (!dict_steal(retval, "NumPy", numpy_version())) return 0;
   if (!dict_steal(retval, "bob.blitz", bob_blitz_version())) return 0;
-  if (!dict_steal(retval, "Bob", bob_version())) return 0;
+  if (!dict_steal(retval, "bob.core", bob_core_version())) return 0;
 
   Py_INCREF(retval);
   return retval;
