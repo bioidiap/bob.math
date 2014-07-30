@@ -6,62 +6,130 @@
 from setuptools import setup, find_packages, dist
 dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.core', 'numpy']))
 from bob.blitz.extension import Extension
-from bob.extension.utils import uniq
+from bob.extension.utils import uniq, find_library
 import bob.core
 
 import os
+import sys
 package_dir = os.path.dirname(os.path.realpath(__file__))
 package_dir = os.path.join(package_dir, 'bob', 'math', 'include')
 include_dirs = [package_dir, bob.core.get_include()]
 
-# uses LAPACK/BLAS info from numpy
-import numpy.__config__ as npconf
+def get_flags(keys):
+  """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
 
-lapack_library_dirs = []
-lapack_libraries = []
-lapack_include_dirs = []
-lapack_define_macros = []
-if hasattr(npconf, 'lapack_info') and npconf.lapack_info:
-  lapack_library_dirs = npconf.lapack_info['library_dirs']
-  lapack_libraries = npconf.lapack_info['libraries']
-  lapack_include_dirs = npconf.lapack_info['include_dirs']
-  lapack_define_macros = npconf.lapack_info['define_macros']
-if hasattr(npconf, 'lapack_opt_info') and npconf.lapack_opt_info:
-  lapack_library_dirs = npconf.lapack_opt_info['library_dirs']
-  lapack_libraries = npconf.lapack_opt_info['libraries']
-  lapack_include_dirs = npconf.lapack_opt_info['include_dirs']
-  lapack_define_macros = npconf.lapack_opt_info['define_macros']
-if hasattr(npconf, 'lapack_mk_info') and nnpconf.lapack_mkl_info:
-  lapack_library_dirs = npconf.lapack_mkl_info['library_dirs']
-  lapack_libraries = npconf.lapack_mkl_info['libraries']
-  lapack_include_dirs = npconf.lapack_mkl_info['include_dirs']
-  lapack_define_macros = npconf.lapack_mkl_info['define_macros']
+  In case NumPy is using a fallback (i.e., no LAPACK/BLAS installed on the host
+  system), then defaults to linking against 'lapack' and 'blas' and hope it
+  works.
+  """
 
-blas_library_dirs = []
-blas_libraries = []
-blas_include_dirs = []
-blas_define_macros = []
-if hasattr(npconf, 'blas_info') and npconf.blas_info:
-  blas_library_dirs = npconf.blas_info['library_dirs']
-  blas_libraries = npconf.blas_info['libraries']
-  blas_include_dirs = npconf.blas_info['include_dirs']
-  blas_define_macros = npconf.blas_info['define_macros']
-if hasattr(npconf, 'blas_opt_info') and npconf.blas_opt_info:
-  blas_library_dirs = npconf.blas_opt_info['library_dirs']
-  blas_libraries = npconf.blas_opt_info['libraries']
-  blas_include_dirs = npconf.blas_opt_info['include_dirs']
-  blas_define_macros = npconf.blas_opt_info['define_macros']
-if hasattr(npconf, 'blas_mk_info') and nnpconf.blas_mkl_info:
-  blas_library_dirs = npconf.blas_mkl_info['library_dirs']
-  blas_libraries = npconf.blas_mkl_info['libraries']
-  blas_include_dirs = npconf.blas_mkl_info['include_dirs']
-  blas_define_macros = npconf.blas_mkl_info['define_macros']
+  import numpy.__config__ as npconf
+
+  retval = dict(
+      library_dirs = [],
+      libraries = [],
+      include_dirs = [],
+      define_macros = [],
+      extra_compile_args = [],
+      extra_link_args = [],
+      )
+
+  for key in keys:
+
+    if not hasattr(npconf, key): continue
+    obj = getattr(npconf, key)
+    if not obj: continue #it is empty
+
+    retval = dict(
+        library_dirs = obj.get('library_dirs', []),
+        libraries = obj.get('libraries', []),
+        include_dirs = obj.get('include_dirs', []),
+        define_macros = obj.get('define_macros', []),
+        extra_compile_args = obj.get('extra_compile_args', []),
+        extra_link_args = obj.get('extra_link_args', []),
+        )
+
+  return retval
+
+lapack_flags = get_flags(['lapack_info', 'lapack_opt_info', 'lapack_mkl_info'])
+blas_flags = get_flags(['blas_info', 'blas_opt_info', 'blas_mkl_info'])
 
 # mix-in
-library_dirs = uniq(lapack_library_dirs + blas_library_dirs)
-libraries = uniq(lapack_libraries + blas_libraries)
-include_dirs = uniq(include_dirs + lapack_include_dirs + blas_include_dirs)
-define_macros = uniq(lapack_define_macros + blas_define_macros)
+math_flags = dict(
+    library_dirs = [],
+    libraries = [],
+    include_dirs = [],
+    define_macros = [],
+    extra_compile_args = [],
+    extra_link_args = [],
+    )
+for key in math_flags:
+  math_flags[key] = uniq(lapack_flags.get(key, []) + blas_flags.get(key, []))
+
+# fixes the include paths
+for path in math_flags['include_dirs']:
+  math_flags['extra_compile_args'].append('-isystem ' + path)
+del math_flags['include_dirs']
+
+# checks if any libraries are being linked, otherwise we
+# search through the filesystem in stock locations.
+if not math_flags['libraries']:
+  # reset all entries
+  math_flags = dict(
+      library_dirs = [],
+      libraries = [],
+      define_macros = [],
+      extra_compile_args = [],
+      extra_link_args = [],
+      )
+
+  # tries first to find an MKL implementation
+  lapack = find_library('mkl_lapack64')
+  if not lapack:
+    # if that fails, go for the default implementation
+    lapack = find_library('lapack', subpaths=['sse2', ''])
+
+  if not lapack:
+    print("ERROR: LAPACK library not found - have that installed or set BOB_PREFIX_PATH to point to the correct installation prefix")
+    sys.exit(1)
+
+  # tries first to find an MKL implementation
+  blas = find_library('mkl')
+  if not blas:
+    # if that fails, go for the default implementation of cblas
+    blas = find_library('cblas', subpaths=['sse2', ''])
+  if not blas:
+    # if that fails, go for the default implementation of blas
+    blas = find_library('blas', subpaths=['sse2', ''])
+
+  if not blas:
+    print("ERROR: BLAS library not found - have that installed or set BOB_PREFIX_PATH to point to the correct installation prefix")
+    sys.exit(1)
+
+  # at this point both lapack and blas were detected, proceed
+  def libname(f): return os.path.splitext(os.path.basename(f))[0][3:]
+
+  math_flags['library_dirs'] = uniq([
+    os.path.dirname(lapack[0]),
+    os.path.dirname(blas[0]),
+    ])
+  math_flags['libraries'] = uniq([
+    libname(lapack[0]),
+    libname(blas[0])
+    ])
+
+  print("\nLAPACK/BLAS configuration from filesystem scan:")
+
+else:
+
+  print("\nLAPACK/BLAS configuration from NumPy:")
+
+print(" * compile arguments: %s" % ', '.join(math_flags['extra_compile_args']))
+print(" * defines: %s" % \
+  ', '.join(['-D%s=%s' % k for k in math_flags['define_macros']]))
+print(" * linking arguments: %s" % ', '.join(math_flags['extra_link_args']))
+print(" * libraries: %s" % ', '.join(math_flags['libraries']))
+print(" * library directories: %s\n" % ', '.join(math_flags['library_dirs']))
 
 version = '2.0.0a0'
 
@@ -97,7 +165,12 @@ setup(
           "bob/math/version.cpp",
           ],
         version = version,
-        include_dirs = include_dirs,
+        include_dirs = math_flags.get('include_dirs', []),
+        library_dirs = math_flags.get('library_dirs', []),
+        libraries = math_flags.get('libraries', []),
+        define_macros = math_flags.get('define_macros', []),
+        extra_compile_args = math_flags.get('extra_compile_args', []),
+        extra_link_args = math_flags.get('extra_link_args', []),
         ),
       Extension("bob.math._library",
         [
@@ -124,9 +197,11 @@ setup(
           ],
         version = version,
         include_dirs = include_dirs,
-        library_dirs = library_dirs,
-        libraries = libraries,
-        define_macros = define_macros,
+        library_dirs = math_flags['library_dirs'],
+        libraries = math_flags['libraries'],
+        define_macros = math_flags['define_macros'],
+        extra_compile_args = math_flags['extra_compile_args'],
+        extra_link_args = math_flags['extra_link_args'],
       ),
     ],
 
