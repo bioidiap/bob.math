@@ -7,7 +7,8 @@
 
 #include "pinv.h"
 #include "svd.h"
-#include "linear.h"
+
+#include <bob.math/linear.h>
 
 #include <bob.core/assert.h>
 

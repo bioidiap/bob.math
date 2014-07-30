@@ -10,7 +10,7 @@
 #include "scatter.h"
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include <bob/math/stats.h>
+#include <bob.math/stats.h>
 
 PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
 
@@ -125,7 +125,7 @@ PyObject* py_scatter_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* m = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&",
-        kwlist, 
+        kwlist,
         &PyBlitzArray_Converter, &a,
         &PyBlitzArray_OutputConverter, &s,
         &PyBlitzArray_OutputConverter, &m
@@ -184,7 +184,7 @@ PyObject* py_scatter_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
     return 0;
   }
 
-  Py_RETURN_NONE; 
+  Py_RETURN_NONE;
 
 }
 
@@ -211,7 +211,7 @@ int BzTuple_Converter(PyObject* o, PyObject** a) {
     return 0;
   }
 
-  if (first->ndim != 2 || 
+  if (first->ndim != 2 ||
       (first->type_num != NPY_FLOAT32 && first->type_num != NPY_FLOAT64)) {
     PyErr_SetString(PyExc_TypeError, "input data object must be a sequence or iterable with at least 2 2D arrays with 32 or 64-bit floats - the first array does not conform");
     Py_DECREF(first);
@@ -274,7 +274,7 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* sb = 0;
   PyBlitzArrayObject* m = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&O&O&", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&O&O&", kwlist,
         &BzTuple_Converter, &data,
         &PyBlitzArray_OutputConverter, &sw,
         &PyBlitzArray_OutputConverter, &sb,
@@ -404,7 +404,7 @@ PyObject* py_scatters_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* sb = 0;
   PyBlitzArrayObject* m = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&", kwlist, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&O&", kwlist,
         &BzTuple_Converter, &data,
         &PyBlitzArray_OutputConverter, &sw,
         &PyBlitzArray_OutputConverter, &sb,

@@ -9,7 +9,8 @@
 #include <boost/shared_array.hpp>
 
 #include "linsolve.h"
-#include "linear.h"
+
+#include <bob.math/linear.h>
 
 #include <bob.core/assert.h>
 #include <bob.core/check.h>

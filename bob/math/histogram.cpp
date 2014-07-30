@@ -11,7 +11,7 @@
 #include "histogram.h"
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include "bob/math/histogram.h"
+#include <bob.math/histogram.h>
 
 static PyObject* py_histogram_intersection_1
 (PyObject*, PyObject* args, PyObject* kwds) {

@@ -7,10 +7,11 @@
  */
 
 #include "pavx.h"
+#include "cpp/pavx.h"
+
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include "bob/math/pavx.h"
-#include "bob/core/cast.h"
+#include <bob/core/cast.h>
 
 PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
 
@@ -22,8 +23,8 @@ PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* output = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &input, 
+        kwlist,
+        &PyBlitzArray_Converter, &input,
         &PyBlitzArray_OutputConverter, &output
         )) return 0;
 
@@ -82,8 +83,8 @@ PyObject* py_pavx_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* output = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &input, 
+        kwlist,
+        &PyBlitzArray_Converter, &input,
         &PyBlitzArray_OutputConverter, &output
         )) return 0;
 
@@ -182,8 +183,8 @@ PyObject* py_pavx_width_height (PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* output = 0;
 
   if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
-        kwlist, 
-        &PyBlitzArray_Converter, &input, 
+        kwlist,
+        &PyBlitzArray_Converter, &input,
         &PyBlitzArray_OutputConverter, &output
         )) return 0;
 

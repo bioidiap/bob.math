@@ -11,7 +11,8 @@
 
 #include "sqrtm.h"
 #include "eig.h"
-#include "linear.h"
+
+#include <bob.math/linear.h>
 
 #include <bob.core/assert.h>
 

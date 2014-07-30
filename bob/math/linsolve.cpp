@@ -11,10 +11,10 @@
 #include "histogram.h"
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include "bob/math/linsolve.h"
+#include "cpp/linsolve.h"
 
 static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -23,8 +23,8 @@ static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* x = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b
         )) return 0;
@@ -91,7 +91,7 @@ static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
 }
 
 static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -99,8 +99,8 @@ static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* A = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_Converter, &b
         )) return 0;
 
@@ -169,7 +169,7 @@ static PyObject* py_linsolve_2(PyObject*, PyObject* args, PyObject* kwds) {
  * Note: Dispatcher function.
  */
 PyObject* py_linsolve(PyObject*, PyObject* args, PyObject* kwargs) {
-  
+
   Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
 
   PyObject* retval = 0;
@@ -195,7 +195,7 @@ PyObject* py_linsolve(PyObject*, PyObject* args, PyObject* kwargs) {
 }
 
 PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -204,8 +204,8 @@ PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
   PyBlitzArrayObject* x = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b
         )) return 0;
@@ -266,7 +266,7 @@ PyObject* py_linsolve_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
 }
 
 static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -275,8 +275,8 @@ static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds)
   PyBlitzArrayObject* x = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b
         )) return 0;
@@ -342,7 +342,7 @@ static PyObject* py_linsolve_sympos_1(PyObject*, PyObject* args, PyObject* kwds)
 }
 
 static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -350,8 +350,8 @@ static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds)
   PyBlitzArrayObject* A = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_Converter, &b
         )) return 0;
 
@@ -419,7 +419,7 @@ static PyObject* py_linsolve_sympos_2(PyObject*, PyObject* args, PyObject* kwds)
  * Note: Dispatcher function.
  */
 PyObject* py_linsolve_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
-  
+
   Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
 
   PyObject* retval = 0;
@@ -445,7 +445,7 @@ PyObject* py_linsolve_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
 }
 
 PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "x", "b", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -454,8 +454,8 @@ PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) 
   PyBlitzArrayObject* x = 0;
   PyBlitzArrayObject* b = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b
         )) return 0;
@@ -516,10 +516,10 @@ PyObject* py_linsolve_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) 
 }
 
 static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
-  static const char* const_kwlist[] = { 
-    "A", "x", "b", "acc", "max_iter", 
+  static const char* const_kwlist[] = {
+    "A", "x", "b", "acc", "max_iter",
     0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
 
@@ -529,8 +529,8 @@ static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kw
   double acc = 0.;
   int max_iter = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b,
         &acc, &max_iter
@@ -590,7 +590,7 @@ static PyObject* py_linsolve_cg_sympos_1(PyObject*, PyObject* args, PyObject* kw
 }
 
 static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
   static const char* const_kwlist[] = { "A", "b", "acc", "max_iter", 0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
@@ -600,8 +600,8 @@ static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kw
   double acc = 0.;
   int max_iter = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&di", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&di", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_Converter, &b,
         &acc, &max_iter
         )) return 0;
@@ -662,7 +662,7 @@ static PyObject* py_linsolve_cg_sympos_2(PyObject*, PyObject* args, PyObject* kw
  * Note: Dispatcher function.
  */
 PyObject* py_linsolve_cg_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
-  
+
   Py_ssize_t nargs = args?PyTuple_Size(args):0 + kwargs?PyDict_Size(kwargs):0;
 
   PyObject* retval = 0;
@@ -688,10 +688,10 @@ PyObject* py_linsolve_cg_sympos(PyObject*, PyObject* args, PyObject* kwargs) {
 }
 
 PyObject* py_linsolve_cg_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwds) {
-  
+
   /* Parses input arguments in a single shot */
-  static const char* const_kwlist[] = { 
-    "A", "x", "b", "acc", "max_iter", 
+  static const char* const_kwlist[] = {
+    "A", "x", "b", "acc", "max_iter",
     0 /* Sentinel */ };
   static char** kwlist = const_cast<char**>(const_kwlist);
 
@@ -701,8 +701,8 @@ PyObject* py_linsolve_cg_sympos_nocheck(PyObject*, PyObject* args, PyObject* kwd
   double acc = 0.;
   int max_iter = 0;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist, 
-        &PyBlitzArray_Converter, &A, 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&O&di", kwlist,
+        &PyBlitzArray_Converter, &A,
         &PyBlitzArray_OutputConverter, &x,
         &PyBlitzArray_Converter, &b,
         acc, max_iter

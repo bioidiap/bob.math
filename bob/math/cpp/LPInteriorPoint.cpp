@@ -12,8 +12,9 @@
 #include <limits>
 
 #include "LPInteriorPoint.h"
-#include "linear.h"
 #include "linsolve.h"
+
+#include <bob.math/linear.h>
 
 #include <bob.core/array_copy.h>
 #include <bob.core/assert.h>

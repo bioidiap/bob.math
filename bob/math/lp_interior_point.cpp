@@ -10,9 +10,10 @@
  */
 
 #include "lp_interior_point.h"
+#include "cpp/LPInteriorPoint.h"
+
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include <bob/math/LPInteriorPoint.h>
 #include <structmember.h>
 
 #include <bob.extension/documentation.h>

@@ -8,7 +8,7 @@
 
 #include "pavx.h"
 #include <bob.blitz/cppapi.h>
-#include <bob/math/norminv.h>
+#include "cpp/norminv.h"
 
 PyObject* py_norminv (PyObject*, PyObject* args, PyObject* kwds) {
 
@@ -20,7 +20,7 @@ PyObject* py_norminv (PyObject*, PyObject* args, PyObject* kwds) {
   double mu = 0.;
   double sigma = 0.;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "ddd", kwlist, &p, &mu, &sigma)) 
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "ddd", kwlist, &p, &mu, &sigma))
     return 0;
 
   try {
