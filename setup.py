@@ -5,15 +5,13 @@
 
 from setuptools import setup, find_packages, dist
 dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.core', 'numpy']))
-from bob.blitz.extension import Extension
+from bob.blitz.extension import Extension, Library, build_ext
 from bob.extension.utils import uniq, find_library
-import bob.core
 
 import os
 import sys
 package_dir = os.path.dirname(os.path.realpath(__file__))
-package_dir = os.path.join(package_dir, 'bob', 'math', 'include')
-include_dirs = [package_dir, bob.core.get_include()]
+target_dir = os.path.join(package_dir, 'bob', 'math')
 
 def get_flags(keys):
   """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
@@ -69,7 +67,6 @@ for key in math_flags:
 # fixes the include paths
 for path in math_flags['include_dirs']:
   math_flags['extra_compile_args'].append('-isystem ' + path)
-del math_flags['include_dirs']
 
 # checks if any libraries are being linked, otherwise we
 # search through the filesystem in stock locations.
@@ -171,8 +168,10 @@ setup(
         define_macros = math_flags.get('define_macros', []),
         extra_compile_args = math_flags.get('extra_compile_args', []),
         extra_link_args = math_flags.get('extra_link_args', []),
+        bob_packages = ['bob.core'],
         ),
-      Extension("bob.math._library",
+
+      Library("bob_math",
         [
           "bob/math/cpp/det.cpp",
           "bob/math/cpp/eig.cpp",
@@ -186,7 +185,22 @@ setup(
           "bob/math/cpp/pinv.cpp",
           "bob/math/cpp/svd.cpp",
           "bob/math/cpp/sqrtm.cpp",
+        ],
+        package_directory = package_dir,
+        target_directory = target_dir,
+        version = version,
+        bob_packages = ['bob.core'],
+        include_dirs = math_flags['include_dirs'],
+        library_dirs = math_flags['library_dirs'],
+        libraries = math_flags['libraries'],
+        define_macros = math_flags['define_macros'],
+#TODO: add extra_compile_args and extra_link_args to Library, if required.
+#        extra_compile_args = math_flags['extra_compile_args'],
+#        extra_link_args = math_flags['extra_link_args'],
+      ),
 
+      Extension("bob.math._library",
+        [
           "bob/math/histogram.cpp",
           "bob/math/linsolve.cpp",
           "bob/math/pavx.cpp",
@@ -196,14 +210,18 @@ setup(
           "bob/math/main.cpp",
           ],
         version = version,
-        include_dirs = include_dirs,
+        bob_packages = ['bob.core'],
         library_dirs = math_flags['library_dirs'],
-        libraries = math_flags['libraries'],
+        libraries = math_flags['libraries'] + ['bob_math'],
         define_macros = math_flags['define_macros'],
         extra_compile_args = math_flags['extra_compile_args'],
         extra_link_args = math_flags['extra_link_args'],
       ),
     ],
+
+    cmdclass = {
+      'build_ext': build_ext
+    },
 
     entry_points={
       },
