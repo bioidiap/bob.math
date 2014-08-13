@@ -11,8 +11,8 @@
 #include <stdexcept>
 #include <limits>
 
-#include "LPInteriorPoint.h"
-#include "linsolve.h"
+#include <bob.math/LPInteriorPoint.h>
+#include <bob.math/linsolve.h>
 
 #include <bob.math/linear.h>
 

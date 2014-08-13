@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <boost/shared_array.hpp>
 
-#include "svd.h"
+#include <bob.math/svd.h>
 
 #include <bob.core/assert.h>
 #include <bob.core/check.h>

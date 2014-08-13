@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-#include "pavx.h"
+#include <bob.math/pavx.h>
 
 #include <bob.core/assert.h>
 

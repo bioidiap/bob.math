@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 
-#include "norminv.h"
+#include <bob.math/norminv.h>
 
 double bob::math::norminv(const double p, const double mu, const double sigma)
 {

@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 
-#include "log.h"
+#include <bob.math/log.h>
 
 /**
  * Computes log(a+b)=log(exp(log(a))+exp(log(b))) from log(a) and log(b),

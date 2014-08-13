@@ -9,8 +9,8 @@
  */
 
 
-#include "sqrtm.h"
-#include "eig.h"
+#include <bob.math/sqrtm.h>
+#include <bob.math/eig.h>
 
 #include <bob.math/linear.h>
 

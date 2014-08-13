@@ -11,7 +11,7 @@
 #include <vector>
 #include <boost/shared_array.hpp>
 
-#include "eig.h"
+#include <bob.math/eig.h>
 
 #include <bob.core/assert.h>
 #include <bob.core/check.h>

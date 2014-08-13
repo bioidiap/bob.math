@@ -5,8 +5,8 @@
  * Copyright (C) Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "det.h"
-#include "lu.h"
+#include <bob.math/det.h>
+#include <bob.math/lu.h>
 
 #include <bob.math/linear.h>
 #include <bob.core/assert.h>

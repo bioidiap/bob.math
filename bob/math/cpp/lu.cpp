@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <boost/shared_array.hpp>
 
-#include "lu.h"
+#include <bob.math/lu.h>
 
 #include <bob.core/assert.h>
 #include <bob.core/array_copy.h>

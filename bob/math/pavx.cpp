@@ -7,7 +7,7 @@
  */
 
 #include "pavx.h"
-#include "cpp/pavx.h"
+#include <bob.math/pavx.h>
 
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>

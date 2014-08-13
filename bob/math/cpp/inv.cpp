@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <boost/shared_array.hpp>
 
-#include "inv.h"
+#include <bob.math/inv.h>
 
 #include <bob.math/linear.h>
 

@@ -11,7 +11,7 @@
 #include "histogram.h"
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
-#include "cpp/linsolve.h"
+#include <bob.math/linsolve.h>
 
 static PyObject* py_linsolve_1(PyObject*, PyObject* args, PyObject* kwds) {
 

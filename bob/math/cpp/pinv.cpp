@@ -5,8 +5,8 @@
  * Copyright (C) Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "pinv.h"
-#include "svd.h"
+#include <bob.math/pinv.h>
+#include <bob.math/svd.h>
 
 #include <bob.math/linear.h>
 
