@@ -75,6 +75,7 @@ if not math_flags['libraries']:
   math_flags = dict(
       library_dirs = [],
       libraries = [],
+      include_dirs = [],
       define_macros = [],
       extra_compile_args = [],
       extra_link_args = [],
