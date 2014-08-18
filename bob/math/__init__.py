@@ -4,11 +4,6 @@ from ._library import *
 # To get the full API documentation automatically
 __all__ = dir()
 
-def get_include():
-  """Returns the directory containing the C/C++ API include directives"""
-
-  return __import__('pkg_resources').resource_filename(__name__, 'include')
-
 def get_config():
   """Returns a string containing the configuration information.
   """

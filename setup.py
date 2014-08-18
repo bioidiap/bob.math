@@ -26,7 +26,7 @@ def get_flags(keys):
   retval = dict(
       library_dirs = [],
       libraries = [],
-      include_dirs = [],
+      system_include_dirs = [],
       define_macros = [],
       extra_compile_args = [],
       extra_link_args = [],
@@ -41,7 +41,7 @@ def get_flags(keys):
     retval = dict(
         library_dirs = obj.get('library_dirs', []),
         libraries = obj.get('libraries', []),
-        include_dirs = obj.get('include_dirs', []),
+        system_include_dirs = obj.get('include_dirs', []),
         define_macros = obj.get('define_macros', []),
         extra_compile_args = obj.get('extra_compile_args', []),
         extra_link_args = obj.get('extra_link_args', []),
@@ -56,17 +56,13 @@ blas_flags = get_flags(['blas_info', 'blas_opt_info', 'blas_mkl_info'])
 math_flags = dict(
     library_dirs = [],
     libraries = [],
-    include_dirs = [],
+    system_include_dirs = [],
     define_macros = [],
     extra_compile_args = [],
     extra_link_args = [],
     )
 for key in math_flags:
   math_flags[key] = uniq(lapack_flags.get(key, []) + blas_flags.get(key, []))
-
-# fixes the include paths
-for path in math_flags['include_dirs']:
-  math_flags['extra_compile_args'].append('-isystem ' + path)
 
 # checks if any libraries are being linked, otherwise we
 # search through the filesystem in stock locations.
@@ -75,7 +71,7 @@ if not math_flags['libraries']:
   math_flags = dict(
       library_dirs = [],
       libraries = [],
-      include_dirs = [],
+      system_include_dirs = [],
       define_macros = [],
       extra_compile_args = [],
       extra_link_args = [],
@@ -122,7 +118,7 @@ else:
 
   print("\nLAPACK/BLAS configuration from NumPy:")
 
-print(" * compile arguments: %s" % ', '.join(math_flags['extra_compile_args']))
+print(" * system include directories: %s" % ', '.join(math_flags['system_include_dirs']))
 print(" * defines: %s" % \
   ', '.join(['-D%s=%s' % k for k in math_flags['define_macros']]))
 print(" * linking arguments: %s" % ', '.join(math_flags['extra_link_args']))
@@ -150,6 +146,7 @@ setup(
     install_requires=[
       'setuptools',
       'bob.blitz',
+      'bob.core',
       'bob.extension',
     ],
 
@@ -163,16 +160,16 @@ setup(
           "bob/math/version.cpp",
           ],
         version = version,
-        include_dirs = math_flags.get('include_dirs', []),
+        system_include_dirs = math_flags.get('system_include_dirs', []),
         library_dirs = math_flags.get('library_dirs', []),
         libraries = math_flags.get('libraries', []),
         define_macros = math_flags.get('define_macros', []),
-        extra_compile_args = math_flags.get('extra_compile_args', []),
+        extra_compile_args = math_flags['extra_compile_args'],
         extra_link_args = math_flags.get('extra_link_args', []),
         bob_packages = ['bob.core'],
         ),
 
-      Library("bob_math",
+      Library("bob.math.bob_math",
         [
           "bob/math/cpp/det.cpp",
           "bob/math/cpp/eig.cpp",
@@ -187,17 +184,12 @@ setup(
           "bob/math/cpp/svd.cpp",
           "bob/math/cpp/sqrtm.cpp",
         ],
-        package_directory = package_dir,
-        target_directory = target_dir,
         version = version,
         bob_packages = ['bob.core'],
-        include_dirs = math_flags['include_dirs'],
+        system_include_dirs = math_flags['system_include_dirs'],
         library_dirs = math_flags['library_dirs'],
         libraries = math_flags['libraries'],
         define_macros = math_flags['define_macros'],
-#TODO: add extra_compile_args and extra_link_args to Library, if required.
-#        extra_compile_args = math_flags['extra_compile_args'],
-#        extra_link_args = math_flags['extra_link_args'],
       ),
 
       Extension("bob.math._library",
@@ -212,8 +204,9 @@ setup(
           ],
         version = version,
         bob_packages = ['bob.core'],
+        system_include_dirs = math_flags['system_include_dirs'],
         library_dirs = math_flags['library_dirs'],
-        libraries = math_flags['libraries'] + ['bob_math'],
+        libraries = math_flags['libraries'],
         define_macros = math_flags['define_macros'],
         extra_compile_args = math_flags['extra_compile_args'],
         extra_link_args = math_flags['extra_link_args'],
