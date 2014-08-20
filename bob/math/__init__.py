@@ -1,3 +1,10 @@
+# import Libraries of other lib packages
+import bob.core
+
+# import our own Library
+import bob.extension
+bob.extension.load_bob_library('bob.math', __file__)
+
 from ._library import __version__
 from ._library import *
 

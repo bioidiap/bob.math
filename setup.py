@@ -3,15 +3,13 @@
 # Andre Anjos <andre.anjos@idiap.ch>
 # Mon 16 Apr 08:18:08 2012 CEST
 
+bob_packages = ['bob.core']
+
 from setuptools import setup, find_packages, dist
-dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.core', 'numpy']))
+dist.Distribution(dict(setup_requires=['bob.blitz', 'numpy'] + bob_packages))
 from bob.blitz.extension import Extension, Library, build_ext
 from bob.extension.utils import uniq, find_library
 
-import os
-import sys
-package_dir = os.path.dirname(os.path.realpath(__file__))
-target_dir = os.path.join(package_dir, 'bob', 'math')
 
 def get_flags(keys):
   """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
@@ -147,18 +145,17 @@ setup(
       'setuptools',
       'bob.blitz',
       'bob.core',
-      'bob.extension',
     ],
 
     namespace_packages=[
       "bob",
-      ],
+    ],
 
     ext_modules = [
       Extension("bob.math.version",
         [
           "bob/math/version.cpp",
-          ],
+        ],
         version = version,
         system_include_dirs = math_flags.get('system_include_dirs', []),
         library_dirs = math_flags.get('library_dirs', []),
@@ -166,8 +163,8 @@ setup(
         define_macros = math_flags.get('define_macros', []),
         extra_compile_args = math_flags['extra_compile_args'],
         extra_link_args = math_flags.get('extra_link_args', []),
-        bob_packages = ['bob.core'],
-        ),
+        bob_packages = bob_packages,
+      ),
 
       Library("bob.math.bob_math",
         [
@@ -185,7 +182,7 @@ setup(
           "bob/math/cpp/sqrtm.cpp",
         ],
         version = version,
-        bob_packages = ['bob.core'],
+        bob_packages = bob_packages,
         system_include_dirs = math_flags['system_include_dirs'],
         library_dirs = math_flags['library_dirs'],
         libraries = math_flags['libraries'],
@@ -201,9 +198,9 @@ setup(
           "bob/math/scatter.cpp",
           "bob/math/lp_interior_point.cpp",
           "bob/math/main.cpp",
-          ],
+        ],
         version = version,
-        bob_packages = ['bob.core'],
+        bob_packages = bob_packages,
         system_include_dirs = math_flags['system_include_dirs'],
         library_dirs = math_flags['library_dirs'],
         libraries = math_flags['libraries'],
@@ -217,9 +214,6 @@ setup(
       'build_ext': build_ext
     },
 
-    entry_points={
-      },
-
     classifiers = [
       'Development Status :: 3 - Alpha',
       'Intended Audience :: Developers',
@@ -228,6 +222,6 @@ setup(
       'Programming Language :: Python',
       'Programming Language :: Python :: 3',
       'Topic :: Software Development :: Libraries :: Python Modules',
-      ],
+    ],
 
-    )
+  )
