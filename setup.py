@@ -10,6 +10,7 @@ dist.Distribution(dict(setup_requires=['bob.blitz', 'numpy'] + bob_packages))
 from bob.blitz.extension import Extension, Library, build_ext
 from bob.extension.utils import uniq, find_library
 
+import os
 
 def get_flags(keys):
   """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
