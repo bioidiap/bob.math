@@ -13,14 +13,13 @@ matrix:
     env:
     - NUMPYSPEC===1.8.0
 before_install:
-- python -c 'import numpy.__config__ as c; print(""); print("Numpy configuration"); print("-------------------"); c.show(); print("")'
 - sudo add-apt-repository -y ppa:biometrics/bob
 - sudo apt-get update -qq
 - sudo apt-get install -qq --force-yes libboost-all-dev libblitz1-dev libatlas-dev libatlas-base-dev liblapack-dev
 - if [ -n "${NUMPYSPEC}" ]; then sudo apt-get install -qq gfortran; fi
 - if [ -n "${NUMPYSPEC}" ]; then pip install --upgrade pip setuptools; fi
-- if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC sphinx nose; fi
-- pip install cpp-coveralls
+- if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC; fi
+- pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel sphinx nose==1.3.0 jinja2==2.6 cpp-coveralls
 install:
 - python bootstrap.py
 - CFLAGS=-coverage ./bin/buildout
@@ -30,5 +29,5 @@ script:
 - ./bin/sphinx-build -b doctest doc sphinx
 - ./bin/sphinx-build -b html doc sphinx
 after_success:
-- coveralls --build-root=`pwd` --exclude=src
+- coveralls --build-root=`pwd` --exclude=src --exclude-pattern=".*Compiler.*"
 - ./src/bob.extension/scripts/upload-sphinx.sh
