@@ -10,6 +10,8 @@
    :target: https://travis-ci.org/bioidiap/bob.math
 .. image:: https://coveralls.io/repos/bioidiap/bob.math/badge.png
    :target: https://coveralls.io/r/bioidiap/bob.math
+.. image:: https://img.shields.io/badge/github-master-0000c0.png
+   :target: https://github.com/bioidiap/bob.math/tree/master
 .. image:: http://img.shields.io/pypi/v/bob.math.png
    :target: https://pypi.python.org/pypi/bob.math
 .. image:: http://img.shields.io/pypi/dm/bob.math.png
