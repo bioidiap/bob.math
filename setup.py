@@ -133,7 +133,7 @@ setup(
 
     name='bob.math',
     version=version,
-    description='Bindings for bob.math',
+    description='Mathematical functions of Bob',
     url='http://github.com/bioidiap/bob.math',
     license='BSD',
     author='Andre Anjos',
@@ -216,7 +216,8 @@ setup(
     },
 
     classifiers = [
-      'Development Status :: 3 - Alpha',
+      'Framework :: Bob',
+      'Development Status :: 4 - Beta',
       'Intended Audience :: Developers',
       'License :: OSI Approved :: BSD License',
       'Natural Language :: English',

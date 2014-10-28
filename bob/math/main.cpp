@@ -99,7 +99,7 @@ static bob::extension::FunctionDoc s_linsolve = bob::extension::FunctionDoc(
 static bob::extension::FunctionDoc s_linsolve_nocheck = bob::extension::FunctionDoc(
   "linsolve_",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve`. "
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve`. "
   "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses LAPACK's ``dgesv`` generic solver. "
   "You can use this method in two different formats. "
@@ -133,7 +133,7 @@ static bob::extension::FunctionDoc s_linsolve_sympos = bob::extension::FunctionD
 static bob::extension::FunctionDoc s_linsolve_sympos_nocheck = bob::extension::FunctionDoc(
   "linsolve_sympos_",
   "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_sympos`. "
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve_sympos`. "
   "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
   "You can use this method in two different formats. "
@@ -167,7 +167,7 @@ static bob::extension::FunctionDoc s_linsolve_cg_sympos = bob::extension::Functi
 static bob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = bob::extension::FunctionDoc(
   "linsolve_cg_sympos_",
   "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`linsolve_cg_sympos`. "
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve_cg_sympos`. "
   "Use it when you are sure your input matrices sizes match.\n\n"
   "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
   "You can use this method in two different formats. "
@@ -201,7 +201,7 @@ static bob::extension::FunctionDoc s_pavx = bob::extension::FunctionDoc(
 static bob::extension::FunctionDoc s_pavx_nocheck = bob::extension::FunctionDoc(
   "pavx_",
   "Applies the Pool-Adjacent-Violators Algorithm",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`pavx`. "
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`pavx`. "
   "Use it when you are sure your input matrices sizes match.\n\n"
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
   "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
@@ -258,7 +258,7 @@ static bob::extension::FunctionDoc s_normsinv = bob::extension::FunctionDoc(
   "normsinv",
   "Computes the inverse normal cumulative distribution",
   "Computes the inverse normal cumulative distribution for a probability :math:`p`, given a distribution with mean :math:`\\mu=0` and standard deviation :math:`\\sigma=1`. "
-  "It is equivalent as calling ``norminv(p, 0, 1)`` (see :func:`norminv`). "
+  "It is equivalent as calling ``norminv(p, 0, 1)`` (see :py:func:`norminv`). "
   "Reference: http://home.online.no/~pjacklam/notes/invnorm/"
   )
   .add_prototype("p", "inv")
@@ -289,7 +289,7 @@ static bob::extension::FunctionDoc s_scatter = bob::extension::FunctionDoc(
 static bob::extension::FunctionDoc s_scatter_nocheck = bob::extension::FunctionDoc(
   "scatter_",
   "Computes scatter matrix of a 2D array.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatter`."
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatter`."
   "Use it when you are sure your input matrices sizes match.\n\n"
   "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
   "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
@@ -338,7 +338,7 @@ static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
 static bob::extension::FunctionDoc s_scatters_nocheck = bob::extension::FunctionDoc(
   "scatters_",
   "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :func:`scatters`. "
+  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatters`. "
   "Use it when you are sure your input matrices sizes match.\n\n"
   "For a detailed description of the function, please see :func:`scatters`."
   )
