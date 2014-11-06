@@ -13,7 +13,8 @@ from bob.extension.utils import uniq, find_library
 from bob.extension.utils import load_requirements
 build_requires = load_requirements()
 
-import os
+# Define package version
+version = open("version.txt").read().rstrip()
 
 def get_flags(keys):
   """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
@@ -126,8 +127,6 @@ print(" * defines: %s" % \
 print(" * linking arguments: %s" % ', '.join(math_flags['extra_link_args']))
 print(" * libraries: %s" % ', '.join(math_flags['libraries']))
 print(" * library directories: %s\n" % ', '.join(math_flags['library_dirs']))
-
-version = '2.0.0a0'
 
 setup(
 
