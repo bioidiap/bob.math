@@ -16,6 +16,8 @@ build_requires = load_requirements()
 # Define package version
 version = open("version.txt").read().rstrip()
 
+import os
+
 def get_flags(keys):
   """Returns link/include flags for LAPACK/BLAS based on what NumPy uses
 
