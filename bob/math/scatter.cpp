@@ -96,9 +96,18 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
     return 0;
   }
 
-  if (user_m) Py_RETURN_NONE;
-  if (user_s) return Py_BuildValue("O", m);
-  return Py_BuildValue("OO", s, m);
+  int returns = 2 - (user_s + user_m);
+
+  PyObject* retval = PyTuple_New(returns);
+
+  // fill from the back
+  if (!user_m)
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", m)));
+
+  if (!user_s)
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", s)));
+
+  return retval;
 
 }
 
@@ -210,7 +219,7 @@ int BzTuple_Converter(PyObject* o, PyObject** a) {
   }
   auto retval_ = make_safe(retval);
 
-  PyTuple_SET_ITEM(retval, 0, (PyObject*)first);
+  PyTuple_SET_ITEM(retval, 0, Py_BuildValue("O", first));
 
   for (Py_ssize_t i=1; i<PyTuple_GET_SIZE(tmp); ++i) {
 
@@ -233,7 +242,7 @@ int BzTuple_Converter(PyObject* o, PyObject** a) {
     PyTuple_SET_ITEM(retval, i, Py_BuildValue("O",next));
 
   }
-  *a = retval;
+  *a = Py_BuildValue("O", retval);
 
   return 1;
 
@@ -347,10 +356,21 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
     return 0;
   }
 
-  if (user_m) Py_RETURN_NONE;
-  if (user_sb) return Py_BuildValue("O", m);
-  if (user_sw) return Py_BuildValue("OO", sb, m);
-  return Py_BuildValue("OOO", sw, sb, m);
+  int returns = 3 - (user_sw + user_sb + user_m);
+
+  PyObject* retval = PyTuple_New(returns);
+
+  // fill from the back
+  if (!user_m)
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", m)));
+
+  if (!user_sb)
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", sb)));
+
+  if (!user_sw)
+    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", sw)));
+
+  return retval;
 
 }
 
