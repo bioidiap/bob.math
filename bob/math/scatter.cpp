@@ -96,21 +96,9 @@ PyObject* py_scatter (PyObject*, PyObject* args, PyObject* kwds) {
     return 0;
   }
 
-  int returns = 2 - (user_s + user_m);
-
-  PyObject* retval = PyTuple_New(returns);
-
-  // fill from the back
-  if (!user_m) {
-    Py_INCREF(m); //avoid clean-up as user has requested this object
-    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)m));
-  }
-  if (!user_s) {
-    Py_INCREF(s); //avoid clean-up as user has requested this object
-    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)s));
-  }
-
-  return retval;
+  if (user_m) Py_RETURN_NONE;
+  if (user_s) return Py_BuildValue("O", m);
+  return Py_BuildValue("OO", s, m);
 
 }
 
@@ -197,33 +185,30 @@ int BzTuple_Converter(PyObject* o, PyObject** a) {
 
   PyObject* tmp = PySequence_Tuple(o);
   if (!tmp) return 0;
+  auto tmp_ = make_safe(tmp);
 
   if (PyTuple_GET_SIZE(o) < 2) {
     PyErr_SetString(PyExc_TypeError, "input data object must be a sequence or iterable with at least 2 2D arrays with 32 or 64-bit floats");
-    Py_DECREF(tmp);
     return 0;
   }
 
   PyBlitzArrayObject* first = 0;
   int status = PyBlitzArray_Converter(PyTuple_GET_ITEM(tmp, 0), &first);
   if (!status) {
-    Py_DECREF(tmp);
     return 0;
   }
+  auto first_ = make_safe(first);
 
   if (first->ndim != 2 ||
       (first->type_num != NPY_FLOAT32 && first->type_num != NPY_FLOAT64)) {
     PyErr_SetString(PyExc_TypeError, "input data object must be a sequence or iterable with at least 2 2D arrays with 32 or 64-bit floats - the first array does not conform");
-    Py_DECREF(first);
-    Py_DECREF(tmp);
   }
 
   PyObject* retval = PyTuple_New(PyTuple_GET_SIZE(tmp));
   if (!retval) {
-    Py_DECREF(tmp);
-    Py_DECREF(first);
     return 0;
   }
+  auto retval_ = make_safe(retval);
 
   PyTuple_SET_ITEM(retval, 0, (PyObject*)first);
 
@@ -233,30 +218,21 @@ int BzTuple_Converter(PyObject* o, PyObject** a) {
     PyObject* item = PyTuple_GET_ITEM(tmp, i); //borrowed
     int status = PyBlitzArray_Converter(item, &next);
     if (!status) {
-      Py_DECREF(retval);
-      Py_DECREF(tmp);
       return 0;
     }
+    auto next_ = make_safe(next);
     if (next->type_num != first->type_num) {
         PyErr_Format(PyExc_TypeError, "array at data[%" PY_FORMAT_SIZE_T "d] does not have the same data type as the first array on the sequence (%s != %s)", i, PyBlitzArray_TypenumAsString(next->type_num), PyBlitzArray_TypenumAsString(first->type_num));
-        Py_DECREF(next);
-        Py_DECREF(retval);
-        Py_DECREF(tmp);
         return 0;
     }
     if (next->ndim != 2) {
         PyErr_Format(PyExc_TypeError, "array at data[%" PY_FORMAT_SIZE_T "d] does not have two dimensions, but %" PY_FORMAT_SIZE_T "d", i, next->ndim);
-        Py_DECREF(next);
-        Py_DECREF(retval);
-        Py_DECREF(tmp);
         return 0;
     }
 
-    PyTuple_SET_ITEM(retval, i, (PyObject*)next); //steals `next'
+    PyTuple_SET_ITEM(retval, i, Py_BuildValue("O",next));
 
   }
-
-  Py_DECREF(tmp);
   *a = retval;
 
   return 1;
@@ -371,25 +347,10 @@ PyObject* py_scatters (PyObject*, PyObject* args, PyObject* kwds) {
     return 0;
   }
 
-  int returns = 3 - (user_sw + user_sb + user_m);
-
-  PyObject* retval = PyTuple_New(returns);
-
-  // fill from the back
-  if (!user_m) {
-    Py_INCREF(m);
-    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)m));
-  }
-  if (!user_sb) {
-    Py_INCREF(sb);
-    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)sb));
-  }
-  if (!user_sw) {
-    Py_INCREF(sw);
-    PyTuple_SET_ITEM(retval, --returns, PyBlitzArray_NUMPY_WRAP((PyObject*)sw));
-  }
-
-  return retval;
+  if (user_m) Py_RETURN_NONE;
+  if (user_sb) return Py_BuildValue("O", m);
+  if (user_sw) return Py_BuildValue("OO", sb, m);
+  return Py_BuildValue("OOO", sw, sb, m);
 
 }
 

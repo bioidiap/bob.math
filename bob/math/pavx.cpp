@@ -65,8 +65,7 @@ PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
   }
 
   if (returns_output) {
-    Py_INCREF(output);
-    return PyBlitzArray_NUMPY_WRAP((PyObject*)output);
+    return PyBlitzArray_NUMPY_WRAP(Py_BuildValue("O", output));
   }
 
   Py_RETURN_NONE;
@@ -234,11 +233,5 @@ PyObject* py_pavx_width_height (PyObject*, PyObject* args, PyObject* kwds) {
 
   if (!height) return 0;
 
-  // creates the return pair and returns
-  PyObject* retval = PyTuple_New(2);
-  Py_INCREF(width);
-  PyTuple_SET_ITEM(retval, 0, PyBlitzArray_NUMPY_WRAP(width));
-  Py_INCREF(height);
-  PyTuple_SET_ITEM(retval, 1, PyBlitzArray_NUMPY_WRAP(height));
-  return retval;
+  return Py_BuildValue("OO", width, height);
 }
