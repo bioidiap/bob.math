@@ -507,10 +507,6 @@ static PyObject* create_module (void) {
   if (!m) return 0;
   auto m_ = make_safe(m); ///< protects against early returns
 
-  /* register version numbers and constants */
-  if (PyModule_AddStringConstant(m, "__version__", BOB_EXT_MODULE_VERSION) < 0)
-    return 0;
-
   /* register the types to python */
   Py_INCREF(&PyBobMathLpInteriorPoint_Type);
   if (PyModule_AddObject(m, "LPInteriorPoint",

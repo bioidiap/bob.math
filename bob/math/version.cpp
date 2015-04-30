@@ -19,7 +19,7 @@
 #endif
 #include <bob.blitz/capi.h>
 #include <bob.blitz/cleanup.h>
-#include <bob.core/config.h>
+#include <bob.math/config.h>
 
 static int dict_set(PyObject* d, const char* key, const char* value) {
   PyObject* v = Py_BuildValue("s", value);
@@ -149,6 +149,9 @@ static PyObject* create_module (void) {
 
   /* register version numbers and constants */
   if (PyModule_AddStringConstant(m, "module", BOB_EXT_MODULE_VERSION) < 0)
+    return 0;
+
+  if (PyModule_AddIntConstant(m, "api", BOB_MATH_API_VERSION) < 0)
     return 0;
 
   PyObject* externals = build_version_dictionary();
