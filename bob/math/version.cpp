@@ -19,6 +19,7 @@
 #endif
 #include <bob.blitz/capi.h>
 #include <bob.blitz/cleanup.h>
+#include <bob.core/config.h>
 #include <bob.math/config.h>
 
 static int dict_set(PyObject* d, const char* key, const char* value) {
