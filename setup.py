@@ -135,7 +135,7 @@ setup(
     name='bob.math',
     version=version,
     description='Mathematical functions of Bob',
-    url='http://github.com/bioidiap/bob.math',
+    url='https://gitlab.idiap.ch/bob/bob.math',
     license='BSD',
     author='Andre Anjos',
     author_email='andre.anjos@idiap.ch',
