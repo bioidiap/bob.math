@@ -15,7 +15,19 @@ Summary
   bob.math.LPInteriorPoint
   bob.math.LPInteriorPointShortstep
   bob.math.LPInteriorPointLongstep
-
+  bob.math.chi_square
+  bob.math.gsvd
+  bob.math.histogram_intersection
+  bob.math.kullback_leibler
+  bob.math.linsolve
+  bob.math.linsolve_cg_sympos
+  bob.math.linsolve_sympos  
+  bob.math.norminv  
+  bob.math.pavx
+  bob.math.pavxWidth
+  bob.math.pavxWidthHeight
+  bob.math.scatter
+  bob.math.scatters
 
 Details
 .......

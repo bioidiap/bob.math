@@ -20,6 +20,7 @@
 #include "norminv.h"
 #include "scatter.h"
 #include "lp_interior_point.h"
+#include "gsvd.h"
 
 static bob::extension::FunctionDoc s_histogram_intersection = bob::extension::FunctionDoc(
     "histogram_intersection",
@@ -355,6 +356,26 @@ static bob::extension::FunctionDoc s_scatters_nocheck = bob::extension::Function
 ;
 
 
+static bob::extension::FunctionDoc s_gsvd = bob::extension::FunctionDoc(
+  "gsvd",
+  "Computes the Generalized SVD",
+  "Computes the Generalized SVD. The output of this function is similar with the one found in Matlab\n"
+  "[U,V,X,C,S] = gsvd(A,B) returns unitary matrices :math:`U` and :math:`V`, the square matrix :math:`X` (which is :math:`[0 R] Q^{T}`), and nonnegative diagonal matrices :math:`C` and :math:`S` such that:\n\n"
+  ".. math:: C^{T}C + S^{T}S = I \n"
+  ".. math:: A = (XC^{T}U^{T})^{T}\n"
+  ".. math:: B = (XS^{T}V^{T})^{T}\n"
+  )
+  .add_prototype("A, B", "")
+  .add_parameter("A", "[array_like (float, 2D)]", "Must be :math:`m \\times n`")
+  .add_parameter("B", "[array_like (float, 2D)]", "Must be :math:`p \\times n`")
+  .add_return("U", "[array_like (float, 2D)]", "Contains a :math:`m \\times m` orthogonal matrix.")
+  .add_return("V", "[array_like (float, 2D)]", "Contains a :math:`n \\times n` orthogonal matrix.")
+  .add_return("X", "[array_like (float, 2D)]", "Contains a :math:`p \\times q` matrix, where :math:`p=\\min(m+n,p)` and :math:`X=[0, R] Q^{T}` (Check LAPACK documentation).")
+  .add_return("C", "[array_like (float, 2D)]", "Contains a :math:`p \\times q` matrix.")
+  .add_return("S", "[array_like (float, 2D)]", "Contains a :math:`n \\times q` matrix.")
+;
+
+
 static PyMethodDef module_methods[] = {
     {
       s_histogram_intersection.name(),
@@ -470,6 +491,13 @@ static PyMethodDef module_methods[] = {
       METH_VARARGS|METH_KEYWORDS,
       s_scatters_nocheck.doc()
     },
+    {
+      s_gsvd.name(),
+      (PyCFunction)py_gsvd,
+      METH_VARARGS|METH_KEYWORDS,
+      s_gsvd.doc()
+    },
+
     {0}  /* Sentinel */
 };
 
