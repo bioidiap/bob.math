@@ -90,6 +90,11 @@ if not math_flags['libraries']:
 
   # tries first to find an MKL implementation
   lapack = find_library('mkl_lapack64')
+
+  if not lapack:
+    # if that fails, go for openblas
+    lapack = find_library('openblas')
+
   if not lapack:
     # if that fails, go for the default implementation
     lapack = find_library('lapack', subpaths=['sse2', ''])
@@ -100,6 +105,11 @@ if not math_flags['libraries']:
 
   # tries first to find an MKL implementation
   blas = find_library('mkl')
+
+  if not blas:
+    # if that fails, go for openblas
+    blas = find_library('openblas')
+
   if not blas:
     # if that fails, go for the default implementation of cblas
     blas = find_library('cblas', subpaths=['sse2', ''])
