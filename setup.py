@@ -69,6 +69,12 @@ math_flags = dict(
 for key in math_flags:
   math_flags[key] = uniq(lapack_flags.get(key, []) + blas_flags.get(key, []))
 
+# checks if those libraries actually exist
+found_all = all([find_library(lib, prefixes=math_flags.get('library_dirs'))
+                 for lib in math_flags['libraries']])
+if not found_all:
+  math_flags['libraries'] = []
+
 # checks if any libraries are being linked, otherwise we
 # search through the filesystem in stock locations.
 if not math_flags['libraries']:
@@ -84,6 +90,11 @@ if not math_flags['libraries']:
 
   # tries first to find an MKL implementation
   lapack = find_library('mkl_lapack64')
+
+  if not lapack:
+    # if that fails, go for openblas
+    lapack = find_library('openblas')
+
   if not lapack:
     # if that fails, go for the default implementation
     lapack = find_library('lapack', subpaths=['sse2', ''])
@@ -94,6 +105,11 @@ if not math_flags['libraries']:
 
   # tries first to find an MKL implementation
   blas = find_library('mkl')
+
+  if not blas:
+    # if that fails, go for openblas
+    blas = find_library('openblas')
+
   if not blas:
     # if that fails, go for the default implementation of cblas
     blas = find_library('cblas', subpaths=['sse2', ''])

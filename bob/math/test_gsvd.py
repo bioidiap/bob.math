@@ -43,7 +43,7 @@ def gsvd_relations(A,B):
 
 def test_first_case():
   """
-  Testing the first scenario:
+  Testing the first scenario of gsvd:
   M-K-L >= 0 (check http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing_ga4a187519e5c71da3b3f67c85e9baf0f2.html#ga4a187519e5c71da3b3f67c85e9baf0f2)  
   """
 
@@ -55,7 +55,7 @@ def test_first_case():
 
 def test_second_case():
   """
-  Testing the second scenario:
+  Testing the second scenario of gsvd:
   M-K-L < 0 (check http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing_ga4a187519e5c71da3b3f67c85e9baf0f2.html#ga4a187519e5c71da3b3f67c85e9baf0f2)  
   """
 

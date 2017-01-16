@@ -50,13 +50,13 @@
 .. _python: http://www.python.org
 .. _pypi: http://pypi.python.org
 .. _qt4: http://qt.nokia.com/
-.. _satellite packages: https://gitlab.idiap.ch/bob/bob/wikis/Packages
+.. _satellite packages: https://www.idiap.ch/software/bob/packages
 .. _scipy: http://www.scipy.org
 .. _setuptools: http://trac.edgewall.org/wiki/setuptools
 .. _sphinx: http://sphinx.pocoo.org
 .. _sqlalchemy: http://www.sqlalchemy.org/
 .. _sqlite: http://www.sqlite.org/
-.. _submit a new bug report: https://groups.google.com/forum/?fromgroups#!forum/bob-devel
+.. _submit a new bug report: https://www.idiap.ch/software/bob/issues
 .. _torch 3 vision: http://torch3vision.idiap.ch
 .. _torch 3: http://www.torch.ch
 .. _torch 5: http://torch5.sourceforge.net
