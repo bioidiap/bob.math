@@ -69,7 +69,7 @@ math_flags = dict(
 for key in math_flags:
   math_flags[key] = uniq(lapack_flags.get(key, []) + blas_flags.get(key, []))
 
-# checks if those libraries actually exists
+# checks if those libraries actually exist
 found_all = all([find_library(lib, prefixes=math_flags.get('library_dirs'))
                  for lib in math_flags['libraries']])
 if not found_all:
