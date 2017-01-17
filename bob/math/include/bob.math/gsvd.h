@@ -65,7 +65,7 @@ void gsvd(blitz::Array<double,2>& A,
         void swap_(blitz::Array<T,1>& A, int* indexes, int begin, int end) {
             T aux = 0;
             int fortran_index = 0;
-            for (int i=0; i<A.extent(0); i++){
+            for (int i=begin; i<A.extent(0); i++){
                 fortran_index = indexes[i]-1;
                 aux = A(i);
                 A(i) = A(fortran_index);
@@ -88,9 +88,12 @@ void gsvd(blitz::Array<double,2>& A,
             int fortran_index = 0;
             for (int i=begin; i<end; i++){
                 fortran_index = indexes[i]-1;
-                aux = A(blitz::Range::all(), i);
-                A(blitz::Range::all(), i) = A(blitz::Range::all(), fortran_index);
-                A(blitz::Range::all(), fortran_index) = aux;
+                
+                if (fortran_index < A.extent(1)){
+                    aux = A(blitz::Range::all(), i);
+                    A(blitz::Range::all(), i) = A(blitz::Range::all(), fortran_index);
+                    A(blitz::Range::all(), fortran_index) = aux;
+                }
             }
         }
 

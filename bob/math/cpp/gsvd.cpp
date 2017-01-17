@@ -225,9 +225,10 @@ void bob::math::gsvd( blitz::Array<double,2>& A,
     }
     // B - diag(C) part. Here the C is LxL
     // Swaping
+    
     bob::math::swap_(C_1d, iwork.get(), K, std::min(M,r));
     blitz::Array<double,2> C_diag (L,L); C_diag = 0;
-    bob::math::diag(C_1d(blitz::Range(0,L-1)), C_diag);
+    bob::math::diag(C_1d(blitz::Range(K,K+L-1)), C_diag);
     C(blitz::Range(K, M-1), blitz::Range(K, K+L-1)) = C_diag;
 
     //2.2 Preparing S
@@ -239,7 +240,7 @@ void bob::math::gsvd( blitz::Array<double,2>& A,
     // Swap
     bob::math::swap_(S_1d, iwork.get(), K, std::min(M,r));
     blitz::Array<double,2> S_diag (L,L); S_diag = 0;
-    bob::math::diag(S_1d(blitz::Range(0,L-1)), S_diag);
+    bob::math::diag(S_1d(blitz::Range(K,K+L-1)), S_diag);
     S(blitz::Range(0, L-1), blitz::Range(K, K+L-1)) = S_diag;
 
   }
