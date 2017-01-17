@@ -38,7 +38,6 @@ def gsvd_relations(A,B):
   B_check = numpy.dot(numpy.dot(X,S.T),V.T).T
   nose.tools.eq_( (abs(B-B_check) < 1e-10).all(), True )
 
-  del U,V,X,C,S
 
 
 def test_first_case():
@@ -63,5 +62,17 @@ def test_second_case():
   B = numpy.random.rand(11,5)
 
   gsvd_relations(A, B)
+
+
+def test_corner_case():
+  """
+  Testing when P <= N.
+    
+  """
+
+  A = numpy.random.rand(25, 25)
+  B = numpy.random.rand(25, 25)
+  gsvd_relations(A, B)
+
 
 
