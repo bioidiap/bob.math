@@ -69,6 +69,14 @@ math_flags = dict(
 for key in math_flags:
   math_flags[key] = uniq(lapack_flags.get(key, []) + blas_flags.get(key, []))
 
+# remove the mkl libraries that we do not need and might not exist
+if len(math_flags['libraries']) > 0 and \
+   any(['mkl' in lib for lib in math_flags['libraries']]):
+  NOT_VALID = ['mkl_lapack95_lp64']  # we don't need this!
+  for lib in list(math_flags['libraries']):
+    if lib in NOT_VALID:
+      math_flags['libraries'].remove(lib)
+
 # checks if those libraries actually exist
 found_all = all([find_library(lib, prefixes=math_flags.get('library_dirs'))
                  for lib in math_flags['libraries']])
