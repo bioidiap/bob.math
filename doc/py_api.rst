@@ -16,6 +16,7 @@ Summary
   bob.math.LPInteriorPointShortstep
   bob.math.LPInteriorPointLongstep
   bob.math.chi_square
+  bob.math.svd
   bob.math.gsvd
   bob.math.histogram_intersection
   bob.math.kullback_leibler
