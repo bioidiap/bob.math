@@ -376,6 +376,22 @@ static bob::extension::FunctionDoc s_gsvd = bob::extension::FunctionDoc(
 ;
 
 
+static bob::extension::FunctionDoc s_svd = bob::extension::FunctionDoc(
+  "svd",
+  "Computes the SVD",
+  "Computes the SVD (Singular Value Decomposition).\n"
+  "[U,S,V] = svd(A) returns :math:`U`, :math:`S` and :math:`V` such that ` \n\n"
+  ".. math:: A=U S V\n"
+  )
+  .add_prototype("A", "")
+  .add_parameter("A", "[array_like (float, 2D)]", "Must be :math:`m \\times n`")
+  .add_return("U", "[array_like (float, 2D)]", "The :math:`U` matrix of left singular vectors (size :math:`m \\times m`)")
+  .add_return("S", "[array_like (float, 2D)]", "The matrix of singular values :math:`S` of size :math:`m \\times n`")
+  .add_return("V", "[array_like (float, 2D)]", "The :math:`V^{T}` matrix of right singular vectors (size :math:`n \\times n`)")
+;
+
+
+
 static PyMethodDef module_methods[] = {
     {
       s_histogram_intersection.name(),
@@ -496,6 +512,12 @@ static PyMethodDef module_methods[] = {
       (PyCFunction)py_gsvd,
       METH_VARARGS|METH_KEYWORDS,
       s_gsvd.doc()
+    },
+    {
+      s_svd.name(),
+      (PyCFunction)py_svd,
+      METH_VARARGS|METH_KEYWORDS,
+      s_svd.doc()
     },
 
     {0}  /* Sentinel */

@@ -8,3 +8,4 @@
 #include <Python.h>
 
 PyObject* py_gsvd(PyObject*, PyObject* args, PyObject* kwds);
+PyObject* py_svd(PyObject*, PyObject* args, PyObject* kwds);

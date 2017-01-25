@@ -79,6 +79,19 @@ static void svd_lapack( const char jobz, const int M, const int N,
     if (info != 0)
       throw std::runtime_error("The LAPACK dgesdd function returned a non-zero value. You may consider using LAPACK dgsevd instead (see #171) by enabling the 'safe' option.");
   }
+  
+  // Defining the sign of the eigenvectors
+  // Approch extracted from page 8 - http://prod.sandia.gov/techlib/access-control.cgi/2007/076422.pdf  
+  if(U[0] < 0){    
+    int ucol=0; ucol= (jobz=='A')? M : std::min(M,N);
+    for (int i=0; i<ldu*ucol; i++){
+      U[i] = -1*U[i];
+    }
+
+    for (int i=0; i<ldvt*N; i++){
+      VT[i] = -1*VT[i];
+    }
+  }
 }
 
 void bob::math::svd(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
@@ -148,7 +161,8 @@ void bob::math::svd_(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
 
   // Call the LAPACK function
   svd_lapack(jobz, N, M, A_lapack, lda, S_lapack, U_lapack, ldu,
-    VT_lapack, ldvt, safe);
+    VT_lapack, ldvt, safe);  
+
 
   // Copy singular vectors back to U, V and sigma if required
   if (!U_direct_use)  Vt = U_blitz_lapack;
