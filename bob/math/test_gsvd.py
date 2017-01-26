@@ -20,7 +20,6 @@ import bob.math
 import numpy
 import nose.tools
 numpy.random.seed(10)
-import pkg_resources
 
 
 def gsvd_relations(A,B):
@@ -104,7 +103,7 @@ def test_svd_signal():
   A = numpy.array([[3,-3,100], [4,-4,50], [3.5,-3.5,-50], [3.8,-3.7,-100]], dtype='float64')
 
   U_ref = numpy.array([[  2.20825004e-03,  -1.80819459e-03,  -9.99995927e-01],
-                       [  7.09549949e-01,  -7.04649416e-01,   2.84101853e-03],
+                       [ -7.09549949e-01,  7.04649416e-01,  -2.84101853e-03],
                        [ -7.04651683e-01,  -7.09553332e-01,  -2.73037723e-04]])
   
   [U,S,V] = bob.math.svd(A)

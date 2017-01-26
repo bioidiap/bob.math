@@ -70,7 +70,7 @@ PyObject* py_gsvd (PyObject*, PyObject* args, PyObject* kwds) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
   }
   catch (...) {
-    PyErr_SetString(PyExc_RuntimeError, "norminv failed: unknown exception caught");
+    PyErr_SetString(PyExc_RuntimeError, "gsvd failed: unknown exception caught");
   }
 
 
@@ -117,7 +117,7 @@ PyObject* py_svd (PyObject*, PyObject* args, PyObject* kwds) {
   
 
   try {
-    bob::math::svd(*A_bz,V,S,U);
+    bob::math::svd(*A_bz,V,S,U, true);
 
     // S for the python output.
     // LAPACK returns an 1d matrix of size n.
@@ -137,7 +137,7 @@ PyObject* py_svd (PyObject*, PyObject* args, PyObject* kwds) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
   }
   catch (...) {
-    PyErr_SetString(PyExc_RuntimeError, "norminv failed: unknown exception caught");
+    PyErr_SetString(PyExc_RuntimeError, "svd failed: unknown exception caught");
   }
 
 
