@@ -7,6 +7,8 @@
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.math/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.math/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.math/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.math/badges/master/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.math/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.math
 .. image:: http://img.shields.io/pypi/v/bob.math.svg
@@ -26,11 +28,10 @@ Bob_. This package contains Bob's math functionality.
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, using the Python interpreter
-provided by the distribution, bootstrap and buildout this package::
+Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+run::
 
-  $ python bootstrap-buildout.py
-  $ ./bin/buildout
+  $ conda install bob.math
 
 
 Contact
