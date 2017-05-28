@@ -22,8 +22,8 @@ Summary
   bob.math.kullback_leibler
   bob.math.linsolve
   bob.math.linsolve_cg_sympos
-  bob.math.linsolve_sympos  
-  bob.math.norminv  
+  bob.math.linsolve_sympos
+  bob.math.norminv
   bob.math.pavx
   bob.math.pavxWidth
   bob.math.pavxWidthHeight
@@ -35,3 +35,4 @@ Details
 
 .. automodule:: bob.math
    :members:
+   :inherited-members:
