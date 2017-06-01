@@ -5,10 +5,10 @@
    :target: http://pythonhosted.org/bob.math/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.math/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.math/badges/master/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.math/commits/master
-.. image:: https://gitlab.idiap.ch/bob/bob.math/badges/master/coverage.svg
-   :target: https://gitlab.idiap.ch/bob/bob.math/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.math/badges/v2.1.1/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.math/commits/v2.1.1
+.. image:: https://gitlab.idiap.ch/bob/bob.math/badges/v2.1.1/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.math/commits/v2.1.1
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.math
 .. image:: http://img.shields.io/pypi/v/bob.math.svg
