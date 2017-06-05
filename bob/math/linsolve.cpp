@@ -134,7 +134,7 @@ BOB_TRY
       bob::math::linsolve(
           *PyBlitzArrayCxx_AsBlitz<double,2>(A),
           *PyBlitzArrayCxx_AsBlitz<double,1>(b),
-          *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval)
+          *PyBlitzArrayCxx_AsBlitz<double,1>(retval)
           );
       break;
 
@@ -145,7 +145,7 @@ BOB_TRY
       bob::math::linsolve(
           *PyBlitzArrayCxx_AsBlitz<double,2>(A),
           *PyBlitzArrayCxx_AsBlitz<double,2>(b),
-          *PyBlitzArrayCxx_AsBlitz<double,2>((PyBlitzArrayObject*)retval)
+          *PyBlitzArrayCxx_AsBlitz<double,2>(retval)
           );
       break;
 
@@ -300,7 +300,7 @@ BOB_TRY
       bob::math::linsolveSympos(
           *PyBlitzArrayCxx_AsBlitz<double,2>(A),
           *PyBlitzArrayCxx_AsBlitz<double,1>(b),
-          *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval)
+          *PyBlitzArrayCxx_AsBlitz<double,1>(retval)
           );
       break;
 
@@ -311,7 +311,7 @@ BOB_TRY
       bob::math::linsolveSympos(
           *PyBlitzArrayCxx_AsBlitz<double,2>(A),
           *PyBlitzArrayCxx_AsBlitz<double,2>(b),
-          *PyBlitzArrayCxx_AsBlitz<double,2>((PyBlitzArrayObject*)retval)
+          *PyBlitzArrayCxx_AsBlitz<double,2>(retval)
           );
       break;
 
@@ -465,7 +465,7 @@ BOB_TRY
       bob::math::linsolveCGSympos(
           *PyBlitzArrayCxx_AsBlitz<double,2>(A),
           *PyBlitzArrayCxx_AsBlitz<double,1>(b),
-          *PyBlitzArrayCxx_AsBlitz<double,1>((PyBlitzArrayObject*)retval),
+          *PyBlitzArrayCxx_AsBlitz<double,1>(retval),
           acc, max_iter
           );
       break;

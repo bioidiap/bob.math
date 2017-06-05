@@ -83,9 +83,6 @@ static bob::extension::FunctionDoc s_kullback_leibler = bob::extension::Function
 ;
 
 
-
-
-
 static bob::extension::FunctionDoc s_pavx = bob::extension::FunctionDoc(
   "pavx",
   "Applies the Pool-Adjacent-Violators Algorithm",
