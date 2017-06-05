@@ -23,10 +23,8 @@ namespace bob { namespace math {
    * @param x The x vector of the system A*x=b which will be updated
    *   at the end of the function.
    */
-  void linsolve(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-      const blitz::Array<double,1>& b);
-  void linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-      const blitz::Array<double,1>& b);
+  void linsolve(const blitz::Array<double,2>& A,
+      const blitz::Array<double,1>& b, blitz::Array<double,1>& x);
 
   /**
    * @brief Function which solves a linear system of equation using the
@@ -36,10 +34,8 @@ namespace bob { namespace math {
    * @param X The X matrix of the system A*X=B which will be updated
    *   at the end of the function (size NxP).
    */
-  void linsolve(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-      const blitz::Array<double,2>& B);
-  void linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-      const blitz::Array<double,2>& B);
+  void linsolve(const blitz::Array<double,2>& A,
+      const blitz::Array<double,2>& B, blitz::Array<double,2>& X);
 
   /**
    * @brief Function which solves a symmetric positive definite linear
@@ -53,9 +49,7 @@ namespace bob { namespace math {
    *   at the end of the function (size N)
    */
   void linsolveSympos(const blitz::Array<double,2>& A,
-      blitz::Array<double,1>& x, const blitz::Array<double,1>& b);
-  void linsolveSympos_(const blitz::Array<double,2>& A,
-      blitz::Array<double,1>& x, const blitz::Array<double,1>& b);
+      const blitz::Array<double,1>& b, blitz::Array<double,1>& x);
 
   /**
    * @brief Function which solves a symmetric positive definite linear
@@ -69,9 +63,7 @@ namespace bob { namespace math {
    *   at the end of the function (size NxP)
    */
   void linsolveSympos(const blitz::Array<double,2>& A,
-      blitz::Array<double,2>& X, const blitz::Array<double,2>& B);
-  void linsolveSympos_(const blitz::Array<double,2>& A,
-      blitz::Array<double,2>& X, const blitz::Array<double,2>& B);
+      const blitz::Array<double,2>& B, blitz::Array<double,2>& X);
 
 
   /**
@@ -86,12 +78,10 @@ namespace bob { namespace math {
    *   norm(Ax-b)/norm(b) < acc
    * @param max_iter The maximum number of iterations
    */
-  void linsolveCGSympos(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-      const blitz::Array<double,1>& b, const double acc, const int max_iter);
-  void linsolveCGSympos_(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-      const blitz::Array<double,1>& b, const double acc, const int max_iter);
+  void linsolveCGSympos(const blitz::Array<double,2>& A,
+      const blitz::Array<double,1>& b, blitz::Array<double,1>& x,
+      const double acc, const int max_iter);
 
 }}
 
 #endif /* BOB_MATH_LINSOLVE_H */
-
