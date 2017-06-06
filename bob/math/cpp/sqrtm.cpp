@@ -34,7 +34,7 @@ void bob::math::sqrtSymReal(const blitz::Array<double,2>& A,
   blitz::Array<double,2> Vt = V.transpose(1,0);
   blitz::Array<double,1> D(N);
   blitz::Array<double,2> tmp(N,N); // Cache for multiplication
-  bob::math::eigSym_(A,V,D);
+  bob::math::eigSym(A,V,D);
 
   // 2/ Updates the diagonal matrix D, such that D=sqrt(|D|)
   //    |.| is used to deal with values close to zero (-epsilon)

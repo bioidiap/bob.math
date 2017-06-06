@@ -169,23 +169,6 @@ static bob::extension::FunctionDoc s_scatter = bob::extension::FunctionDoc(
   .add_return("m", "array_like (float, 1D)", "The mean matrix, with with the row means of ``a``")
 ;
 
-static bob::extension::FunctionDoc s_scatter_nocheck = bob::extension::FunctionDoc(
-  "scatter_",
-  "Computes scatter matrix of a 2D array.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatter`."
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
-  "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
-  "The resulting array ``m`` is a 1D array with the row means of ``a``. "
-  "This function supports many calling modes, but you should provide, at least, the input data matrix ``a``. "
-  "All non-provided arguments will be allocated internally and returned."
-  )
-  .add_prototype("a, s, m")
-  .add_parameter("a", "array_like (float, 2D)", "The sample matrix, *considering data is organized row-wise* (each sample is a row, each feature is a column)")
-  .add_parameter("s", "array_like (float, 2D)", "The scatter matrix, squared with extents equal to the number of columns in ``a``")
-  .add_parameter("m", "array_like (float,1D)", "The mean matrix, with with the row means of ``a``")
-;
-
 
 static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
   "scatters",
@@ -216,24 +199,6 @@ static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
   .add_return("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`")
   .add_return("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`")
   .add_return("m", "array_like (float, 1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
-;
-
-static bob::extension::FunctionDoc s_scatters_nocheck = bob::extension::FunctionDoc(
-  "scatters_",
-  "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatters`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "For a detailed description of the function, please see :func:`scatters`."
-  )
-  .add_prototype("data, sw, sb, m")
-  .add_prototype("data, sw, sb")
-  .add_parameter("data", "[array_like (float, 2D)]", "The list of sample matrices. "
-      "In each sample matrix the data is organized row-wise (each sample is a row, each feature is a column). "
-      "Each matrix stores the data of a particular class. "
-      "**Every matrix in ``data`` must have exactly the same number of columns.**")
-  .add_parameter("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`, squared with extents equal to the number of columns in ``data``")
-  .add_parameter("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`, squared with extents equal to the number of columns in ``data``")
-  .add_parameter("m", "array_like (float,1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
 ;
 
 
@@ -347,22 +312,10 @@ static PyMethodDef module_methods[] = {
       s_scatter.doc()
     },
     {
-      s_scatter_nocheck.name(),
-      (PyCFunction)py_scatter_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_scatter_nocheck.doc()
-    },
-    {
       s_scatters.name(),
       (PyCFunction)py_scatters,
       METH_VARARGS|METH_KEYWORDS,
       s_scatters.doc()
-    },
-    {
-      s_scatters_nocheck.name(),
-      (PyCFunction)py_scatters_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_scatters_nocheck.doc()
     },
     {
       s_gsvd.name(),
