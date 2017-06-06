@@ -99,24 +99,6 @@ static bob::extension::FunctionDoc s_pavx = bob::extension::FunctionDoc(
   .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
 ;
 
-static bob::extension::FunctionDoc s_pavx_nocheck = bob::extension::FunctionDoc(
-  "pavx_",
-  "Applies the Pool-Adjacent-Violators Algorithm",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`pavx`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
-  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
-  "You can use this method in two different formats. "
-  "The first interface accepts the ``input`` and ``output``. "
-  "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
-  )
-  .add_prototype("input, output")
-  .add_prototype("input", "output")
-  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
-  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
-  .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
-;
-
 static bob::extension::FunctionDoc s_pavx_width = bob::extension::FunctionDoc(
   "pavxWidth",
   "Applies the Pool-Adjacent-Violators Algorithm and returns the width.",
@@ -333,12 +315,6 @@ static PyMethodDef module_methods[] = {
       (PyCFunction)py_pavx,
       METH_VARARGS|METH_KEYWORDS,
       s_pavx.doc()
-    },
-    {
-      s_pavx_nocheck.name(),
-      (PyCFunction)py_pavx_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_pavx_nocheck.doc()
     },
     {
       s_pavx_width.name(),

@@ -33,7 +33,6 @@ namespace bob { namespace math {
    * Duembgen is that the data points of the vector y can not be weighted.
    */
   void pavx(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat);
-  void pavx_(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat);
 
   /**
    * This variant additionally returns the width vector of the pav bins,

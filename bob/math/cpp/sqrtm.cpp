@@ -28,15 +28,6 @@ void bob::math::sqrtSymReal(const blitz::Array<double,2>& A,
   bob::core::array::assertSameShape(A,shape);
   bob::core::array::assertSameShape(B,shape);
 
-  bob::math::sqrtSymReal_(A, B);
-}
-
-void bob::math::sqrtSymReal_(const blitz::Array<double,2>& A,
-  blitz::Array<double,2>& B)
-{
-  // Size variable
-  int N = A.extent(0);
-
   // 1/ Perform the Eigenvalue decomposition of the symmetric matrix
   //    A = V.D.V^T, and V^-1=V^T
   blitz::Array<double,2> V(N,N);

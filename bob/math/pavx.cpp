@@ -72,53 +72,6 @@ PyObject* py_pavx (PyObject*, PyObject* args, PyObject* kwds) {
 
 }
 
-PyObject* py_pavx_nocheck (PyObject*, PyObject* args, PyObject* kwds) {
-
-  /* Parses input arguments in a single shot */
-  static const char* const_kwlist[] = { "input", "output", 0 /* Sentinel */ };
-  static char** kwlist = const_cast<char**>(const_kwlist);
-
-  PyBlitzArrayObject* input = 0;
-  PyBlitzArrayObject* output = 0;
-
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&",
-        kwlist,
-        &PyBlitzArray_Converter, &input,
-        &PyBlitzArray_OutputConverter, &output
-        )) return 0;
-
-  //protects acquired resources through this scope
-  auto input_ = make_safe(input);
-  auto output_ = make_safe(output);
-
-  // can only handle 1D arrays
-  if (input->ndim != 1 || output->ndim != 1) {
-    PyErr_SetString(PyExc_TypeError, "input and output arrays should be one-dimensional");
-    return 0;
-  }
-
-  // can only handle float arrays
-  if (input->type_num != NPY_FLOAT64 || output->type_num != NPY_FLOAT64) {
-    PyErr_SetString(PyExc_TypeError, "input and output arrays data types should be float (i.e. `numpy.float64' equivalents)");
-    return 0;
-  }
-
-  try {
-    bob::math::pavx_(*PyBlitzArrayCxx_AsBlitz<double,1>(input),
-        *PyBlitzArrayCxx_AsBlitz<double,1>(output));
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_SetString(PyExc_RuntimeError, "pavx failed: unknown exception caught");
-    return 0;
-  }
-
-  Py_RETURN_NONE;
-}
-
 PyObject* py_pavx_width (PyObject*, PyObject* args, PyObject* kwds) {
 
   /* Parses input arguments in a single shot */

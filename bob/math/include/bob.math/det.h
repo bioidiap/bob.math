@@ -20,12 +20,6 @@ namespace bob { namespace math {
    * @param A The A matrix to consider (size NxN)
    */
   double det(const blitz::Array<double,2>& A);
-  /**
-   * @brief Function which computes the determinant of a square matrix
-   * @param A The A matrix to consider (size NxN)
-   * @warning Does not check the input matrix
-   */
-  double det_(const blitz::Array<double,2>& A);
 
   /**
    * @brief Function which computes the sign and (natural) logarithm of
@@ -35,15 +29,6 @@ namespace bob { namespace math {
    *   (-1 if negative, 0 if zero, +1 if positive)
    */
   double slogdet(const blitz::Array<double,2>& A, int& sign);
-  /**
-   * @brief Function which computes the sign and (natural) logarithm of
-   *   the determinant of a square matrix
-   * @param A The A matrix to consider (size NxN)
-   * @param sign The (output) sign of the determinant
-   *   (-1 if negative, 0 if zero, +1 if positive)
-   * @warning Does not check the input matrix
-   */
-  double slogdet_(const blitz::Array<double,2>& A, int& sign);
 
 }}
 

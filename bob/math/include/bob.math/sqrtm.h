@@ -20,14 +20,13 @@ namespace bob { namespace math {
  */
 
     /**
-      * @brief Function which computes the (unique) square root of a real 
+      * @brief Function which computes the (unique) square root of a real
       *   symmetric definite-positive matrix.
       * @warning The input matrix should be symmetric.
       * @param A The A matrix to decompose (size NxN)
       * @param B The square root matrix B of A (size NxN)
       */
-    void sqrtSymReal(const blitz::Array<double,2>& A, blitz::Array<double,2>& B); 
-    void sqrtSymReal_(const blitz::Array<double,2>& A, blitz::Array<double,2>& B);
+    void sqrtSymReal(const blitz::Array<double,2>& A, blitz::Array<double,2>& B);
 
 /**
  * @}
