@@ -46,5 +46,5 @@ void bob::math::sqrtSymReal(const blitz::Array<double,2>& A,
   blitz::firstIndex i;
   blitz::secondIndex j;
   tmp = V(i,j) * D(j); // tmp = V.sqrt(D)
-  bob::math::prod_(tmp, Vt, B); // B = V.sqrt(D).V^T
+  bob::math::prod(tmp, Vt, B); // B = V.sqrt(D).V^T
 }
