@@ -79,10 +79,10 @@ static void svd_lapack( const char jobz, const int M, const int N,
     if (info != 0)
       throw std::runtime_error("The LAPACK dgesdd function returned a non-zero value. You may consider using LAPACK dgsevd instead (see #171) by enabling the 'safe' option.");
   }
-
+  
   // Defining the sign of the eigenvectors
-  // Approch extracted from page 8 - http://prod.sandia.gov/techlib/access-control.cgi/2007/076422.pdf
-  if(U[0] < 0){
+  // Approch extracted from page 8 - http://prod.sandia.gov/techlib/access-control.cgi/2007/076422.pdf  
+  if(U[0] < 0){    
     int ucol=0; ucol= (jobz=='A')? M : std::min(M,N);
     for (int i=0; i<ldu*ucol; i++){
       U[i] = -1*U[i];
@@ -113,6 +113,17 @@ void bob::math::svd(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
   bob::core::array::assertSameDimensionLength(sigma.extent(0), nb_singular);
   bob::core::array::assertSameDimensionLength(Vt.extent(0), N);
   bob::core::array::assertSameDimensionLength(Vt.extent(1), N);
+
+  bob::math::svd_(A, U, sigma, Vt, safe);
+}
+
+void bob::math::svd_(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
+  blitz::Array<double,1>& sigma, blitz::Array<double,2>& Vt, bool safe)
+{
+  // Size variables
+  const int M = A.extent(0);
+  const int N = A.extent(1);
+  const int nb_singular = std::min(M,N);
 
   // Prepares to call LAPACK function:
   // We will decompose A^T rather than A to reduce the required number of copy
@@ -150,7 +161,7 @@ void bob::math::svd(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
 
   // Call the LAPACK function
   svd_lapack(jobz, N, M, A_lapack, lda, S_lapack, U_lapack, ldu,
-    VT_lapack, ldvt, safe);
+    VT_lapack, ldvt, safe);  
 
 
   // Copy singular vectors back to U, V and sigma if required
@@ -176,6 +187,17 @@ void bob::math::svd(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
   bob::core::array::assertSameDimensionLength(U.extent(0), M);
   bob::core::array::assertSameDimensionLength(U.extent(1), nb_singular);
   bob::core::array::assertSameDimensionLength(sigma.extent(0), nb_singular);
+
+  bob::math::svd_(A, U, sigma, safe);
+}
+
+void bob::math::svd_(const blitz::Array<double,2>& A, blitz::Array<double,2>& U,
+  blitz::Array<double,1>& sigma, bool safe)
+{
+  // Size variables
+  const int M = A.extent(0);
+  const int N = A.extent(1);
+  const int nb_singular = std::min(M,N);
 
   // Prepares to call LAPACK function
 
@@ -226,6 +248,16 @@ void bob::math::svd(const blitz::Array<double,2>& A, blitz::Array<double,1>& sig
   bob::core::array::assertZeroBase(sigma);
   // Checks and resizes if required
   bob::core::array::assertSameDimensionLength(sigma.extent(0), nb_singular);
+
+  bob::math::svd_(A, sigma, safe);
+}
+
+void bob::math::svd_(const blitz::Array<double,2>& A, blitz::Array<double,1>& sigma, bool safe)
+{
+  // Size variables
+  const int M = A.extent(0);
+  const int N = A.extent(1);
+  const int nb_singular = std::min(M,N);
 
   // Prepares to call LAPACK function
 

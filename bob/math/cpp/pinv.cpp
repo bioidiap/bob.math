@@ -18,7 +18,6 @@ void bob::math::pinv(const blitz::Array<double,2>& A,
   // Size variables
   const int M = A.extent(0);
   const int N = A.extent(1);
-  const int nb_singular = std::min(M,N);
 
   // Checks zero base
   bob::core::array::assertZeroBase(A);
@@ -26,6 +25,18 @@ void bob::math::pinv(const blitz::Array<double,2>& A,
   // Checks size
   bob::core::array::assertSameDimensionLength(B.extent(0), N);
   bob::core::array::assertSameDimensionLength(B.extent(1), M);
+
+  // Calls pinv_()
+  bob::math::pinv_(A, B, rcond);
+}
+
+void bob::math::pinv_(const blitz::Array<double,2>& A,
+  blitz::Array<double,2>& B, const double rcond)
+{
+  // Size variables
+  const int M = A.extent(0);
+  const int N = A.extent(1);
+  const int nb_singular = std::min(M,N);
 
   // Allocates arrays for the SVD
   blitz::Array<double,2> U(M,M);
@@ -35,7 +46,7 @@ void bob::math::pinv(const blitz::Array<double,2>& A,
   blitz::Array<double,2> sigmai_Ut(N, M);
   blitz::Array<double,1> Ut_sum(M);
   // Computes the SVD
-  bob::math::svd(A, U, sigma, Vt);
+  bob::math::svd_(A, U, sigma, Vt);
 
   // Cuts off small sigmas for the inverse similar to Numpy:
   // cf. https://github.com/numpy/numpy/blob/maintenance/1.7.x/numpy/linalg/linalg.py#L1577
@@ -57,3 +68,4 @@ void bob::math::pinv(const blitz::Array<double,2>& A,
   blitz::Array<double,2> V = Vt.transpose(1,0);
   bob::math::prod(V, sigmai_Ut, B);
 }
+

@@ -15,7 +15,11 @@
 double bob::math::det(const blitz::Array<double,2>& A)
 {
   bob::core::array::assertSameDimensionLength(A.extent(0),A.extent(1));
+  return bob::math::det_(A);
+}
 
+double bob::math::det_(const blitz::Array<double,2>& A)
+{
   // Size variable
   int N = A.extent(0);
 
@@ -49,7 +53,11 @@ double bob::math::det(const blitz::Array<double,2>& A)
 double bob::math::slogdet(const blitz::Array<double,2>& A, int& sign)
 {
   bob::core::array::assertSameDimensionLength(A.extent(0),A.extent(1));
+  return bob::math::slogdet_(A, sign);
+}
 
+double bob::math::slogdet_(const blitz::Array<double,2>& A, int& sign)
+{
   // Size variable
   int N = A.extent(0);
 
@@ -83,3 +91,4 @@ double bob::math::slogdet(const blitz::Array<double,2>& A, int& sign)
 
   return Udiag;
 }
+

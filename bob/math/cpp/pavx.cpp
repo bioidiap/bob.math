@@ -11,6 +11,13 @@
 
 #include <bob.core/assert.h>
 
+void bob::math::pavx(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat)
+{
+  bob::core::array::assertSameShape(y, ghat);
+  assert(y.extent(0) > 0);
+  math::pavx_(y, ghat);
+}
+
 static size_t pavx_1(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat,
   blitz::Array<size_t,1>& index, blitz::Array<size_t,1>& len)
 {
@@ -57,11 +64,8 @@ static void pavx_2(blitz::Array<double,1>& ghat, blitz::Array<size_t,1>& index, 
   }
 }
 
-void bob::math::pavx(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat)
+void bob::math::pavx_(const blitz::Array<double,1>& y, blitz::Array<double,1>& ghat)
 {
-  bob::core::array::assertSameShape(y, ghat);
-  assert(y.extent(0) > 0);
-
   // Define working arrays: An interval of indices is represented by its left
   // endpoint "index" and its length "len"
   int N = y.extent(0);

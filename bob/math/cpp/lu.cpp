@@ -45,6 +45,17 @@ void bob::math::lu(const blitz::Array<double,2>& A, blitz::Array<double,2>& L,
   bob::core::array::assertSameShape(U,shapeU);
   bob::core::array::assertSameShape(P,shapeP);
 
+  bob::math::lu_(A, L, U, P);
+}
+
+void bob::math::lu_(const blitz::Array<double,2>& A, blitz::Array<double,2>& L,
+  blitz::Array<double,2>& U, blitz::Array<double,2>& P)
+{
+  // Size variable
+  const int M = A.extent(0);
+  const int N = A.extent(1);
+  const int minMN = std::min(M,N);
+
   // Prepares to call LAPACK function
 
   // Initialises LAPACK variables
@@ -105,6 +116,15 @@ void bob::math::chol(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(M,N);
   bob::core::array::assertSameShape(A,L);
 
+  bob::math::chol_(A, L);
+}
+
+void bob::math::chol_(const blitz::Array<double,2>& A,
+  blitz::Array<double,2>& L)
+{
+  // Size variable
+  const int N = A.extent(0);
+
   // Prepares to call LAPACK function
   // Initialises LAPACK variables
   int info = 0;
@@ -141,3 +161,4 @@ void bob::math::chol(const blitz::Array<double,2>& A,
   blitz::secondIndex j;
   L = blitz::where(i < j, 0, L);
 }
+

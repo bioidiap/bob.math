@@ -21,6 +21,7 @@ namespace bob { namespace math {
    * @param B The B=inverse(A) matrix (size NxN)
    */
   void inv(const blitz::Array<double,2>& A, blitz::Array<double,2>& B);
+  void inv_(const blitz::Array<double,2>& A, blitz::Array<double,2>& B);
 
 }}
 

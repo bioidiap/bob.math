@@ -57,6 +57,16 @@ void bob::math::eig(const blitz::Array<double,2>& A,
   bob::core::array::assertSameShape(V,shape2);
   bob::core::array::assertSameShape(D,shape1);
 
+  bob::math::eig_(A, V, D);
+}
+
+void bob::math::eig_(const blitz::Array<double,2>& A,
+  blitz::Array<std::complex<double>,2>& V,
+  blitz::Array<std::complex<double>,1>& D)
+{
+  // Size variable
+  const int N = A.extent(0);
+
   // Prepares to call LAPACK function
   // Initialises LAPACK variables
   const char jobvl = 'N'; // Do NOT compute left eigen-vectors
@@ -137,6 +147,15 @@ void bob::math::eigSym(const blitz::Array<double,2>& A,
   bob::core::array::assertSameShape(V,shape2);
   bob::core::array::assertSameShape(D,shape1);
 
+  bob::math::eigSym_(A, V, D);
+}
+
+void bob::math::eigSym_(const blitz::Array<double,2>& A,
+  blitz::Array<double,2>& V, blitz::Array<double,1>& D)
+{
+  // Size variable
+  const int N = A.extent(0);
+
   // Prepares to call LAPACK function
   // Initialises LAPACK variables
   const char jobz = 'V'; // Get both the eigenvalues and the eigenvectors
@@ -214,6 +233,15 @@ void bob::math::eigSym(const blitz::Array<double,2>& A, const blitz::Array<doubl
   bob::core::array::assertSameShape(B,shape2);
   bob::core::array::assertSameShape(V,shape2);
   bob::core::array::assertSameShape(D,shape1);
+
+  bob::math::eigSym_(A, B, V, D);
+}
+
+void bob::math::eigSym_(const blitz::Array<double,2>& A, const blitz::Array<double,2>& B,
+  blitz::Array<double,2>& V, blitz::Array<double,1>& D)
+{
+  // Size variable
+  const int N = A.extent(0);
 
   // Prepares to call LAPACK function
   // Initialises LAPACK variables

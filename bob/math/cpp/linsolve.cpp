@@ -35,6 +35,12 @@ void bob::math::linsolve(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(A.extent(0), A.extent(1));
   bob::core::array::assertSameDimensionLength(A.extent(1), b.extent(0));
 
+  bob::math::linsolve_(A, b, x);
+}
+
+void bob::math::linsolve_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
+{
   // Defines dimensionality variables
   const int N = A.extent(0);
 
@@ -87,6 +93,13 @@ void bob::math::linsolve(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(A.extent(1), X.extent(0));
   bob::core::array::assertSameDimensionLength(A.extent(0), B.extent(0));
   bob::core::array::assertSameDimensionLength(X.extent(1), B.extent(1));
+
+  bob::math::linsolve_(A, B, X);
+}
+
+void bob::math::linsolve_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
+{
 
   // Defines dimensionality variables
   const int N = A.extent(0);
@@ -148,6 +161,13 @@ void bob::math::linsolveSympos(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(A.extent(0), A.extent(1));
   bob::core::array::assertSameDimensionLength(A.extent(1), b.extent(0));
 
+  bob::math::linsolveSympos_(A, b, x);
+}
+
+void bob::math::linsolveSympos_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
+{
+
   // Defines dimensionality variables
   const int N = A.extent(0);
 
@@ -202,6 +222,12 @@ void bob::math::linsolveSympos(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(A.extent(0), B.extent(0));
   bob::core::array::assertSameDimensionLength(X.extent(1), B.extent(1));
 
+  bob::math::linsolveSympos_(A, B, X);
+}
+
+void bob::math::linsolveSympos_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
+{
   // Defines dimensionality variables
   const int N = A.extent(0);
   const int P = X.extent(1);
@@ -267,6 +293,16 @@ void bob::math::linsolveCGSympos(const blitz::Array<double,2>& A,
   bob::core::array::assertZeroBase(A);
   bob::core::array::assertSameDimensionLength(A.extent(0), N);
   bob::core::array::assertSameDimensionLength(A.extent(1), N);
+
+  bob::math::linsolveCGSympos_(A, b, x, acc, max_iter);
+}
+
+void bob::math::linsolveCGSympos_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x,
+  const double acc, const int max_iter)
+{
+  // Dimensionality of the problem
+  const int N = b.extent(0);
 
   blitz::Array<double,1> r(N), d(N), best_x(N), q(N), tmp(N);
   x = 0.;

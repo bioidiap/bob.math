@@ -35,6 +35,14 @@ void bob::math::inv(const blitz::Array<double,2>& A, blitz::Array<double,2>& B)
   bob::core::array::assertSameShape(A,shapeA);
   bob::core::array::assertSameShape(B,shapeA);
 
+  bob::math::inv_(A, B);
+}
+
+void bob::math::inv_(const blitz::Array<double,2>& A, blitz::Array<double,2>& B)
+{
+  // Size variable
+  const int N = A.extent(0);
+
   //////////////////////////////////////
   // Prepares to call LAPACK functions
   // Initializes LAPACK variables
@@ -88,3 +96,4 @@ void bob::math::inv(const blitz::Array<double,2>& A, blitz::Array<double,2>& B)
   if (!B_direct_use)
     B = A_blitz_lapack;
 }
+

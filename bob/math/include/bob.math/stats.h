@@ -23,20 +23,15 @@ namespace bob { namespace math {
    * organized row-wise (each sample is a row, each feature is a column).
    * Outputs the sample mean M and the scatter matrix S.
    *
-   * The input and output data have their sizes checked and this method will
-   * raise an appropriate exception if that is not cased.
+   * @warning No checks are performed on the array sizes and is recommended
+   * only in scenarios where you have previously checked conformity and is
+   * focused only on speed.
    *
    * This version of the method also returns the sample mean of the array.
    */
   template<typename T>
-    void scatter(const blitz::Array<T,2>& A, blitz::Array<T,2>& S,
+    void scatter_(const blitz::Array<T,2>& A, blitz::Array<T,2>& S,
         blitz::Array<T,1>& M) {
-
-      // Check output
-      bob::core::array::assertSameDimensionLength(A.extent(1), M.extent(0));
-      bob::core::array::assertSameDimensionLength(A.extent(1), S.extent(0));
-      bob::core::array::assertSameDimensionLength(A.extent(1), S.extent(1));
-
       blitz::firstIndex i;
       blitz::secondIndex j;
       blitz::Range a = blitz::Range::all();
@@ -54,10 +49,49 @@ namespace bob { namespace math {
   /**
    * @brief Computes the scatter matrix of a 2D array considering data is
    * organized row-wise (each sample is a row, each feature is a column).
+   * Outputs the sample mean M and the scatter matrix S.
+   *
+   * The input and output data have their sizes checked and this method will
+   * raise an appropriate exception if that is not cased. If you know that
+   * the input and output matrices conform, use the scatter_() variant.
+   *
+   * This version of the method also returns the sample mean of the array.
+   */
+  template<typename T>
+    void scatter(const blitz::Array<T,2>& A, blitz::Array<T,2>& S,
+        blitz::Array<T,1>& M) {
+
+      // Check output
+      bob::core::array::assertSameDimensionLength(A.extent(1), M.extent(0));
+      bob::core::array::assertSameDimensionLength(A.extent(1), S.extent(0));
+      bob::core::array::assertSameDimensionLength(A.extent(1), S.extent(1));
+
+      scatter_<T>(A, S, M);
+    }
+
+  /**
+   * @brief Computes the scatter matrix of a 2D array considering data is
+   * organized row-wise (each sample is a row, each feature is a column).
+   * Outputs the sample scatter matrix S.
+   *
+   * @warning No checks are performed on the array sizes and is recommended
+   * only in scenarios where you have previously checked conformity and is
+   * focused only on speed.
+   */
+  template<typename T>
+    void scatter_(const blitz::Array<T,2>& A, blitz::Array<T,2>& S) {
+      blitz::Array<T,1> M;
+      scatter_<T>(A, S, M);
+    }
+
+  /**
+   * @brief Computes the scatter matrix of a 2D array considering data is
+   * organized row-wise (each sample is a row, each feature is a column).
    * Outputs the sample scatter matrix S.
    *
    * The input and output data have their sizes checked and this method will
-   * raise an appropriate exception if that is not cased.
+   * raise an appropriate exception if that is not cased. If you know that
+   * the input and output matrices conform, use the scatter_() variant.
    */
   template<typename T>
     void scatter(const blitz::Array<T,2>& A, blitz::Array<T,2>& S) {
@@ -115,20 +149,16 @@ namespace bob { namespace math {
    *
    * This method was designed based on the previous design at
    * torch3Vision 2.1, by SM.
+   *
+   * @warning No checks are performed on the array sizes and is recommended
+   * only in scenarios where you have previously checked conformity and is
+   * focused only on speed.
    */
   template <typename T>
-    void scatters(const std::vector<blitz::Array<T,2> >& data,
+    void scatters_(const std::vector<blitz::Array<T,2> >& data,
         blitz::Array<T,2>& Sw, blitz::Array<T,2>& Sb,
         blitz::Array<T,1>& m)
     {
-      // Check output
-      for (size_t i=0; i<data.size(); ++i)
-        bob::core::array::assertSameDimensionLength(data[i].extent(1), m.extent(0));
-      bob::core::array::assertSameDimensionLength(m.extent(0), Sw.extent(0));
-      bob::core::array::assertSameDimensionLength(m.extent(0), Sw.extent(1));
-      bob::core::array::assertSameDimensionLength(m.extent(0), Sb.extent(0));
-      bob::core::array::assertSameDimensionLength(m.extent(0), Sb.extent(1));
-
       // checks for data shape should have been done before...
       const int n_features = data[0].extent(1);
 
@@ -161,6 +191,74 @@ namespace bob { namespace math {
           Sw += buffer(i) * buffer(j); //outer product
         }
       }
+    }
+
+  /**
+   * @brief Calculates the within and between class scatter matrices Sw and
+   * Sb. Returns those matrices and the overall means vector (m).
+   *
+   * Strategy implemented:
+   * 1. Evaluate the overall mean (m), class means (m_k) and the total class
+   *    counts (N).
+   * 2. Evaluate Sw and Sb using normal loops.
+   *
+   * Note that Sw and Sb, in this implementation, will be normalized by N-1
+   * (number of samples) and K (number of classes). This procedure makes
+   * the eigen values scaled by (N-1)/K, effectively increasing their
+   * values. The main motivation for this normalization are numerical
+   * precision concerns with the increasing number of samples causing a
+   * rather large Sw matrix. A normalization strategy mitigates this
+   * problem. The eigen vectors will see no effect on this normalization as
+   * they are normalized in the euclidean sense (||a|| = 1) so that does
+   * not change those.
+   *
+   * This method was designed based on the previous design at
+   * torch3Vision 2.1, by SM.
+   */
+  template <typename T>
+    void scatters(const std::vector<blitz::Array<T,2> >& data,
+        blitz::Array<T,2>& Sw, blitz::Array<T,2>& Sb,
+        blitz::Array<T,1>& m)
+    {
+      // Check output
+      for (size_t i=0; i<data.size(); ++i)
+        bob::core::array::assertSameDimensionLength(data[i].extent(1), m.extent(0));
+      bob::core::array::assertSameDimensionLength(m.extent(0), Sw.extent(0));
+      bob::core::array::assertSameDimensionLength(m.extent(0), Sw.extent(1));
+      bob::core::array::assertSameDimensionLength(m.extent(0), Sb.extent(0));
+      bob::core::array::assertSameDimensionLength(m.extent(0), Sb.extent(1));
+
+      scatters_<T>(data, Sw, Sb, m);
+    }
+
+  /**
+   * @brief Calculates the within and between class scatter matrices Sw and
+   * Sb. Returns those matrices.
+   *
+   * Strategy implemented:
+   * 1. Evaluate the overall mean (m), class means (m_k) and the total class
+   *    counts (N).
+   * 2. Evaluate Sw and Sb using normal loops.
+   *
+   * Note that Sw and Sb, in this implementation, will be normalized by N-1
+   * (number of samples) and K (number of classes). This procedure makes
+   * the eigen values scaled by (N-1)/K, effectively increasing their
+   * values. The main motivation for this normalization are numerical
+   * precision concerns with the increasing number of samples causing a
+   * rather large Sw matrix. A normalization strategy mitigates this
+   * problem. The eigen vectors will see no effect on this normalization as
+   * they are normalized in the euclidean sense (||a|| = 1) so that does
+   * not change those.
+   *
+   * This method was designed based on the previous design at
+   * torch3Vision 2.1, by SM.
+   */
+  template<typename T>
+    void scatters_(const std::vector<blitz::Array<T,2> >& data,
+        blitz::Array<T,2>& Sw, blitz::Array<T,2>& Sb)
+    {
+      blitz::Array<T,1> M(data[0].extent(1));
+      scatters_<T>(data, Sw, Sb, M);
     }
 
   /**

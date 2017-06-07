@@ -22,6 +22,8 @@ namespace bob { namespace math {
    */
   void lu(const blitz::Array<double,2>& A, blitz::Array<double,2>& L,
       blitz::Array<double,2>& U, blitz::Array<double,2>& P);
+  void lu_(const blitz::Array<double,2>& A, blitz::Array<double,2>& L,
+      blitz::Array<double,2>& U, blitz::Array<double,2>& P);
 
   /**
    * @brief Performs the Cholesky decomposition of a real symmetric
@@ -33,6 +35,7 @@ namespace bob { namespace math {
    * @param L The L lower-triangular matrix of the decomposition
    */
   void chol(const blitz::Array<double,2>& A, blitz::Array<double,2>& L);
+  void chol_(const blitz::Array<double,2>& A, blitz::Array<double,2>& L);
   /**
    * @}
    */
