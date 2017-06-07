@@ -283,7 +283,7 @@ void bob::math::linsolveCGSympos(const blitz::Array<double,2>& A,
   while (n_iter < max_iter && delta > acc*acc*delta0)
   {
     // q = A*d
-    bob::math::prod(A, d, q);
+    bob::math::prod_(A, d, q);
 
     // alpha = delta/(d'*q);
     double alpha = delta / bob::math::dot(d,q);
