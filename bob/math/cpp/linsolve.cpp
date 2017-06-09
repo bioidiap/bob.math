@@ -22,8 +22,8 @@ extern "C" void dgesv_( const int *N, const int *NRHS, double *A,
 extern "C" void dposv_( const char* uplo, const int *N, const int *NRHS,
   double *A, const int *lda, double *B, const int *ldb, int *info);
 
-void bob::math::linsolve(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-  const blitz::Array<double,1>& b)
+void bob::math::linsolve(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
 {
   // Check x and b
   bob::core::array::assertZeroBase(x);
@@ -35,11 +35,11 @@ void bob::math::linsolve(const blitz::Array<double,2>& A, blitz::Array<double,1>
   bob::core::array::assertSameDimensionLength(A.extent(0), A.extent(1));
   bob::core::array::assertSameDimensionLength(A.extent(1), b.extent(0));
 
-  bob::math::linsolve_(A, x, b);
+  bob::math::linsolve_(A, b, x);
 }
 
-void bob::math::linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-  const blitz::Array<double,1>& b)
+void bob::math::linsolve_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
 {
   // Defines dimensionality variables
   const int N = A.extent(0);
@@ -82,8 +82,8 @@ void bob::math::linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,1
 }
 
 
-void bob::math::linsolve(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-  const blitz::Array<double,2>& B)
+void bob::math::linsolve(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
 {
   // Checks dimensionality and zero base
   bob::core::array::assertZeroBase(A);
@@ -94,12 +94,13 @@ void bob::math::linsolve(const blitz::Array<double,2>& A, blitz::Array<double,2>
   bob::core::array::assertSameDimensionLength(A.extent(0), B.extent(0));
   bob::core::array::assertSameDimensionLength(X.extent(1), B.extent(1));
 
-  bob::math::linsolve_(A, X, B);
+  bob::math::linsolve_(A, B, X);
 }
 
-void bob::math::linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-  const blitz::Array<double,2>& B)
+void bob::math::linsolve_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
 {
+
   // Defines dimensionality variables
   const int N = A.extent(0);
   const int P = X.extent(1);
@@ -148,7 +149,7 @@ void bob::math::linsolve_(const blitz::Array<double,2>& A, blitz::Array<double,2
 
 
 void bob::math::linsolveSympos(const blitz::Array<double,2>& A,
-  blitz::Array<double,1>& x, const blitz::Array<double,1>& b)
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
 {
   // Check x and b
   bob::core::array::assertZeroBase(x);
@@ -160,12 +161,13 @@ void bob::math::linsolveSympos(const blitz::Array<double,2>& A,
   bob::core::array::assertSameDimensionLength(A.extent(0), A.extent(1));
   bob::core::array::assertSameDimensionLength(A.extent(1), b.extent(0));
 
-  bob::math::linsolveSympos_(A, x, b);
+  bob::math::linsolveSympos_(A, b, x);
 }
 
 void bob::math::linsolveSympos_(const blitz::Array<double,2>& A,
-  blitz::Array<double,1>& x, const blitz::Array<double,1>& b)
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x)
 {
+
   // Defines dimensionality variables
   const int N = A.extent(0);
 
@@ -208,8 +210,8 @@ void bob::math::linsolveSympos_(const blitz::Array<double,2>& A,
     x = x_blitz_lapack;
 }
 
-void bob::math::linsolveSympos(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-  const blitz::Array<double,2>& B)
+void bob::math::linsolveSympos(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
 {
   // Checks dimensionality and zero base
   bob::core::array::assertZeroBase(A);
@@ -220,11 +222,11 @@ void bob::math::linsolveSympos(const blitz::Array<double,2>& A, blitz::Array<dou
   bob::core::array::assertSameDimensionLength(A.extent(0), B.extent(0));
   bob::core::array::assertSameDimensionLength(X.extent(1), B.extent(1));
 
-  bob::math::linsolveSympos_(A, X, B);
+  bob::math::linsolveSympos_(A, B, X);
 }
 
-void bob::math::linsolveSympos_(const blitz::Array<double,2>& A, blitz::Array<double,2>& X,
-  const blitz::Array<double,2>& B)
+void bob::math::linsolveSympos_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,2>& B, blitz::Array<double,2>& X)
 {
   // Defines dimensionality variables
   const int N = A.extent(0);
@@ -275,8 +277,9 @@ void bob::math::linsolveSympos_(const blitz::Array<double,2>& A, blitz::Array<do
 
 
 
-void bob::math::linsolveCGSympos(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-  const blitz::Array<double,1>& b, const double acc, const int max_iter)
+void bob::math::linsolveCGSympos(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x,
+  const double acc, const int max_iter)
 {
   // Dimensionality of the problem
   const int N = b.extent(0);
@@ -291,11 +294,12 @@ void bob::math::linsolveCGSympos(const blitz::Array<double,2>& A, blitz::Array<d
   bob::core::array::assertSameDimensionLength(A.extent(0), N);
   bob::core::array::assertSameDimensionLength(A.extent(1), N);
 
-  bob::math::linsolveCGSympos_(A, x, b, acc, max_iter);
+  bob::math::linsolveCGSympos_(A, b, x, acc, max_iter);
 }
 
-void bob::math::linsolveCGSympos_(const blitz::Array<double,2>& A, blitz::Array<double,1>& x,
-  const blitz::Array<double,1>& b, const double acc, const int max_iter)
+void bob::math::linsolveCGSympos_(const blitz::Array<double,2>& A,
+  const blitz::Array<double,1>& b, blitz::Array<double,1>& x,
+  const double acc, const int max_iter)
 {
   // Dimensionality of the problem
   const int N = b.extent(0);
@@ -347,4 +351,3 @@ void bob::math::linsolveCGSympos_(const blitz::Array<double,2>& A, blitz::Array<
   // TODO return best_res and number of iterations?
   //double res = best_res;
 }
-

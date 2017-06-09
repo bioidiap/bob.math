@@ -82,129 +82,10 @@ static bob::extension::FunctionDoc s_kullback_leibler = bob::extension::Function
   .add_return("dist", "float", "The Kullback-Leibler divergence value for the given histograms.")
 ;
 
-static bob::extension::FunctionDoc s_linsolve = bob::extension::FunctionDoc(
-  "linsolve",
-  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
-  "This method uses LAPACK's ``dgesv`` generic solver. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
-
-static bob::extension::FunctionDoc s_linsolve_nocheck = bob::extension::FunctionDoc(
-  "linsolve_",
-  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x`.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "This method uses LAPACK's ``dgesv`` generic solver. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
-
-static bob::extension::FunctionDoc s_linsolve_sympos = bob::extension::FunctionDoc(
-  "linsolve_sympos",
-  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
-
-static bob::extension::FunctionDoc s_linsolve_sympos_nocheck = bob::extension::FunctionDoc(
-  "linsolve_sympos_",
-  "Solves the linear system :math:`Ax=b` and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve_sympos`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "This method uses LAPACK's ``dposv`` solver, assuming :math:`A` is a symmetric positive definite matrix. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
-
-static bob::extension::FunctionDoc s_linsolve_cg_sympos = bob::extension::FunctionDoc(
-  "linsolve_cg_sympos",
-  "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
-
-static bob::extension::FunctionDoc s_linsolve_cg_sympos_nocheck = bob::extension::FunctionDoc(
-  "linsolve_cg_sympos_",
-  "Solves the linear system :math:`Ax=b` using conjugate gradients and returns the result in :math:`x` for symmetric :math:`A` matrix.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`linsolve_cg_sympos`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "This method uses the conjugate gradient solver, assuming :math:`A` is a symmetric positive definite matrix. "
-  "You can use this method in two different formats. "
-  "The first interface accepts the matrices :math:`A` and :math:`b` returning :math:`x`. "
-  "The second one accepts a pre-allocated :math:`x` vector and sets it with the linear system solution."
-  )
-  .add_prototype("A, b", "x")
-  .add_prototype("A, b, x")
-  .add_parameter("A", "array_like (2D)", "The matrix :math:`A` of the linear system")
-  .add_parameter("b", "array_like (1D)", "The vector :math:`b` of the linear system")
-  .add_parameter("x", "array_like (1D)", "The result vector :math:`x`, as parameter")
-  .add_return("x", "array_like (1D)", "The result vector :math:`x`, as return value")
-;
 
 static bob::extension::FunctionDoc s_pavx = bob::extension::FunctionDoc(
   "pavx",
   "Applies the Pool-Adjacent-Violators Algorithm",
-  "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
-  "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
-  "You can use this method in two different formats. "
-  "The first interface accepts the ``input`` and ``output``. "
-  "The second one accepts the input array ``input`` and allocates a new ``output`` array, which is returned. "
-  )
-  .add_prototype("input, output")
-  .add_prototype("input", "output")
-  .add_parameter("input", "array_like (float, 1D)", "The input matrix for the PAV algorithm.")
-  .add_parameter("output", "array_like (float, 1D)", "The output matrix, must be of the same size as ``input``")
-  .add_return("output", "array_like (float, 1D)", "The output matrix; will be created in the same size as ``input``")
-;
-
-static bob::extension::FunctionDoc s_pavx_nocheck = bob::extension::FunctionDoc(
-  "pavx_",
-  "Applies the Pool-Adjacent-Violators Algorithm",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`pavx`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
   "Applies the Pool-Adjacent-Violators Algorithm to ``input``. "
   "This is a simplified C++ port of the isotonic regression code made available at the `University of Bern website <http://www.imsv.unibe.ch/content/staff/personalhomepages/duembgen/software/isotonicregression/index_eng.html>`_.\n\n"
   "You can use this method in two different formats. "
@@ -288,23 +169,6 @@ static bob::extension::FunctionDoc s_scatter = bob::extension::FunctionDoc(
   .add_return("m", "array_like (float, 1D)", "The mean matrix, with with the row means of ``a``")
 ;
 
-static bob::extension::FunctionDoc s_scatter_nocheck = bob::extension::FunctionDoc(
-  "scatter_",
-  "Computes scatter matrix of a 2D array.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatter`."
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "Computes the scatter matrix of a 2D array *considering data is organized row-wise* (each sample is a row, each feature is a column). "
-  "The resulting array ``s`` is squared with extents equal to the number of columns in ``a``. "
-  "The resulting array ``m`` is a 1D array with the row means of ``a``. "
-  "This function supports many calling modes, but you should provide, at least, the input data matrix ``a``. "
-  "All non-provided arguments will be allocated internally and returned."
-  )
-  .add_prototype("a, s, m")
-  .add_parameter("a", "array_like (float, 2D)", "The sample matrix, *considering data is organized row-wise* (each sample is a row, each feature is a column)")
-  .add_parameter("s", "array_like (float, 2D)", "The scatter matrix, squared with extents equal to the number of columns in ``a``")
-  .add_parameter("m", "array_like (float,1D)", "The mean matrix, with with the row means of ``a``")
-;
-
 
 static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
   "scatters",
@@ -335,24 +199,6 @@ static bob::extension::FunctionDoc s_scatters = bob::extension::FunctionDoc(
   .add_return("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`")
   .add_return("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`")
   .add_return("m", "array_like (float, 1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
-;
-
-static bob::extension::FunctionDoc s_scatters_nocheck = bob::extension::FunctionDoc(
-  "scatters_",
-  "Computes :math:`S_w` and :math:`S_b` scatter matrices of a set of 2D arrays.",
-  ".. warning:: This variant does not perform any checks on the input matrices and is faster then :py:func:`scatters`. "
-  "Use it when you are sure your input matrices sizes match.\n\n"
-  "For a detailed description of the function, please see :func:`scatters`."
-  )
-  .add_prototype("data, sw, sb, m")
-  .add_prototype("data, sw, sb")
-  .add_parameter("data", "[array_like (float, 2D)]", "The list of sample matrices. "
-      "In each sample matrix the data is organized row-wise (each sample is a row, each feature is a column). "
-      "Each matrix stores the data of a particular class. "
-      "**Every matrix in ``data`` must have exactly the same number of columns.**")
-  .add_parameter("sw", "array_like (float, 2D)", "The within-class scatter matrix :math:`S_w`, squared with extents equal to the number of columns in ``data``")
-  .add_parameter("sb", "array_like (float, 2D)", "The between-class scatter matrix :math:`S_b`, squared with extents equal to the number of columns in ``data``")
-  .add_parameter("m", "array_like (float,1D)", "The mean matrix, representing the ensemble mean with no prior (i.e., biased towards classes with more samples)")
 ;
 
 
@@ -418,22 +264,10 @@ static PyMethodDef module_methods[] = {
       s_linsolve.doc()
     },
     {
-      s_linsolve_nocheck.name(),
-      (PyCFunction)py_linsolve_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_nocheck.doc()
-    },
-    {
       s_linsolve_sympos.name(),
       (PyCFunction)py_linsolve_sympos,
       METH_VARARGS|METH_KEYWORDS,
       s_linsolve_sympos.doc()
-    },
-    {
-      s_linsolve_sympos_nocheck.name(),
-      (PyCFunction)py_linsolve_sympos_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_sympos_nocheck.doc()
     },
     {
       s_linsolve_cg_sympos.name(),
@@ -442,22 +276,10 @@ static PyMethodDef module_methods[] = {
       s_linsolve_cg_sympos.doc()
     },
     {
-      s_linsolve_cg_sympos_nocheck.name(),
-      (PyCFunction)py_linsolve_cg_sympos_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_linsolve_cg_sympos_nocheck.doc()
-    },
-    {
       s_pavx.name(),
       (PyCFunction)py_pavx,
       METH_VARARGS|METH_KEYWORDS,
       s_pavx.doc()
-    },
-    {
-      s_pavx_nocheck.name(),
-      (PyCFunction)py_pavx_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_pavx_nocheck.doc()
     },
     {
       s_pavx_width.name(),
@@ -490,22 +312,10 @@ static PyMethodDef module_methods[] = {
       s_scatter.doc()
     },
     {
-      s_scatter_nocheck.name(),
-      (PyCFunction)py_scatter_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_scatter_nocheck.doc()
-    },
-    {
       s_scatters.name(),
       (PyCFunction)py_scatters,
       METH_VARARGS|METH_KEYWORDS,
       s_scatters.doc()
-    },
-    {
-      s_scatters_nocheck.name(),
-      (PyCFunction)py_scatters_nocheck,
-      METH_VARARGS|METH_KEYWORDS,
-      s_scatters_nocheck.doc()
     },
     {
       s_gsvd.name(),

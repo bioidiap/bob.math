@@ -252,7 +252,7 @@ void bob::math::LPInteriorPoint::centeringV(const blitz::Array<double,2>& A,
 
     // 2) Update the big system and solve it
     updateLargeSystem( x, 1., m);
-    bob::math::linsolve( m_cache_A_large, m_cache_x_large, m_cache_b_large);
+    bob::math::linsolve( m_cache_A_large, m_cache_b_large, m_cache_x_large);
 
     // 4) Find alpha and update x, lamda and mu
     double alpha=1.;
@@ -406,7 +406,7 @@ void bob::math::LPInteriorPointShortstep::solve(const blitz::Array<double,2>& A,
 
     // 2) Update the big system and solve it
     updateLargeSystem( x, sigma, m);
-    bob::math::linsolve( m_cache_A_large, m_cache_x_large, m_cache_b_large);
+    bob::math::linsolve( m_cache_A_large, m_cache_b_large, m_cache_x_large);
 
     // 3) Update x, lamda and mu
     m_lambda += m_cache_x_large( r_m+n);
@@ -527,7 +527,7 @@ void bob::math::LPInteriorPointPredictorCorrector::solve(const blitz::Array<doub
 
     // 2) Update the big system and solve it
     updateLargeSystem( x, 0., m);
-    bob::math::linsolve( m_cache_A_large, m_cache_x_large, m_cache_b_large);
+    bob::math::linsolve( m_cache_A_large, m_cache_b_large, m_cache_x_large);
 
     // 3) alpha=1
     double alpha = 1.;
@@ -560,7 +560,7 @@ void bob::math::LPInteriorPointPredictorCorrector::solve(const blitz::Array<doub
 
     // 7) Update the big system and solve it
     updateLargeSystem( x, 1., m);
-    bob::math::linsolve( m_cache_A_large, m_cache_x_large, m_cache_b_large);
+    bob::math::linsolve( m_cache_A_large, m_cache_b_large, m_cache_x_large);
 
     // 8) Update x
     m_lambda += m_cache_x_large(r_m+n);
@@ -690,7 +690,7 @@ void bob::math::LPInteriorPointLongstep::solve(const blitz::Array<double,2>& A,
 
     // 2) Update the big system and solve it
     updateLargeSystem(x, m_sigma, m);
-    bob::math::linsolve(m_cache_A_large, m_cache_x_large, m_cache_b_large);
+    bob::math::linsolve(m_cache_A_large, m_cache_b_large, m_cache_x_large);
 
     // 3) alpha=1
     double alpha = 1.;
@@ -737,4 +737,3 @@ void bob::math::LPInteriorPointLongstep::solve(const blitz::Array<double,2>& A,
   // Launch the long step algorithm
   solve(A, b, c, x, m_lambda, m_mu);
 }
-

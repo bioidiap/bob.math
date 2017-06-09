@@ -9,7 +9,7 @@
 """
 
 import os, sys
-from bob.math import scatter, scatter_, scatters, scatters_
+from bob.math import scatter, scatters
 import numpy
 import nose.tools
 
@@ -112,7 +112,7 @@ def test_fast_scatter():
   # This test demonstrates how to use the scatter matrix function of bob.
   S = numpy.ndarray((data.shape[1], data.shape[1]), dtype=float)
   M = numpy.ndarray((data.shape[1],), dtype=float)
-  scatter_(data, S, M)
+  scatter(data, S, M)
   S /= (data.shape[0]-1)
 
   # Do the same with numpy and compare. Note that with numpy we are computing
@@ -185,7 +185,7 @@ def test_fast_scatters():
   Sw = numpy.empty_like(Sw_)
   Sb = numpy.empty_like(Sb_)
   m = numpy.empty_like(m_)
-  scatters_(data, Sw, Sb, m)
+  scatters(data, Sw, Sb, m)
   assert numpy.allclose(Sw, Sw_)
   assert numpy.allclose(Sb, Sb_)
   assert numpy.allclose(m, m_)

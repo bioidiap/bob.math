@@ -30,7 +30,7 @@ def test_linsolve():
   x1 = numpy.ndarray((3,), 'float64')
 
   # Computes the solution
-  linsolve(A,x1,b)
+  linsolve(A,b,x1)
   x2 = linsolve(A,b)
 
   # Compare to reference
@@ -54,7 +54,7 @@ def test_linsolveSympos():
   x1 = numpy.ndarray((3,), 'float64')
 
   # Computes the solution
-  linsolve_sympos(A,x1,b)
+  linsolve_sympos(A,b,x1)
   x2 = linsolve_sympos(A,b)
 
   # Compare to reference
@@ -81,7 +81,7 @@ def test_linsolveCGSympos():
   # Computes the solution
   eps = 1e-6
   max_iter = 1000
-  linsolve_cg_sympos(A,x1,b,eps,max_iter)
+  linsolve_cg_sympos(A,b,x1,eps,max_iter)
   x2 = linsolve_cg_sympos(A,b,eps,max_iter)
 
   # Compare to reference
