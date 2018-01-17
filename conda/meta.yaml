@@ -15,6 +15,9 @@ build:
     - python setup.py sdist --formats=zip
     {% endif %}
     - python setup.py install --single-version-externally-managed --record record.txt
+  skip: True  # [blas_impl == 'openblas' and win]
+  requires_features:
+    blas: {{ blas_impl }}
 
 requirements:
   build:
@@ -29,7 +32,9 @@ requirements:
     - libblitz {{ libblitz }}
     - boost {{ boost }}
     - numpy {{ numpy }}
-    - mkl-devel {{ mkl }}
+    - mkl-devel {{ mkl }}  # [blas_impl == 'mkl']
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - nomkl  # [blas_impl == 'openblas']
   run:
     - python
     - setuptools
