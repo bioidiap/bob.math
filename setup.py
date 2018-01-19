@@ -77,76 +77,7 @@ if len(math_flags['libraries']) > 0 and \
     if lib in NOT_VALID:
       math_flags['libraries'].remove(lib)
 
-# checks if those libraries actually exist
-found_all = all([find_library(lib, prefixes=math_flags.get('library_dirs'))
-                 for lib in math_flags['libraries']])
-if not found_all:
-  math_flags['libraries'] = []
-
-# checks if any libraries are being linked, otherwise we
-# search through the filesystem in stock locations.
-if not math_flags['libraries']:
-  # reset all entries
-  math_flags = dict(
-      library_dirs = [],
-      libraries = [],
-      system_include_dirs = [],
-      define_macros = [],
-      extra_compile_args = [],
-      extra_link_args = [],
-      )
-
-  # tries first to find an MKL implementation
-  lapack = find_library('mkl_lapack64')
-
-  if not lapack:
-    # if that fails, go for openblas
-    lapack = find_library('openblas')
-
-  if not lapack:
-    # if that fails, go for the default implementation
-    lapack = find_library('lapack', subpaths=['sse2', ''])
-
-  if not lapack:
-    print("ERROR: LAPACK library not found - have that installed or set BOB_PREFIX_PATH to point to the correct installation prefix")
-    sys.exit(1)
-
-  # tries first to find an MKL implementation
-  blas = find_library('mkl')
-
-  if not blas:
-    # if that fails, go for openblas
-    blas = find_library('openblas')
-
-  if not blas:
-    # if that fails, go for the default implementation of cblas
-    blas = find_library('cblas', subpaths=['sse2', ''])
-  if not blas:
-    # if that fails, go for the default implementation of blas
-    blas = find_library('blas', subpaths=['sse2', ''])
-
-  if not blas:
-    print("ERROR: BLAS library not found - have that installed or set BOB_PREFIX_PATH to point to the correct installation prefix")
-    sys.exit(1)
-
-  # at this point both lapack and blas were detected, proceed
-  def libname(f): return os.path.splitext(os.path.basename(f))[0][3:]
-
-  math_flags['library_dirs'] = uniq([
-    os.path.dirname(lapack[0]),
-    os.path.dirname(blas[0]),
-    ])
-  math_flags['libraries'] = uniq([
-    libname(lapack[0]),
-    libname(blas[0])
-    ])
-
-  print("\nLAPACK/BLAS configuration from filesystem scan:")
-
-else:
-
-  print("\nLAPACK/BLAS configuration from NumPy:")
-
+print("\nLAPACK/BLAS configuration from NumPy:")
 print(" * system include directories: %s" % ', '.join(math_flags['system_include_dirs']))
 print(" * defines: %s" % \
   ', '.join(['-D%s=%s' % k for k in math_flags['define_macros']]))
