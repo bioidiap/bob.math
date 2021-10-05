@@ -107,7 +107,7 @@ def test_svd_signal():
                        [ 7.04651683e-01,  7.09553332e-01,  2.73037723e-04]])
   
   [U,S,V] = bob.math.svd(A)
-  nose.tools.eq_((abs(U-U_ref) < 1e-8).all(), True)
+  nose.tools.eq_((abs(U-U_ref) < 1e-7).all(), True)
   svd_relations(A)
   
 
