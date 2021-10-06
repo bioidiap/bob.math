@@ -31,10 +31,9 @@ requirements:
     - libblitz {{ libblitz }}
     - boost {{ boost }}
     - numpy {{ numpy }}
-    - libblas
-    - libcblas
-    - liblapack
-    - liblapacke
+    - libblas {{ libblas }}
+    - libcblas {{ libcblas }}
+    - liblapack {{ liblapack }}
   run:
     - python
     - setuptools
