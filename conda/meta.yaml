@@ -31,9 +31,9 @@ requirements:
     - libblitz {{ libblitz }}
     - boost {{ boost }}
     - numpy {{ numpy }}
-    - mkl-devel {{ mkl }}  # [blas_impl == 'mkl']
-    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
-    - nomkl  # [blas_impl == 'openblas']
+    - libblas {{ libblas }}
+    - libcblas {{ libcblas }}
+    - liblapack {{ liblapack }}
   run:
     - python
     - setuptools
